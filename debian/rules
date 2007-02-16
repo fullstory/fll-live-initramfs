@@ -1,0 +1,15 @@
+#!/usr/bin/make -f
+  
+include /usr/share/cdbs/1/rules/debhelper.mk
+
+install/fll-live-initramfs::
+	# hooks
+	for hook in hooks/*; do \
+		install -m 0755 -D $$hook \
+			debian/fll-live-initramfs/usr/share/initramfs-tools/$$hook; \
+	done
+	# scripts
+	for script in scripts/*; do \
+		install -m 0755 -D $$script \
+			debian/fll-live-initramfs/usr/share/initramfs-tools/$$script; \
+	done

@@ -1,0 +1,15 @@
+Source: fll-live-initramfs
+Section: misc
+Priority: extra
+Maintainer: Kel Modderman <kel@otaku42.de>
+Uploaders: Stefan Lippers-Hollmann <s.l-h@gmx.de>
+Build-Depends: cdbs, debhelper (>= 5)
+Standards-Version: 3.7.2
+
+Package: fll-live-initramfs
+Architecture: all
+Depends: initramfs-tools (>= 0.40), distro-defaults
+Description: fll live media initramfs glue
+ This package provides the script glue that allows initramfs-tools to
+ generate an early userspace filesystem suitable for booting the live
+ media of the F.U.L.L.S.T.O.R.Y project.

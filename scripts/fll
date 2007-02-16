@@ -1,0 +1,23 @@
+#!/bin/sh
+
+#
+# F.U.L.L.S.T.O.R.Y initramfs live media detection and preparation script
+#
+
+# expand PATH's scope to include, and prefer, the standard PATH of
+# the yet-to-be-mounted live media.
+export PATH=/root/usr/bin:/root/usr/sbin:/root/bin:/root/sbin:/usr/bin:/usr/sbin:/bin:/sbin
+
+# source global variables
+. /etc/default/distro
+export FLL_DISTRO_MODE=live	# XXX: override live-detection of distro-defaults
+
+# source common fll stuff
+. /scripts/fll-common
+
+mountroot()
+{
+	echo ""
+	echo "${YELLOW}Welcome to ${WHITE}${FLL_DISTRO_NAME}${YELLOW} (${FLL_ARCH}) live linux!${NORMAL}"
+	echo ""
+}

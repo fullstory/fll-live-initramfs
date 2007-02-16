@@ -1,0 +1,47 @@
+#!/bin/sh
+
+#
+# F.U.L.L.S.T.O.R.Y live media initramfs hook
+#
+
+set -e
+
+# initramfs-tools prerequisite handling
+PREREQS=""
+
+prereqs()
+{
+	echo "$PREREQ"
+}
+
+case "$1" in
+	prereqs)
+		prereqs
+		exit 0
+		;;
+esac
+
+# source initramfs-tools hook helper functions
+. /usr/share/initramfs-tools/hook-functions
+
+# distro-defaults is an absolute requirement
+install -D /etc/default/distro ${DESTDIR}/etc/default/distro
+install -D /usr/share/initramfs-tools/scripts/fll-common \
+	${DESTDIR}/scripts/fll-functions
+
+# ro media magic filesystem merging module. do not fail if the module
+# is not available; we'll fallback to a symlink farm (knoppix style).
+manual_add_modules unionfs	|| true
+manual_add_modules aufs		|| true
+
+# squashfs & loop
+manual_add_modules squashfs
+manual_add_modules loop
+# keep the cloop dream alive, don't bail if it does not exist
+manual_add_modules cloop	|| true
+
+# initramfs-tools defaults to this, let us make 100% sure
+auto_add_modules
+
+# losetup too
+copy_exec /sbin/losetup /sbin
