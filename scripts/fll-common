@@ -1,22 +1,13 @@
 #!/bin/sh
 
-#
+###############################################################################
 # F.U.L.L.S.T.O.R.Y common functions and variables
 #
 # Copyright (C) 2007 F.U.L.L.S.T.O.R.Y Project
 #
 # F.U.L.L.S.T.O.R.Y Project Homepage:
 # http://developer.berlios.de/projects/fullstory
-#
-
-case "$DPKG_ARCH" in
-	i?86)
-		FLL_ARCH="i686"
-		;;
-	*)
-		FLL_ARCH="$DPKG_ARCH"
-		;;
-esac
+###############################################################################
 
 # Normal color
 NORMAL="[0;39m"
@@ -34,3 +25,16 @@ MAGENTA="[1;35m"
 CYAN="[1;36m"
 # BOLD WHITE: Hint
 WHITE="[1;37m"
+
+###############################################################################
+
+case "$DPKG_ARCH" in
+	i?86)
+		FLL_ARCH="i686"
+		;;
+	*)
+		FLL_ARCH="$DPKG_ARCH"
+		;;
+esac
+
+###############################################################################
