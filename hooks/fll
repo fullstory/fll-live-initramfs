@@ -31,22 +31,23 @@ esac
 
 # distro-defaults is an absolute requirement
 install -D /etc/default/distro ${DESTDIR}/etc/default/distro
+
+# common fll variable declarations and functions
 install -D /usr/share/initramfs-tools/scripts/fll-common \
 	${DESTDIR}/scripts/fll-functions
 
-# ro media magic filesystem merging module. do not fail if the module
-# is not available; we'll fallback to a symlink farm (knoppix style).
-manual_add_modules unionfs	|| true
-manual_add_modules aufs		|| true
+# ro media magic filesystem merging module, at least one of these is required
+manual_add_modules unionfs || manual_add_modules aufs
 
-# squashfs & loop
+# squashfs & loop are required
 manual_add_modules squashfs
 manual_add_modules loop
+
 # keep the cloop dream alive, don't bail if it does not exist
-manual_add_modules cloop	|| true
+manual_add_modules cloop || true
 
 # initramfs-tools defaults to this, let us make 100% sure
 auto_add_modules
 
-# losetup too
+# losetup is required
 copy_exec /sbin/losetup /sbin
