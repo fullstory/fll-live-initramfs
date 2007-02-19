@@ -4,6 +4,22 @@ This is fll-live-initramfs, written and maintained by Kel Modderman
 The original source can always be found at:
 	http://developer.berlios.de/projects/fullstory
 
+Some parts of initramfs scripts are derived from the KNOPPIX/KANOTIX linuxrc
+contained in live-initrd-sidux.
+Copyright:
+	(C) Klaus Knopper <knoppix@knopper.net>
+	(C) 2003-2006 Joerg Schirottke <master@kanotix.com>
+	(C) 2006 Stefan Lippers-Hollmann <s.l-h@gmx.de>
+License: GPL V2.
+http://sidux.com/debian/pool/main/l/live-initrd-sidux/
+
+Some code and ideas taken from the debian-live and ubuntu project; casper.
+Copyright:
+	(C) 2006 Marco Amadori <marco.amadori@gmail.com>
+	(C) 2005-2006 Canonical Ltd. <http://www.cannonical.com/>
+License: GPL
+ftp://ftp.debian.org/debian/pool/main/c/casper/
+
 License:
 
   This program is free software; you can redistribute it and/or modify
