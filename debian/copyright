@@ -4,6 +4,9 @@ This is fll-live-initramfs, written and maintained by Kel Modderman
 The original source can always be found at:
 	http://developer.berlios.de/projects/fullstory
 
+Copyright:
+	(C) 2007 F.U.L.L.S.T.O.R.Y Project
+
 Some parts of initramfs scripts are derived from the KNOPPIX/KANOTIX linuxrc
 contained in live-initrd-sidux.
 Copyright:
