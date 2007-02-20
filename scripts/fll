@@ -23,7 +23,7 @@ export FLL_DISTRO_MODE=live	# XXX: override /etc/default/distro
 ###############################################################################
 
 echo ""
-echo "${WHITE}Welcome to ${FLL_DISTRO_NAME} (${FLL_ARCH}) live linux!${NORMAL}"
+echo "${WHITE}Welcome to ${FLL_DISTRO_NAME} ("$(uname -m)") live linux!${NORMAL}"
 echo ""
 
 ###############################################################################
