@@ -32,10 +32,6 @@ esac
 # distro-defaults is an absolute requirement
 install -D /etc/default/distro ${DESTDIR}/etc/default/distro
 
-# common fll variable declarations and functions
-install -D /usr/share/initramfs-tools/scripts/fll-common \
-	${DESTDIR}/scripts/fll-functions
-
 # magic filesystem merging module, at least one of these is required
 manual_add_modules unionfs
 # another filesystem merging module, with a questionable existance
