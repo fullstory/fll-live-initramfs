@@ -41,6 +41,15 @@ manual_add_modules aufs || true
 manual_add_modules squashfs
 manual_add_modules loop
 
+# ms fs drivers
+manual_add_modules vfat
+manual_add_modules ntfs
+
+# needed for vfat and iso9660
+manual_add_modules nls_cp437
+manual_add_modules nls_utf8
+manual_add_modules nls_iso8859-1
+
 # initramfs-tools defaults to this, let us make 100% sure
 auto_add_modules
 

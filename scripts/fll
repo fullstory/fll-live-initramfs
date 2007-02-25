@@ -17,6 +17,9 @@ export PATH=/root/usr/bin:/root/usr/sbin:/root/bin:/root/sbin:/usr/bin:/usr/sbin
 . /etc/default/distro
 export FLL_DISTRO_MODE=live	# XXX: override /etc/default/distro
 
+# make mountpoint for live filesystem
+mkdir -p ${rootmnt}${FLL_MOUNTPOINT}
+
 # source common fll variable declarations and functions
 . /scripts/fll-common
 
