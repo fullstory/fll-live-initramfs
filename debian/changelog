@@ -1,5 +1,6 @@
 fll-live-initramfs (1.0.0) unstable; urgency=low
 
   * Initial Release.
+  * Proof of concept functionality only.
 
- -- Kel Modderman <kel@otaku42.de>  Fri, 06 Apr 2007 14:27:10 +1000
+ -- Kel Modderman <kel@otaku42.de>  Fri, 06 Apr 2007 23:06:51 +1000
