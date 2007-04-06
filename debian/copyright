@@ -20,7 +20,7 @@ Some code and ideas taken from the debian-live and ubuntu project; casper.
 Copyright:
 	(C) 2006 Marco Amadori <marco.amadori@gmail.com>
 	(C) 2005-2006 Canonical Ltd. <http://www.cannonical.com/>
-License: GPLv2
+License: GPL
 ftp://ftp.debian.org/debian/pool/main/c/casper/
 
 License:
