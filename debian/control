@@ -18,6 +18,7 @@ Package: live-initrd-sidux
 Architecture: all
 Depends: fll-live-initramfs
 Description: dummy package for fll-live-initramfs transition
- This package provides is a dummy package that depends on fll-live-initramfs.
+ This package is a dummy package that depends on fll-live-initramfs.
+ .
  It may be removed once fll-live-initramfs is feature complete, and fll-builder
  has been adjusted to use it.
