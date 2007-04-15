@@ -152,27 +152,23 @@ mountroot()
 	
 	# parse fll option on cmdline
 	fll_parse_cmdline
-	
+
 	# Welcome message
-	echo ""
-	echo "${WHITE}Welcome to ${FLL_DISTRO_NAME} (${DPKG_ARCH}) live linux!${NORMAL}"
-	echo ""
+	printf "\n${WHITE}Welcome to ${FLL_DISTRO_NAME} (${DPKG_ARCH}) live linux!${NORMAL}\n\n"
 
 	# Print kernel info
-	echo "${BLUE}Linux Kernel: [ ${YELLOW}$(uname -r)${BLUE} ]${NORMAL}"
-	echo ""
+	printf "${BLUE}Linux Kernel\t[ ${YELLOW}$(uname -r)${BLUE} ]${NORMAL}\n\n"
 
 	# Print CPU info
-	echo -n "${BLUE}"
+	printf "${BLUE}"
 	awk -F: '
-		/^processor/	{ printf("Processor'${YELLOW}'"$2"'${BLUE}' is: ")	}
+		/^processor/	{ printf("Processor'${YELLOW}'"$2"'${BLUE}'\t")	}
 		/^model name/	{ printf("[ '${YELLOW}'"$2"'${BLUE}' ] ")		}
 		/^cpu MHz/	{ printf("[ '${YELLOW}'%d MHz'${BLUE}' ] ", int($2))	}
 		/^cache size/	{ printf("['${YELLOW}'"$2" Cache'${BLUE}' ]")		}
 		/^$/		{ printf("\n")						}
 	' /proc/cpuinfo
-	echo -n "${NORMAL}"
-	echo ""
+	printf "${NORMAL}\n"
 
 	# Calculate total and unused memory: MEMTOTAL MEMFEE MEMUSED
 	eval "$(awk '
@@ -186,12 +182,11 @@ mountroot()
 	' /proc/meminfo)"
 	
 	# Print System Memory info
-	echo -n "${BLUE}System Memory: "
-	echo -n "[ ${YELLOW}${MEMUSED} M used${BLUE} ] "
-	echo -n "[ ${YELLOW}${MEMFREE} M free${BLUE} ] "
-	echo -n "[ ${YELLOW}${MEMTOTAL} M total${BLUE} ] "
-	echo "${NORMAL}"
-	echo ""
+	printf "${BLUE}System Memory\t"
+	printf "[ ${YELLOW}${MEMUSED} M used ${BLUE}] "
+	printf "[ ${YELLOW}${MEMFREE} M free${BLUE} ] "
+	printf "[ ${YELLOW}${MEMTOTAL} M total${BLUE} ]"
+	printf "${NORMAL}\n\n"
 
 	# make live media mountpoint
 	mkdir -p ${rootmnt}${FLL_MOUNTPOINT}
