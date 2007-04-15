@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 ###############################################################################
 # F.U.L.L.S.T.O.R.Y initramfs-tools hook
@@ -9,8 +9,6 @@
 # F.U.L.L.S.T.O.R.Y Project Homepage:
 # http://developer.berlios.de/projects/fullstory
 ###############################################################################
-
-set -e
 
 # initramfs-tools prerequisite handling
 PREREQS=""
@@ -27,22 +25,23 @@ case "$1" in
 		;;
 esac
 
-# source initramfs-tools hook helper functions
 . /usr/share/initramfs-tools/hook-functions
 
-# distro-defaults is an absolute requirement
-install -D /etc/default/distro ${DESTDIR}/etc/default/distro
+# distro-defaults
+mkdir -p ${DESTDIR}/etc/default
+# enforce live mode
+sed 's/^FLL_DISTRO_MODE.*/FLL_DISTRO_MODE="live"/' \
+	/etc/default/distro > ${DESTDIR}/etc/default/distro
 
-# magic filesystem merging module, at least one of these is required
+# filesystem unioning modules
 manual_add_modules unionfs
-# another filesystem merging module, with a questionable existance
 manual_add_modules aufs || true
 
-# squashfs & loop are required
+# squashfs and loop
 manual_add_modules squashfs
 manual_add_modules loop
 
-# ms fs drivers
+# ms filesystem drivers
 manual_add_modules vfat
 manual_add_modules ntfs
 
@@ -51,8 +50,5 @@ manual_add_modules nls_cp437
 manual_add_modules nls_utf8
 manual_add_modules nls_iso8859-1
 
-# initramfs-tools defaults to this, let us make 100% sure
+# ensure maximum hardware support
 auto_add_modules
-
-# losetup is required
-copy_exec /sbin/losetup /sbin

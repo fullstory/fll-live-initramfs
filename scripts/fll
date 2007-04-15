@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ###############################################################################
-# F.U.L.L.S.T.O.R.Y initramfs live media detection and preparation script
+# F.U.L.L.S.T.O.R.Y initramfs live media init functions
 #
 # Copyright:	(C) 2007 F.U.L.L.S.T.O.R.Y Project
 # License:	GPLv2
@@ -9,32 +9,198 @@
 # F.U.L.L.S.T.O.R.Y Project Homepage:
 # http://developer.berlios.de/projects/fullstory
 ###############################################################################
-
-# expand PATH's scope to include, and prefer, that of the yet-to-be-mounted
-# live media.
+# expand scope of PATH
 export PATH=/root/usr/bin:/root/usr/sbin:/root/bin:/root/sbin:/usr/bin:/usr/sbin:/bin:/sbin
-
-# source global variables from distro-defaults
-. /etc/default/distro
-export FLL_DISTRO_MODE=live	# XXX: override /etc/default/distro
-
-# make mountpoint for live filesystem
-mkdir -p ${rootmnt}${FLL_MOUNTPOINT}
-
-# source common fll variable declarations and functions
-. /scripts/fll-common
-
+# Normal color
+export NORMAL="[0;39m"
+# RED: Failure or error message
+export RED="[1;31m"
+# GREEN: Success message
+export GREEN="[1;32m"
+# YELLOW: Descriptions
+export YELLOW="[1;33m"
+# BLUE: System mesages
+export BLUE="[1;34m"
+# MAGENTA: Found devices or drivers
+export MAGENTA="[1;35m"
+# CYAN: Questions
+export CYAN="[1;36m"
+# BOLD WHITE: Hint
+export WHITE="[1;37m"
 ###############################################################################
-
-echo ""
-echo "${WHITE}Welcome to ${FLL_DISTRO_NAME} ("$(uname -m)") live linux!${NORMAL}"
-echo ""
-
+# parse /proc/cmdline for fll specific options
+fll_parse_cmdline()
+{
+	for opt in $(cat /proc/cmdline); do
+		case "${opt}" in
+			fll=debug)
+				set -x
+				;;
+			fromhd*)
+				FLL_FROMHD="yes"
+				;;
+			fromiso*)
+				FLL_FROMISO="yes"
+				case "${opt}" in
+					fromiso=*)
+						# alternative to iso_dir=
+						FLL_MEDIA_NAME="${opt#fromiso=}"
+						;;
+				esac
+				;;
+			image_dir=*)
+				FLL_IMAGE_DIR="${opt#image_dir=}"
+				FLL_IMAGE_LOCATION="${FLL_IMAGE_DIR}/${FLL_IMAGE_FILE}"
+				;;
+			image_name=*)
+				FLL_IMAGE_FILE="${opt#image_name=}"
+				FLL_IMAGE_LOCATION="${FLL_IMAGE_DIR}/${FLL_IMAGE_FILE}"
+				;;
+			iso_dir=*)
+				FLL_MEDIA_DIR="${opt#iso_dir=}"
+				;;
+			iso_name=*)
+				FLL_MEDIA_NAME="${opt#iso_name=}"
+				;;
+			toram)
+				FLL_TORAM="yes"
+				;;
+			unionfs|aufs)
+				if modprobe "${MODPROBE_OPTIONS}" "${opt}"; then
+					FLL_UNION_MODULE="${opt}"
+				fi
+				;;
+			union_opts=*)
+				FLL_UNION_OPTIONS="${opt#union_opts=}"
+				;;
+		esac
+	done
+}
 ###############################################################################
+# use information exported via proc and sysfs to make block device list
+# give priority to cdrom devices
+fll_finger_blockdevs()
+{
+	# cdrom detection via /proc/sys/dev/cdrom/info
+	if [ -f /proc/sys/dev/cdrom/info ]; then
+		probed_cdroms="$(awk '
+			/name:/ {
+				for (i = NF; i >= 3; i--) {
+					printf("/dev/%s\n", $i)
+				}
+			}
+		' /proc/sys/dev/cdrom/info)"
+	fi
 
+	# give priority to cdrom devices
+	if [ "${probed_cdroms}" ]; then
+		echo "${probed_cdroms}"
+	fi
+
+	# generic block device detection
+	for dev in /sys/block/*; do
+		dev=${dev#/sys/block/}
+		
+		case "${dev}" in
+			ram*|loop*)
+				continue
+				;;
+		esac
+
+		if [ "${probed_cdroms}" ]; then
+			for cdrom in ${probed_cdroms}; do
+				if [ "${cdrom#/dev/}" = "${dev}" ]; then
+					continue 2
+				fi
+			done
+		fi
+		
+		# use shell wildcard to expand subdevices
+		for subdev in $(echo /dev/${dev}*); do
+			if [ -b "${subdev}" ]; then
+				echo "${subdev}"
+			fi
+		done
+	done
+}
+###############################################################################
+# identify filesystem type of block device
+fll_finger_fstype()
+{
+	unset FSTYPE
+	unset FSSIZE
+	
+	# fstype from klibc-utils
+	eval "$(fstype < ${1})"
+	
+	if [ "${FSTYPE}" != "unknown" ]; then
+		export FSTYPE
+		if [ "${FSSIZE}" ]; then
+			export FSSIZE
+		fi
+		return 0
+	fi
+	
+	return 1
+}
+###############################################################################
+# define mountroot() for init
 mountroot()
 {
-	: # TODO
-}
+	# source distro-defaults
+	. /etc/default/distro
+	
+	# parse fll option on cmdline
+	fll_parse_cmdline
+	
+	# Welcome message
+	echo ""
+	echo "${WHITE}Welcome to ${FLL_DISTRO_NAME} (${DPKG_ARCH}) live linux!${NORMAL}"
+	echo ""
 
+	# Print kernel info
+	echo "${BLUE}Linux Kernel: [ ${YELLOW}$(uname -r)${BLUE} ]${NORMAL}"
+	echo ""
+
+	# Print CPU info
+	echo -n "${BLUE}"
+	awk -F: '
+		/^processor/	{ printf("Processor'${YELLOW}'"$2"'${BLUE}' is: ")	}
+		/^model name/	{ printf("[ '${YELLOW}'"$2"'${BLUE}' ] ")		}
+		/^cpu MHz/	{ printf("[ '${YELLOW}'%d MHz'${BLUE}' ] ", int($2))	}
+		/^cache size/	{ printf("['${YELLOW}'"$2" Cache'${BLUE}' ]")		}
+		/^$/		{ printf("\n")						}
+	' /proc/cpuinfo
+	echo -n "${NORMAL}"
+	echo ""
+
+	# Calculate total and unused memory: MEMTOTAL MEMFEE MEMUSED
+	eval "$(awk '
+		/^MemTotal:/			{ total=$2 }
+		/^(MemFree|Buffers|Cached):/	{ free+=$2 }
+		END {
+			printf("MEMTOTAL=%d\n", int(total) / 1024)
+			printf("MEMFREE=%d\n", int(free) / 1024)
+			printf("MEMUSED=%d\n", (int(total) - int(free)) / 1024)
+		}
+	' /proc/meminfo)"
+	
+	# Print System Memory info
+	echo -n "${BLUE}System Memory: "
+	echo -n "[ ${YELLOW}${MEMUSED} M used${BLUE} ] "
+	echo -n "[ ${YELLOW}${MEMFREE} M free${BLUE} ] "
+	echo -n "[ ${YELLOW}${MEMTOTAL} M total${BLUE} ] "
+	echo "${NORMAL}"
+	echo ""
+
+	# make live media mountpoint
+	mkdir -p ${rootmnt}${FLL_MOUNTPOINT}
+
+	for dev in $(fll_finger_blockdevs); do
+		if fll_finger_fstype ${dev}; then
+			echo "${GREEN}${dev} ${FSTYPE}${NORMAL}"
+		fi
+	done
+
+}
 ###############################################################################

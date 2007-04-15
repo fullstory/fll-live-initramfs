@@ -1,8 +1,38 @@
-fll-live-initramfs (1.0.1) UNRELEASED; urgency=low
+fll-live-initramfs (1.0.5) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * Proof of concept functionality only.
+  * Give priority to cdroms when autoprobing all block devices.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 06 Apr 2007 23:25:12 +0200
+ -- Kel Modderman <kel@otaku42.de>  Mon, 16 Apr 2007 01:04:48 +1000
+
+fll-live-initramfs (1.0.4) unstable; urgency=low
+
+  * Proof of concept functionality only.
+  * Tidy up colourful hello world.
+
+ -- Kel Modderman <kel@otaku42.de>  Mon, 16 Apr 2007 00:08:16 +1000
+
+fll-live-initramfs (1.0.3) unstable; urgency=low
+
+  * Proof of concept functionality only.
+  * Add initial functions for probing local block devices and determining
+    fstype.
+
+ -- Kel Modderman <kel@otaku42.de>  Sun, 15 Apr 2007 23:41:39 +1000
+
+fll-live-initramfs (1.0.2) unstable; urgency=low
+
+  * Proof of concept functionality only.
+  * Remove fll-common shlib script.
+
+ -- Kel Modderman <kel@otaku42.de>  Sun, 15 Apr 2007 22:43:19 +1000
+
+fll-live-initramfs (1.0.1) unstable; urgency=low
+
+  * Proof of concept functionality only.
+  * Extend hello world, now with colours.
+
+ -- Kel Modderman <kel@otaku42.de>  Sun, 15 Apr 2007 22:07:01 +1000
 
 fll-live-initramfs (1.0.0) unstable; urgency=low
 
