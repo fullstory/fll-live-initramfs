@@ -1,13 +1,13 @@
 #!/bin/sh
 
 ###############################################################################
-# F.U.L.L.S.T.O.R.Y initramfs live media init functions
+#	F.U.L.L.S.T.O.R.Y initramfs live media init functions
 #
-# Copyright:	(C) 2007 F.U.L.L.S.T.O.R.Y Project
-# License:	GPLv2
+#	Copyright:	(C) 2007 F.U.L.L.S.T.O.R.Y Project
+#	License:	GPLv2
 #
-# F.U.L.L.S.T.O.R.Y Project Homepage:
-# http://developer.berlios.de/projects/fullstory
+#	F.U.L.L.S.T.O.R.Y Project Homepage:
+#	http://developer.berlios.de/projects/fullstory
 ###############################################################################
 # expand scope of PATH
 export PATH=/root/usr/bin:/root/usr/sbin:/root/bin:/root/sbin:/usr/bin:/usr/sbin:/bin:/sbin
@@ -28,7 +28,8 @@ export CYAN="[1;36m"
 # BOLD WHITE: Hint
 export WHITE="[1;37m"
 ###############################################################################
-# parse /proc/cmdline for fll specific options
+# 	parse /proc/cmdline for fll specific options
+###############################################################################
 fll_parse_cmdline()
 {
 	for opt in $(cat /proc/cmdline); do
@@ -77,8 +78,9 @@ fll_parse_cmdline()
 	done
 }
 ###############################################################################
-# use information exported via proc and sysfs to make block device list
-# give priority to cdrom devices
+# 	use information exported via proc and sysfs to make block device list
+# 	give priority to cdrom devices
+###############################################################################
 fll_finger_blockdevs()
 {
 	# cdrom detection via /proc/sys/dev/cdrom/info
@@ -124,7 +126,8 @@ fll_finger_blockdevs()
 	done
 }
 ###############################################################################
-# identify filesystem type of block device
+# 	identify filesystem type of block device
+###############################################################################
 fll_finger_fstype()
 {
 	unset FSTYPE
@@ -144,7 +147,8 @@ fll_finger_fstype()
 	return 1
 }
 ###############################################################################
-# define mountroot() for init
+# 	define mountroot() for init
+###############################################################################
 mountroot()
 {
 	# source distro-defaults
@@ -153,6 +157,9 @@ mountroot()
 	# parse fll option on cmdline
 	fll_parse_cmdline
 
+	#######################################################################
+	#	print geeky informational messages
+	#######################################################################
 	# Welcome message
 	printf "\n${WHITE}Welcome to ${FLL_DISTRO_NAME} (${DPKG_ARCH}) live linux!${NORMAL}\n\n"
 
@@ -170,7 +177,7 @@ mountroot()
 	' /proc/cpuinfo
 	printf "${NORMAL}\n"
 
-	# Calculate total and unused memory: MEMTOTAL MEMFEE MEMUSED
+	# Calculate total, used and unused memory: MEMTOTAL MEMUSED MEMFREE
 	eval "$(awk '
 		/^MemTotal:/			{ total=$2 }
 		/^(MemFree|Buffers|Cached):/	{ free+=$2 }
@@ -188,6 +195,9 @@ mountroot()
 	printf "[ ${YELLOW}${MEMTOTAL} M total${BLUE} ]"
 	printf "${NORMAL}\n\n"
 
+	#######################################################################
+	#	find and mount the live-media
+	#######################################################################
 	# make live media mountpoint
 	mkdir -p ${rootmnt}${FLL_MOUNTPOINT}
 
