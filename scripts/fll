@@ -80,7 +80,7 @@ fll_finger_blockdevs()
 		probed_cdroms="$(awk '
 			/name:/ {
 				for (i = NF; i >= 3; i--) {
-					printf("/dev/%s\n", $i)
+					print($i)
 				}
 			}
 		' /proc/sys/dev/cdrom/info)"
@@ -89,7 +89,13 @@ fll_finger_blockdevs()
 	# give priority to cdrom devices
 	if [ "${probed_cdroms}" ]; then
 		for cdrom in ${probed_cdroms}; do
-			echo "${cdrom}"
+			if [ -d "/sys/block/${cdrom}" ]; then
+				cdrom=$(udevinfo --query=name --path=/block/${cdrom} \
+					2>/dev/null || echo ${cdrom})
+			fi
+			if [ -b "/dev/${cdrom}" ]; then
+				echo "/dev/${cdrom}"
+			fi
 		done
 	fi
 
@@ -107,11 +113,14 @@ fll_finger_blockdevs()
 		# skip block devices already detected as cdroms
 		if [ "${probed_cdroms}" ]; then
 			for cdrom in ${probed_cdroms}; do
-				if [ "${cdrom#/dev/}" = "${dev}" ]; then
+				if [ "${cdrom}" = "${dev}" ]; then
 					continue 2
 				fi
 			done
 		fi
+
+		dev=$(udevinfo --query=name --path=/block/${dev} \
+			2>/dev/null || echo ${dev})
 		
 		# use shell wildcard to expand subdevices
 		for subdev in $(echo /dev/${dev}*); do
