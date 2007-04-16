@@ -79,7 +79,7 @@ fll_parse_cmdline()
 }
 ###############################################################################
 # 	use information exported via proc and sysfs to make block device list
-# 	give priority to cdrom devices
+# 	bubble-sort cdrom devices to top of block device stack
 ###############################################################################
 fll_finger_blockdevs()
 {
@@ -96,7 +96,9 @@ fll_finger_blockdevs()
 
 	# give priority to cdrom devices
 	if [ "${probed_cdroms}" ]; then
-		echo "${probed_cdroms}"
+		for cdrom in ${probed_cdroms}; do
+			echo "${cdrom}"
+		done
 	fi
 
 	# generic block device detection
@@ -104,11 +106,13 @@ fll_finger_blockdevs()
 		dev=${dev#/sys/block/}
 		
 		case "${dev}" in
-			ram*|loop*)
+			# skip ram, loop and floppy devices
+			ram[0-9]*|loop[0-9]*|fd[0-9]*)
 				continue
 				;;
 		esac
 
+		# skip block devices already detected as cdroms
 		if [ "${probed_cdroms}" ]; then
 			for cdrom in ${probed_cdroms}; do
 				if [ "${cdrom#/dev/}" = "${dev}" ]; then
