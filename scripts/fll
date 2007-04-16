@@ -159,6 +159,51 @@ fll_finger_fstype()
 	return 1
 }
 ###############################################################################
+#	generic mount function usage: fll_mount fs src mnt options
+###############################################################################
+fll_mount()
+{
+	FS="${1}"
+	SRC="${2}"
+	DST="${3}"
+	shift 3
+	
+	case "${FS}" in
+		squashfs|iso9660)
+			if [ -f "${SRC}" ] && [ ! -b "${SRC}" ]; then
+				FLL_MOUNT_OPTS="ro,loop"
+			else
+				FLL_MOUNT_OPTS="ro"
+			fi
+			;;
+		vfat)
+			# We REALLY need this for FLL_IMAGE on DOS-filesystems
+			if [ "${#}" -gt 0 ]; then
+				FLL_MOUNT_OPTS="${@},shortname=winnt"
+			else
+				FLL_MOUNT_OPTS="shortname=winnt"
+			fi
+			;;
+		*)
+			if [ "${#}" -gt 0 ]; then
+				FLL_MOUNT_OPTS="${@}"
+			fi
+			;;
+	esac
+	
+	if [ "${FLL_MOUNT_OPTS}" ]; then
+		if mount -t ${FS} -o ${FLL_MOUNT_OPTS} ${SRC} ${DST} >/dev/null 2>&1; then
+			return 0
+		fi
+	else
+		if mount -t ${FS} ${SRC} ${DST} >/dev/null 2>&1; then
+			return 0
+		fi
+	fi
+
+	return 1
+}
+###############################################################################
 # 	define mountroot() for init
 ###############################################################################
 mountroot()
@@ -182,7 +227,7 @@ mountroot()
 	printf "${GREEN}"
 	awk -F: '
 		/^processor/	{ printf("Processor'${YELLOW}'"$2"'${WHITE}'\t")	}
-		/^model name/	{ printf("[ '${YELLOW}'"$2"'${WHITE}' ] ")		}
+		/^model name/	{ printf("['${YELLOW}'"$2"'${WHITE}' ] ")		}
 		/^cpu MHz/	{ printf("[ '${YELLOW}'%d MHz'${WHITE}' ] ", int($2))	}
 		/^cache size/	{ printf("['${YELLOW}'"$2" Cache'${WHITE}' ]")		}
 		/^$/		{ printf("\n'${GREEN}'")				}
@@ -211,14 +256,37 @@ mountroot()
 	#	find live-media
 	#######################################################################
 	# make live media mountpoint
-	mkdir -p ${rootmnt}${FLL_MOUNTPOINT}
+	mkdir -p /mnt ${rootmnt}${FLL_MOUNTPOINT}
 	
 	printf "${BLUE}Probing devices for live media:${NORMAL}"
+	
+	unset FLL_MEDIA_BK
+	unset FLL_MEDIA_FS
+	
 	for dev in $(fll_finger_blockdevs); do
 		if fll_finger_fstype "${dev}"; then
 			printf " ${WHITE}${dev#/dev/}${NORMAL}"
+			if fll_mount "${FSTYPE}" "${dev}" /mnt ro; then
+				if [ -f "/mnt/${FLL_IMAGE_LOCATION}" ]; then
+					# Ureka!
+					FLL_MEDIA_BK="${dev}"
+					FLL_MEDIA_FS="${FSTYPE}"
+					break
+				else
+					# next please
+					umount /mnt
+				fi
+			fi
 		fi
 	done
-	printf "\n"
+	
+	printf "${NORMAL}\n\n"
+
+	if [ "${FLL_MEDIA_BK}" ]; then
+		printf "${GREEN}Live media\t${WHITE}[ ${YELLOW}${FLL_MEDIA_BK}${WHITE} ]"
+		printf " [ ${YELLOW}${FLL_MEDIA_FS}${WHITE} ]${NORMAL}\n\n"
+	else
+		printf "${RED}Failed to located live media!${NORMAL}\n\n"
+	fi
 }
 ###############################################################################
