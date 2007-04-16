@@ -165,7 +165,7 @@ mountroot()
 	# Print CPU info
 	printf "${BLUE}"
 	awk -F: '
-		/^processor/	{ printf("Processor'${YELLOW}'"$2"'${BLUE}'\t")	}
+		/^processor/	{ printf("Processor'${YELLOW}'"$2"'${BLUE}'\t")		}
 		/^model name/	{ printf("[ '${YELLOW}'"$2"'${BLUE}' ] ")		}
 		/^cpu MHz/	{ printf("[ '${YELLOW}'%d MHz'${BLUE}' ] ", int($2))	}
 		/^cache size/	{ printf("['${YELLOW}'"$2" Cache'${BLUE}' ]")		}
@@ -178,9 +178,9 @@ mountroot()
 		/^MemTotal:/			{ total=$2 }
 		/^(MemFree|Buffers|Cached):/	{ free+=$2 }
 		END {
-			printf("MEMTOTAL=%d\n", int(total) / 1024)
-			printf("MEMFREE=%d\n", int(free) / 1024)
-			printf("MEMUSED=%d\n", (int(total) - int(free)) / 1024)
+			printf("MEMTOTAL=%d\n",	int(total) / 1024)
+			printf("MEMFREE=%d\n",	int(free) / 1024)
+			printf("MEMUSED=%d\n",	(int(total) - int(free)) / 1024)
 		}
 	' /proc/meminfo)"
 	
