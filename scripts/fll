@@ -213,10 +213,10 @@ mountroot()
 	# make live media mountpoint
 	mkdir -p ${rootmnt}${FLL_MOUNTPOINT}
 	
-	printf "${BLUE}Probing devices for live media: ${NORMAL}"
+	printf "${BLUE}Probing devices for live media:${NORMAL}"
 	for dev in $(fll_finger_blockdevs); do
 		if fll_finger_fstype "${dev}"; then
-			printf "${WHITE}${dev#/dev/} ${NORMAL}"
+			printf " ${WHITE}${dev#/dev/}${NORMAL}"
 		fi
 	done
 	printf "\n"
