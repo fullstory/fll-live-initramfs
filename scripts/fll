@@ -9,8 +9,12 @@
 #	F.U.L.L.S.T.O.R.Y Project Homepage:
 #	http://developer.berlios.de/projects/fullstory
 ###############################################################################
-# expand scope of PATH
+#	expand scope of PATH
+###############################################################################
 export PATH=/root/usr/bin:/root/usr/sbin:/root/bin:/root/sbin:/usr/bin:/usr/sbin:/bin:/sbin
+###############################################################################
+#	colourful escape sequences
+###############################################################################
 export NORMAL="[0;39m"	# NORMAL: Normal color
 export RED="[1;31m"		# RED: Failure or error message
 export GREEN="[1;32m"		# GREEN: Success message
@@ -89,10 +93,6 @@ fll_finger_blockdevs()
 	# give priority to cdrom devices
 	if [ "${probed_cdroms}" ]; then
 		for cdrom in ${probed_cdroms}; do
-			if [ -d "/sys/block/${cdrom}" ]; then
-				cdrom=$(udevinfo --query=name --path=/block/${cdrom} \
-					2>/dev/null || echo ${cdrom})
-			fi
 			if [ -b "/dev/${cdrom}" ]; then
 				echo "/dev/${cdrom}"
 			fi
@@ -119,9 +119,6 @@ fll_finger_blockdevs()
 			done
 		fi
 
-		dev=$(udevinfo --query=name --path=/block/${dev} \
-			2>/dev/null || echo ${dev})
-		
 		# use shell wildcard to expand subdevices
 		for subdev in $(echo /dev/${dev}*); do
 			if [ -b "${subdev}" ]; then
@@ -143,9 +140,7 @@ fll_finger_fstype()
 	
 	if [ "${FSTYPE}" != "unknown" ]; then
 		export FSTYPE
-		if [ "${FSSIZE}" ]; then
-			export FSSIZE
-		fi
+		export FSSIZE
 		return 0
 	fi
 	
@@ -183,7 +178,7 @@ mountroot()
 	printf "${NORMAL}\n"
 
 	# Calculate total, used and unused memory: MEMTOTAL MEMUSED MEMFREE
-	eval "$(awk '
+	eval $(awk '
 		/^MemTotal:/			{ total=$2 }
 		/^(MemFree|Buffers|Cached):/	{ free+=$2 }
 		END {
@@ -191,7 +186,7 @@ mountroot()
 			printf("MEMFREE=%d\n",	int(free) / 1024)
 			printf("MEMUSED=%d\n",	(int(total) - int(free)) / 1024)
 		}
-	' /proc/meminfo)"
+	' /proc/meminfo)
 	
 	# Print System Memory info
 	printf "${BLUE}System Memory\t"
