@@ -150,7 +150,7 @@ fll_finger_fstype()
 	# fstype from klibc-utils
 	eval "$(fstype < ${1})"
 	
-	if [ "${FSTYPE}" != "unknown" ]; then
+	if [ "${FSTYPE}" ] && [ "${FSTYPE}" != "unknown" ]; then
 		export FSTYPE
 		export FSSIZE
 		return 0
@@ -181,11 +181,11 @@ mountroot()
 	# Print CPU info
 	printf "${GREEN}"
 	awk -F: '
-		/^processor/	{ printf("'${GREEN}'Processor'${YELLOW}'"$2"'${WHITE}'\t")		}
+		/^processor/	{ printf("Processor'${YELLOW}'"$2"'${WHITE}'\t")	}
 		/^model name/	{ printf("[ '${YELLOW}'"$2"'${WHITE}' ] ")		}
 		/^cpu MHz/	{ printf("[ '${YELLOW}'%d MHz'${WHITE}' ] ", int($2))	}
 		/^cache size/	{ printf("['${YELLOW}'"$2" Cache'${WHITE}' ]")		}
-		/^$/		{ printf("\n")						}
+		/^$/		{ printf("\n'${GREEN}'")				}
 	' /proc/cpuinfo
 	printf "${NORMAL}\n"
 
@@ -212,12 +212,13 @@ mountroot()
 	#######################################################################
 	# make live media mountpoint
 	mkdir -p ${rootmnt}${FLL_MOUNTPOINT}
-
+	
+	printf "${BLUE}Probing devices for live media: ${NORMAL}"
 	for dev in $(fll_finger_blockdevs); do
-		if fll_finger_fstype ${dev}; then
-			echo "${dev} ${FSTYPE}"
+		if fll_finger_fstype "${dev}"; then
+			printf "${WHITE}${dev#/dev/} ${NORMAL}"
 		fi
 	done
-
+	printf "\n"
 }
 ###############################################################################
