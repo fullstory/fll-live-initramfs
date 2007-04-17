@@ -1,3 +1,15 @@
+fll-live-initramfs (1.0.18) unstable; urgency=low
+
+  * Bugfix toram, use du to calculate required free ram for toram.
+
+ -- Kel Modderman <kel@otaku42.de>  Wed, 18 Apr 2007 01:45:06 +1000
+
+fll-live-initramfs (1.0.17) unstable; urgency=low
+
+  * Trivial cleanups and output formatting.
+
+ -- Kel Modderman <kel@otaku42.de>  Wed, 18 Apr 2007 01:36:37 +1000
+
 fll-live-initramfs (1.0.16) unstable; urgency=low
 
   * Proof of concept functionality only.
