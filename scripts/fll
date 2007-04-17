@@ -317,9 +317,8 @@ mountroot()
 			##
 			# we have FSTYPE
 			##
-			if mkdir -p "/mnt/${dev#/dev/}"; then
-				FLL_BLOCKMNT="/mnt/${dev#/dev/}"
-			fi
+			mkdir -p "/mnt/${dev#/dev/}"
+			FLL_BLOCKMNT="/mnt/${dev#/dev/}"
 			##
 			# mount block device for probe
 			##
@@ -437,7 +436,7 @@ mountroot()
 
 		# umount mount points in FLL_DOUMOUNT stack
 		for mnt in ${FLL_DOUMOUNT}; do
-			umount "${mnt}" && rmdir "${mnt}"
+			umount "${mnt}"
 		done
 
 		if [ "${FLL_MEDIA_FOUND}" ]; then
