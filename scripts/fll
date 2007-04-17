@@ -282,10 +282,10 @@ mountroot()
 	# Print System Memory info
 	eval $(fll_meminfo)
 	if [ "${MEMUSED}" ] && [ "${MEMFREE}" ] && [ "${MEMTOTAL}" ]; then
-		printf "${GREEN}System Memory\t${WHITE}"
-		printf "[ ${YELLOW}${MEMUSED} M used ${WHITE}] "
-		printf "[ ${YELLOW}${MEMFREE} M free${WHITE} ] "
-		printf "[ ${YELLOW}${MEMTOTAL} M total${WHITE} ]"
+		printf "${GREEN}System Memory is\t${WHITE}"
+		printf "[ ${YELLOW}${MEMUSED}M used ${WHITE}] "
+		printf "[ ${YELLOW}${MEMFREE}M free${WHITE} ] "
+		printf "[ ${YELLOW}${MEMTOTAL}M total${WHITE} ]"
 		printf "${NORMAL}\n\n"
 	fi
 
