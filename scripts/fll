@@ -320,6 +320,10 @@ mountroot()
 				##
 				if [ "${FLL_FROMISO}" = "yes" ]; then
 					if [ -f "${FLL_BLOCKMNT}/${FLL_MEDIA_DIR}/${FLL_MEDIA_NAME}" ]; then
+						FLL_MEDIA_FOUND="${dev}"
+						printf "${GREEN}Detected ISO image "
+						printf "${YELLOW}${FLL_MEDIA_DIR}/${FLL_MEDIA_NAME}${GREEN} "
+						printf "on ${YELLOW}${dev}${GREEN}.${NORMAL}\n\n"
 						##
 						# loop mount iso on FLL_MEDIA_MOUNTPOINT
 						##
@@ -328,7 +332,7 @@ mountroot()
 							if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_MEDIA_DIR}/${FLL_MEDIA_NAME}" \
 								"${FLL_MEDIA_MOUNTPOINT}"; then
 								##
-								# add block device mntpnt to FLL_DOUMOUNT stack
+								# add block device mount point to umount stack
 								##
 								if [ "${FLL_TORAM}" ]; then
 									FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
@@ -337,7 +341,13 @@ mountroot()
 								# update live image probe location
 								##
 								FLL_BLOCKMNT="${FLL_MEDIA_MOUNTPOINT}"
+							else
+								# XXX: panic: this should not fail
+								unset FLL_MEDIA_FOUND
 							fi
+						else
+							# XXX: panic: this should not fail
+							unset FLL_MEDIA_FOUND
 						fi
 					fi
 				fi
@@ -364,12 +374,15 @@ mountroot()
 								##
 								# do the copy
 								##
-								printf "${GREEN}Copying "
-								printf "${YELLOW}${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}${GREEN} "
-								printf "to memory, please be patient..."
+								printf "${GREEN}Copying ${YELLOW}${FLL_IMAGE_LOCATION}${GREEN} from"
+								printf "${YELLOW}${dev}${GREEN} to memory, please be patient...${NORMAL}"
 								if cp "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "/dev/shm/${FLL_IMAGE_DIR}"; then
+									##
+									# add old mnt pnt to umount stack, update FLL_BLOCKMNT and dev
+									##
 									FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
 									FLL_BLOCKMNT="/dev/shm"
+									dev="ram"
 									printf "${GREEN}Finshed.${NORMAL}\n\n"
 								else
 									if [ "${FLL_FROMISO}" = "yes" ]; then
@@ -388,13 +401,12 @@ mountroot()
 								fi
 							fi
 						fi
-
 						##
-						# mount compressed filesystem
+						# mount compressed filesystem, source directory: FLL_BLOCKMNT
 						##
 						if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" \
 							"${rootmnt}${FLL_MOUNTPOINT}"; then
-							: # success!
+							printf "${GREEN}Accessing live media via ${YELLOW}${dev}${NORMAL}.\n\n"
 						else
 							# XXX: panic: this should not fail
 							unset FLL_MEDIA_FOUND
@@ -406,7 +418,7 @@ mountroot()
 						FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
 					fi
 				else
-					# next please
+					# next please, umount dev
 					FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
 				fi
 			fi
@@ -421,5 +433,10 @@ mountroot()
 			break
 		fi
 	done
+
+	if [ -z "${FLL_MEDIA_FOUND}" ]; then
+		# XXX: panic?
+		printf "${RED}Failed to detect live media!${NORMAL}\n\n"
+	fi
 }
 ###############################################################################
