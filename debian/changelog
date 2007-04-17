@@ -1,3 +1,10 @@
+fll-live-initramfs (1.0.14) unstable; urgency=low
+
+  * Proof of concept functionality only.
+  * Use panic() in fatal failure situations.
+
+ -- Kel Modderman <kel@otaku42.de>  Wed, 18 Apr 2007 00:13:28 +1000
+
 fll-live-initramfs (1.0.13) unstable; urgency=low
 
   * Proof of concept functionality only.
