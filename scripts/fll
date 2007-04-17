@@ -52,8 +52,8 @@ fll_parse_cmdline()
 						;;
 				esac
 				;;
-			fromhd*)
-				FLL_FROMHD="yes"
+			fromhd=*)
+				FLL_BLOCKDEVS="${opt#fromhd}"
 				;;
 			fromiso*)
 				FLL_FROMISO="yes"
@@ -109,8 +109,8 @@ fll_finger_blockdevs()
 		' /proc/sys/dev/cdrom/info)"
 	fi
 
-	# give priority to cdrom devices
-	if [ "${probed_cdroms}" ]; then
+	# give priority to cdrom devices, skip them for fromiso
+	if [ "${probed_cdroms}" ] && [ "${FLL_FROMISO}" != "yes" ]; then
 		for cdrom in ${probed_cdroms}; do
 			if [ -b "/dev/${cdrom}" ]; then
 				echo "/dev/${cdrom}"
@@ -191,12 +191,20 @@ fll_mount()
 	shift 3
 	
 	case "${FS}" in
-		squashfs|iso9660)
+		iso9660|squashfs)
 			if [ -f "${SRC}" ] && [ ! -b "${SRC}" ]; then
 				fll_setup_dev_loop
 				FLL_MOUNT_OPTS="ro,loop"
 			else
 				FLL_MOUNT_OPTS="ro"
+			fi
+			;;
+		ntfs)
+			# uid + gid of 1000: may not be true in some cases
+			if [ "${#}" -gt 0 ]; then
+				FLL_MOUNT_OPTS="${@},uid=1000,gid=1000"
+			else
+				FLL_MOUNT_OPTS="ro,uid=1000,gid=1000"
 			fi
 			;;
 		vfat)
@@ -279,42 +287,108 @@ mountroot()
 	#	find live-media
 	#######################################################################
 	# make live media temp FLL_IMAGE_LOCATION probe mountpoint
-	mkdir -p /fll
+	mkdir -p /mnt "${rootmnt}${FLL_MOUNTPOINT}"
 	
-	printf "${GREEN}Probing media\t${WHITE}[${YELLOW}"
+	if [ -z "${FLL_BLOCKDEVS}" ]; then
+		FLL_BLOCKDEVS=$(fll_finger_blockdevs)
+	fi
+
+	printf "${GREEN}Probing devices\t${WHITE}[ ${YELLOW}"
+	for dev in ${FLL_BLOCKDEVS}; do
+		printf "${dev#/dev/} "
+	done
+	printf "${WHITE}]${NORMAL}\n\n"
 	
-	unset FLL_MEDIA_BD FLL_MEDIA_FS
-	for dev in $(fll_finger_blockdevs); do
+	for dev in ${FLL_BLOCKDEVS}; do
+		unset FLL_BLOCKMNT FLL_DOUMOUNT FLL_MEDIA_FOUND
+		##
+		# determine filesystem type of block device
+		##
 		if fll_finger_fstype "${dev}"; then
-			printf " ${dev#/dev/}"
-			if fll_mount "${FSTYPE}" "${dev}" /fll ro; then
-				if [ -f "/fll/${FLL_IMAGE_LOCATION}" ]; then
-					FLL_MEDIA_BD="${dev}"
-					FLL_MEDIA_FS="${FSTYPE}"
-					if fll_finger_fstype "/fll/${FLL_IMAGE_LOCATION}"; then
-						if fll_mount "${FSTYPE}" "/fll/${FLL_IMAGE_LOCATION}" "${rootmnt}" ro; then
-							break
+			##
+			# we have FSTYPE
+			##
+			if mkdir -p "/mnt/${dev#/dev/}"; then
+				FLL_BLOCKMNT="/mnt/${dev#/dev/}"
+			fi
+			##
+			# mount block device for probe
+			##
+			if fll_mount "${FSTYPE}" "${dev}" "${FLL_BLOCKMNT}" ro; then
+				##
+				# probe for iso image
+				##
+				if [ "${FLL_FROMISO}" = "yes" ]; then
+					if [ -f "${FLL_BLOCKMNT}/${FLL_MEDIA_DIR}/${FLL_MEDIA_NAME}" ]; then
+						##
+						# loop mount iso on FLL_MEDIA_MOUNTPOINT
+						##
+						if fll_finger_fstype "${FLL_MEDIA_DIR}/${FLL_MEDIA_NAME}"; then
+							mkdir -p "${FLL_MEDIA_MOUNTPOINT}"
+							if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_MEDIA_DIR}/${FLL_MEDIA_NAME}" \
+								"${FLL_MEDIA_MOUNTPOINT}"; then
+								##
+								# add block device mntpnt to FLL_DOUMOUNT stack
+								##
+								if [ "${FLL_TORAM}" ]; then
+									FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
+								fi
+								##
+								# update live image probe location
+								##
+								FLL_BLOCKMNT="${FLL_MEDIA_MOUNTPOINT}"
+							fi
+						fi
+					fi
+				fi
+				##
+				# probe for compressed filesystem
+				##
+				if [ -f "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" ]; then
+					FLL_MEDIA_FOUND="${dev}"
+					if fll_finger_fstype "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}"; then
+						##
+						# XXX: toram
+						# prepare /dev/shm, cp -a FLL_BLOCKMNT/* /dev/shm
+						# add FLL_BLOCKMNT to FLL_DOUMOUNT stack
+						# redefine FLL_BLOCKMNT
+						##
+						if [ "${FLL_TORAM}" ]; then
+							:
+							FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
+						fi
+
+						##
+						# mount compressed filesystem
+						##
+						if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" \
+							"${rootmnt}${FLL_MOUNTPOINT}"; then
+							: # success!
 						else
-							unset FLL_MEDIA_BD FLL_MEDIA_FS
+							# XXX: panic: this should not fail
+							unset FLL_MEDIA_FOUND
+							FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
 						fi
 					else
-						unset FLL_MEDIA_BD FLL_MEDIA_FS
+						# XXX: panic: this should not fail
+						unset FLL_MEDIA_FOUND
+						FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
 					fi
 				else
 					# next please
-					umount /fll
+					FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
 				fi
 			fi
 		fi
-	done
-	
-	printf " ${WHITE}]${NORMAL}\n\n"
 
-	if [ "${FLL_MEDIA_BD}" ]; then
-		printf "${GREEN}Found media\t${WHITE}[ ${YELLOW}${FLL_MEDIA_BD}${WHITE} ]"
-		printf " [ ${YELLOW}${FLL_MEDIA_FS}${WHITE} ]${NORMAL}\n\n"
-	else
-		printf "${RED}Failed to located live media!${NORMAL}\n\n"
-	fi
+		# umount mntpnts in FLL_DOUMOUNT stack
+		for mnt in ${FLL_DOUMOUNT}; do
+			umount "${mnt}" && rmdir "${mnt}"
+		done
+
+		if [ "${FLL_MEDIA_FOUND}" ]; then
+			break
+		fi
+	done
 }
 ###############################################################################

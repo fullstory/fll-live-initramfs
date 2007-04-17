@@ -1,3 +1,18 @@
+fll-live-initramfs (1.0.11) unstable; urgency=low
+
+  * Proof of concept functionality only.
+  * Add initial fromiso handling.
+  * Add mount-points-to-be-umounted stack concept.
+
+ -- Kel Modderman <kel@otaku42.de>  Tue, 17 Apr 2007 21:34:04 +1000
+
+fll-live-initramfs (1.0.10) unstable; urgency=low
+
+  * Proof of concept functionality only.
+  * Move squasfs image mountpoint to traditional position.
+
+ -- Kel Modderman <kel@otaku42.de>  Tue, 17 Apr 2007 20:03:43 +1000
+
 fll-live-initramfs (1.0.9) unstable; urgency=low
 
   * Proof of concept functionality only.
