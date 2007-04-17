@@ -414,9 +414,13 @@ mountroot()
 						##
 						# mount compressed filesystem, source directory: FLL_BLOCKMNT
 						##
-						mkdir -p "${rootmnt}${FLL_MOUNTPOINT}"
-						if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" \
-							"${rootmnt}${FLL_MOUNTPOINT}"; then
+						if [ "${FLL_UNION_MODULE}" ]; then
+							FLL_INITRAMFS_ROOTMNT="${rootmnt}"
+						else
+							FLL_INITRAMFS_ROOTMNT="${rootmnt}${FLL_MOUNTPOINT}"
+						fi
+						mkdir -p "${FLL_INITRAMFS_ROOTMNT}"
+						if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "${FLL_INITRAMFS_ROOTMNT}"; then
 							printf "${GREEN}Accessing live media from ${YELLOW}${dev}${GREEN}${NORMAL}\n\n"
 						else
 							# XXX: this should not fail
