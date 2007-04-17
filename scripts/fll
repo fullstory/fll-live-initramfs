@@ -383,14 +383,13 @@ mountroot()
 									FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
 									FLL_BLOCKMNT="/dev/shm"
 									dev="ram"
-									printf "${GREEN}Finshed.${NORMAL}\n\n"
+									printf "${GREEN}done.${NORMAL}\n\n"
 								else
 									if [ "${FLL_FROMISO}" = "yes" ]; then
 										# we failed to copy iso contents to ram: reset umount stack
 										unset FLL_DOUMOUNT
 									fi
-									printf "${RED}Failed!${NORMAL}\n\n"
-									
+									printf "${RED}failed!${NORMAL}\n\n"
 								fi
 							else
 								printf "${RED}Insufficient free memory to copy live media to ram!${NORMAL}\n"
@@ -406,7 +405,7 @@ mountroot()
 						##
 						if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" \
 							"${rootmnt}${FLL_MOUNTPOINT}"; then
-							printf "${GREEN}Accessing live media via ${YELLOW}${dev}${NORMAL}.\n\n"
+							printf "${GREEN}Accessing live media via ${YELLOW}${dev}${GREEN}.${NORMAL}\n\n"
 						else
 							# XXX: panic: this should not fail
 							unset FLL_MEDIA_FOUND
