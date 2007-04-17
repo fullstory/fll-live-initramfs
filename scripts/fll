@@ -374,7 +374,7 @@ mountroot()
 								##
 								# do the copy
 								##
-								printf "${GREEN}Copying ${YELLOW}${FLL_IMAGE_LOCATION}${GREEN} from"
+								printf "${GREEN}Copying ${YELLOW}${FLL_IMAGE_LOCATION}${GREEN} from "
 								printf "${YELLOW}${dev}${GREEN} to memory, please be patient...${NORMAL}"
 								if cp "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "/dev/shm/${FLL_IMAGE_DIR}"; then
 									##
