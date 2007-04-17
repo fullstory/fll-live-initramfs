@@ -284,7 +284,7 @@ mountroot()
 	#######################################################################
 	#	find live-media
 	#######################################################################
-	if [ -z "${FLL_BLOCKDEVS}" ]; the
+	if [ -z "${FLL_BLOCKDEVS}" ]; then
 		# list of block devices to be probed for live media
 		FLL_BLOCKDEVS=$(fll_finger_blockdevs)
 	fi
@@ -425,7 +425,7 @@ mountroot()
 			fi
 		fi
 
-		# umount mntpnts in FLL_DOUMOUNT stack
+		# umount mount points in FLL_DOUMOUNT stack
 		for mnt in ${FLL_DOUMOUNT}; do
 			umount "${mnt}" && rmdir "${mnt}"
 		done

@@ -1,3 +1,9 @@
+fll-live-initramfs (1.0.15) unstable; urgency=low
+
+  * Fix syntax error.
+
+ -- Kel Modderman <kel@otaku42.de>  Wed, 18 Apr 2007 00:27:40 +1000
+
 fll-live-initramfs (1.0.14) unstable; urgency=low
 
   * Proof of concept functionality only.
