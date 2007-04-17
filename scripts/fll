@@ -348,14 +348,45 @@ mountroot()
 					FLL_MEDIA_FOUND="${dev}"
 					if fll_finger_fstype "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}"; then
 						##
-						# XXX: toram
-						# prepare /dev/shm, cp -a FLL_BLOCKMNT/* /dev/shm
-						# add FLL_BLOCKMNT to FLL_DOUMOUNT stack
-						# redefine FLL_BLOCKMNT
+						# copy to tmpfs
 						##
 						if [ "${FLL_TORAM}" ]; then
-							:
-							FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
+							#
+							# required tmpfs size: compressed filesystem size + 5% buffer
+							#
+							FLL_TORAM_SIZE=$(awk 'BEGIN{ printf("%d\n", int(('${FSSIZE}' * 1.05) / (1024 * 1024))) }')
+							if [ "${MEMFREE}" -gt "${FLL_TORAM_SIZE}" ]; then
+								##
+								# prepare tmpfs
+								##
+								mkdir -p "/dev/shm/${FLL_IMAGE_DIR}"
+								mount -n -t tmpfs -o size="${FLL_TORAM_SIZE}m" tmpfs "/dev/shm/${FLL_IMAGE_DIR}"
+								##
+								# do the copy
+								##
+								printf "${GREEN}Copying "
+								printf "${YELLOW}${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}${GREEN} "
+								printf "to memory, please be patient..."
+								if cp "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "/dev/shm/${FLL_IMAGE_DIR}"; then
+									FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
+									FLL_BLOCKMNT="/dev/shm/${FLL_IMAGE_LOCATION}"
+									printf "${GREEN}Finshed.${NORMAL}\n\n"
+								else
+									if [ "${FLL_FROMISO}" = "yes" ]; then
+										# we failed to copy iso contents to ram: reset umount stack
+										unset FLL_DOUMOUNT
+									fi
+									printf "${RED}Failed!${NORMAL}\n\n"
+									
+								fi
+							else
+								printf "${RED}Insufficient free memory to copy live media to ram!${NORMAL}\n"
+								printf "${RED}Required free memory: ${YELLOW}${FLL_TORAM_SIZE} M${NORMAL}\n\n"
+								if [ "${FLL_FROMISO}" = "yes" ]; then
+									# we failed to copy iso contents to ram: reset umount stack
+									unset FLL_DOUMOUNT
+								fi
+							fi
 						fi
 
 						##
