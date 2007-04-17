@@ -369,7 +369,7 @@ mountroot()
 								printf "to memory, please be patient..."
 								if cp "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "/dev/shm/${FLL_IMAGE_DIR}"; then
 									FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
-									FLL_BLOCKMNT="/dev/shm/${FLL_IMAGE_LOCATION}"
+									FLL_BLOCKMNT="/dev/shm"
 									printf "${GREEN}Finshed.${NORMAL}\n\n"
 								else
 									if [ "${FLL_FROMISO}" = "yes" ]; then
