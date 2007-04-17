@@ -42,8 +42,15 @@ fll_parse_cmdline()
 {
 	for opt in $(cat /proc/cmdline); do
 		case "${opt}" in
-			fll=debug)
-				set -x
+			fll=*)
+				case "${opt#fll=}" in
+					debug)
+						set -x
+						;;
+					verbose)
+						FLL_VERBOSITY=1
+						;;
+				esac
 				;;
 			fromhd*)
 				FLL_FROMHD="yes"
@@ -144,11 +151,15 @@ fll_finger_blockdevs()
 ###############################################################################
 fll_finger_fstype()
 {
-	unset FSTYPE
-	unset FSSIZE
+	unset FSTYPE FSSIZE
 	
 	# fstype from klibc-utils
-	eval "$(fstype < ${1})"
+	eval $(fstype < ${1})
+
+	if ( [ -z "${FSTYPE}" ] || [ "${FSTYPE}" = "unknown" ] ) && \
+		[ -x /lib/udev/vol_id ]; then
+		FSTYPE=$(/lib/udev/vol_id -t ${1})
+	fi
 	
 	if [ "${FSTYPE}" ] && [ "${FSTYPE}" != "unknown" ]; then
 		export FSTYPE
@@ -157,6 +168,17 @@ fll_finger_fstype()
 	fi
 	
 	return 1
+}
+###############################################################################
+#	ugly hack to create "missing" /dev/loop{0..7} device nodes
+###############################################################################
+fll_setup_dev_loop()
+{
+	grep -q ^loop /proc/modules || modprobe "${MODPROBE_OPTIONS}" loop
+	
+	for n in 0 1 2 3 4 5 6 7; do
+		[ -e /dev/loop${n} ] || mknod /dev/loop b${n} 7 ${n}
+	done		
 }
 ###############################################################################
 #	generic mount function usage: fll_mount fs src mnt options
@@ -171,6 +193,7 @@ fll_mount()
 	case "${FS}" in
 		squashfs|iso9660)
 			if [ -f "${SRC}" ] && [ ! -b "${SRC}" ]; then
+				fll_setup_dev_loop
 				FLL_MOUNT_OPTS="ro,loop"
 			else
 				FLL_MOUNT_OPTS="ro"
@@ -255,26 +278,31 @@ mountroot()
 	#######################################################################
 	#	find live-media
 	#######################################################################
-	# make live media mountpoint
-	mkdir -p /mnt ${rootmnt}${FLL_MOUNTPOINT}
+	# make live media temp FLL_IMAGE_LOCATION probe mountpoint
+	mkdir -p /fll
 	
 	printf "${BLUE}Probing devices for live media:${NORMAL}"
 	
-	unset FLL_MEDIA_BK
-	unset FLL_MEDIA_FS
-	
+	unset FLL_MEDIA_BD FLL_MEDIA_FS
 	for dev in $(fll_finger_blockdevs); do
 		if fll_finger_fstype "${dev}"; then
 			printf " ${WHITE}${dev#/dev/}${NORMAL}"
-			if fll_mount "${FSTYPE}" "${dev}" /mnt ro; then
-				if [ -f "/mnt/${FLL_IMAGE_LOCATION}" ]; then
-					# Ureka!
-					FLL_MEDIA_BK="${dev}"
+			if fll_mount "${FSTYPE}" "${dev}" /fll ro; then
+				if [ -f "/fll/${FLL_IMAGE_LOCATION}" ]; then
+					FLL_MEDIA_BD="${dev}"
 					FLL_MEDIA_FS="${FSTYPE}"
-					break
+					if fll_finger_fstype "/fll/${FLL_IMAGE_LOCATION}"; then
+						if fll_mount "${FSTYPE}" "/fll/${FLL_IMAGE_LOCATION}" "${rootmnt}" ro; then
+							break
+						else
+							unset FLL_MEDIA_BD FLL_MEDIA_FS
+						fi
+					else
+						unset FLL_MEDIA_BD FLL_MEDIA_FS
+					fi
 				else
 					# next please
-					umount /mnt
+					umount /fll
 				fi
 			fi
 		fi
@@ -282,8 +310,8 @@ mountroot()
 	
 	printf "${NORMAL}\n\n"
 
-	if [ "${FLL_MEDIA_BK}" ]; then
-		printf "${GREEN}Live media\t${WHITE}[ ${YELLOW}${FLL_MEDIA_BK}${WHITE} ]"
+	if [ "${FLL_MEDIA_BD}" ]; then
+		printf "${GREEN}Live media\t${WHITE}[ ${YELLOW}${FLL_MEDIA_BD}${WHITE} ]"
 		printf " [ ${YELLOW}${FLL_MEDIA_FS}${WHITE} ]${NORMAL}\n\n"
 	else
 		printf "${RED}Failed to located live media!${NORMAL}\n\n"

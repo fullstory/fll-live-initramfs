@@ -1,3 +1,13 @@
+fll-live-initramfs (1.0.9) unstable; urgency=low
+
+  * Proof of concept functionality only.
+  * Extend live media detection to actually do something with squashfs image.
+  * Add debug and verbose variants to fll= cmdline option.
+  * Fallback to using vol_id if present and fstype failed to finger filesystem
+    type of object.
+
+ -- Kel Modderman <kel@otaku42.de>  Tue, 17 Apr 2007 15:07:26 +1000
+
 fll-live-initramfs (1.0.8) unstable; urgency=low
 
   * Proof of concept functionality only.
