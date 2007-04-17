@@ -1,3 +1,10 @@
+fll-live-initramfs (1.0.13) unstable; urgency=low
+
+  * Proof of concept functionality only.
+  * Print more info about what is going on.
+
+ -- Kel Modderman <kel@otaku42.de>  Tue, 17 Apr 2007 23:31:40 +1000
+
 fll-live-initramfs (1.0.12) unstable; urgency=low
 
   * Proof of concept functionality only.
