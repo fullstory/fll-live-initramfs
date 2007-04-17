@@ -233,6 +233,21 @@ fll_mount()
 	return 1
 }
 ###############################################################################
+#	Calculate total, used and unused memory: MEMTOTAL MEMUSED MEMFREE
+###############################################################################
+fll_meminfo()
+{
+	awk '
+		/^MemTotal:/			{ total=$2 }
+		/^(MemFree|Buffers|Cached):/	{ free+=$2 }
+		END {
+			printf("MEMTOTAL=%d\n",	int(total) / 1024)
+			printf("MEMFREE=%d\n",	int(free) / 1024)
+			printf("MEMUSED=%d\n",	(int(total) - int(free)) / 1024)
+		}
+	' /proc/meminfo
+}
+###############################################################################
 # 	define mountroot() for init
 ###############################################################################
 mountroot()
@@ -250,36 +265,29 @@ mountroot()
 	printf "\n${WHITE}Welcome to ${FLL_DISTRO_NAME} (${FLL_ARCH}) live linux!${NORMAL}\n\n"
 
 	# Print kernel info
-	printf "${GREEN}Linux Kernel\t${WHITE}[ ${YELLOW}$(uname -r)${WHITE} ]${NORMAL}\n\n"
+	printf "${GREEN}Linux Kernel is\t${WHITE}[ ${YELLOW}$(uname -r)${WHITE} ]${NORMAL}\n\n"
 
 	# Print CPU info
 	printf "${GREEN}"
 	awk -F: '
-		/^processor/	{ printf("Processor'${YELLOW}'"$2"'${WHITE}'\t")	}
-		/^model name/	{ printf("['${YELLOW}'"$2"'${WHITE}' ] ")		}
+		/^processor/	{ printf("Processor'${YELLOW}'"$2"'${GREEN}' is\t")	}
+		/^model name/	{ printf("'${WHITE}'['${YELLOW}'"$2"'${WHITE}' ] ")	}
 		/^cpu MHz/	{ printf("[ '${YELLOW}'%d MHz'${WHITE}' ] ", int($2))	}
 		/^cache size/	{ printf("['${YELLOW}'"$2" Cache'${WHITE}' ]")		}
 		/^$/		{ printf("\n'${GREEN}'")				}
 	' /proc/cpuinfo
 	printf "${NORMAL}\n"
 
-	# Calculate total, used and unused memory: MEMTOTAL MEMUSED MEMFREE
-	eval $(awk '
-		/^MemTotal:/			{ total=$2 }
-		/^(MemFree|Buffers|Cached):/	{ free+=$2 }
-		END {
-			printf("MEMTOTAL=%d\n",	int(total) / 1024)
-			printf("MEMFREE=%d\n",	int(free) / 1024)
-			printf("MEMUSED=%d\n",	(int(total) - int(free)) / 1024)
-		}
-	' /proc/meminfo)
 	
 	# Print System Memory info
-	printf "${GREEN}System Memory\t${WHITE}"
-	printf "[ ${YELLOW}${MEMUSED} M used ${WHITE}] "
-	printf "[ ${YELLOW}${MEMFREE} M free${WHITE} ] "
-	printf "[ ${YELLOW}${MEMTOTAL} M total${WHITE} ]"
-	printf "${NORMAL}\n\n"
+	eval $(fll_meminfo)
+	if [ "${MEMUSED}" ] && [ "${MEMFREE}" ] && [ "${MEMTOTAL}" ]; then
+		printf "${GREEN}System Memory\t${WHITE}"
+		printf "[ ${YELLOW}${MEMUSED} M used ${WHITE}] "
+		printf "[ ${YELLOW}${MEMFREE} M free${WHITE} ] "
+		printf "[ ${YELLOW}${MEMTOTAL} M total${WHITE} ]"
+		printf "${NORMAL}\n\n"
+	fi
 
 	#######################################################################
 	#	find live-media
@@ -365,17 +373,19 @@ mountroot()
 							#
 							# required tmpfs size: compressed filesystem size + 5% buffer
 							#
-							FLL_TORAM_SIZE=$(awk 'BEGIN{ printf("%d\n", int(('${FSSIZE}' * 1.05) / (1024 * 1024))) }')
-							if [ "${MEMFREE}" -gt "${FLL_TORAM_SIZE}" ]; then
+							FLL_TORAM_FSSIZE=$(awk 'BEGIN{ printf("%d\n", int(('${FSSIZE}' * 1.05) / (1024 * 1024))) }')
+							# recalculate free system memory
+							eval $(fll_meminfo)
+							if [ "${MEMFREE}" -gt "${FLL_TORAM_FSSIZE}" ]; then
 								##
 								# prepare tmpfs
 								##
 								mkdir -p "/dev/shm/${FLL_IMAGE_DIR}"
-								mount -n -t tmpfs -o size="${FLL_TORAM_SIZE}m" tmpfs "/dev/shm/${FLL_IMAGE_DIR}"
+								mount -n -t tmpfs -o size="${FLL_TORAM_FSSIZE}m" tmpfs "/dev/shm/${FLL_IMAGE_DIR}"
 								##
 								# do the copy
 								##
-								printf "${GREEN}Copying live media from ${YELLOW}${dev}${GREEN} to memory, "
+								printf "${GREEN}Copying live media from ${YELLOW}${dev}${GREEN} into ram, "
 								printf "please be patient...${NORMAL}"
 								if cp "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "/dev/shm/${FLL_IMAGE_DIR}"; then
 									##
@@ -393,8 +403,8 @@ mountroot()
 									printf "${RED}failed!${NORMAL}\n\n"
 								fi
 							else
-								printf "${RED}Insufficient free memory to copy live media to ram!${NORMAL}\n"
-								printf "${RED}Required free memory: ${YELLOW}${FLL_TORAM_SIZE} M${NORMAL}\n\n"
+								printf "${RED}Insufficient free memory to copy live media into ram!${NORMAL}\n"
+								printf "${RED}Required free memory: ${YELLOW}${FLL_TORAM_FSSIZE} M${NORMAL}\n\n"
 								if [ "${FLL_FROMISO}" = "yes" ]; then
 									# we failed to copy iso contents to ram: reset umount stack
 									unset FLL_DOUMOUNT
@@ -407,7 +417,7 @@ mountroot()
 						mkdir -p "${rootmnt}${FLL_MOUNTPOINT}"
 						if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" \
 							"${rootmnt}${FLL_MOUNTPOINT}"; then
-							printf "${GREEN}Accessing live media via ${YELLOW}${dev}${GREEN}.${NORMAL}\n\n"
+							printf "${GREEN}Accessing live media from ${YELLOW}${dev}${GREEN}${NORMAL}\n\n"
 						else
 							# XXX: this should not fail
 							unset FLL_MEDIA_FOUND
