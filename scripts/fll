@@ -44,23 +44,10 @@ fll_parse_cmdline()
 				set -x
 				;;
 			fromhd=*)
-				if [ -b "${opt#fromhd=}" ]; then
-					FLL_BLOCKDEVS="${opt#fromhd=}"
-				elif [ -b "/dev/${opt#fromhd=}" ]; then
-					FLL_BLOCKDEVS="/dev/${opt#fromhd=}"
-				else
-					printf "${RED}Ignoring cheatcode \"${YELLOW}${opt}${RED}\": "
-					printf "device ${YELLOW}${opt#fromhd=}${RED} not found${NORMAL}\n"
-				fi
+				FLL_BLOCKDEVS="${opt#fromhd=}"
 				;;
 			fromiso*)
 				FLL_FROMISO="yes"
-				case "${opt}" in
-					fromiso=*)
-						# alternative to iso_dir=
-						FLL_MEDIA_NAME="${opt#fromiso=}"
-						;;
-				esac
 				;;
 			image_dir=*)
 				FLL_IMAGE_DIR="${opt#image_dir=}"
