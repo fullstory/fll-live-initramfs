@@ -416,25 +416,50 @@ mountroot()
 						FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
 					fi
 				else
+					##
 					# next please, umount dev
+					##
 					FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
 				fi
 			fi
 		fi
-
+		##
 		# umount mount points in FLL_DOUMOUNT stack
+		##
 		for mnt in ${FLL_DOUMOUNT}; do
 			umount "${mnt}"
 		done
-
+		##
+		# break upon successful mount of live-media
+		##
 		if [ "${FLL_MEDIA_FOUND}" ]; then
 			break
 		fi
 	done
 
+	##
+	# panic on failure to detect live media
+	##
 	if [ -z "${FLL_MEDIA_FOUND}" ]; then
 		printf "${RED}Failed to detect live media!${NORMAL}\n\n"
 		panic
 	fi
+	
+	##
+	# create base symlinks in ${rootmnt} to ${FLL_INITRAMFS_ROOTMNT}
+	##
+	for dir in ${FLL_INITRAMFS_ROOTMNT}/*; do
+		if [ -d "${dir}" ]; then
+			case "${dir##*/}" in
+				home|var)
+					# we handle these later on
+					continue
+					;;
+				*)
+					ln -s "${FLL_MOUNTPOINT}/${dir##*/}" "${rootmnt}/${dir##*/}"
+					;;
+			esac
+		fi
+	done
 }
 ###############################################################################

@@ -1,3 +1,16 @@
+fll-live-initramfs (1.0.20) unstable; urgency=low
+
+  * Proof of concept functionality only.
+  * Initial start to live media mountpoint symlink voodoo.
+
+ -- Kel Modderman <kel@otaku42.de>  Wed, 18 Apr 2007 21:29:06 +1000
+
+fll-live-initramfs (1.0.19) unstable; urgency=low
+
+  * Output formatting.
+
+ -- Kel Modderman <kel@otaku42.de>  Wed, 18 Apr 2007 02:00:36 +1000
+
 fll-live-initramfs (1.0.18) unstable; urgency=low
 
   * Bugfix toram, use du to calculate required free ram for toram.
