@@ -268,13 +268,16 @@ mountroot()
 	
 	# Print System Memory info
 	eval $(fll_meminfo)
-	if [ "${MEMUSED}" ] && [ "${MEMFREE}" ] && [ "${MEMTOTAL}" ]; then
-		printf "${GREEN}System Memory\t${WHITE}"
-		printf "[ ${YELLOW}${MEMUSED}M used ${WHITE}] "
-		printf "[ ${YELLOW}${MEMFREE}M free${WHITE} ] "
-		printf "[ ${YELLOW}${MEMTOTAL}M total${WHITE} ]"
-		printf "${NORMAL}\n\n"
-	fi
+	printf "${GREEN}System Memory\t${WHITE}"
+	printf "[ ${YELLOW}${MEMUSED}M used ${WHITE}] "
+	printf "[ ${YELLOW}${MEMFREE}M free${WHITE} ] "
+	printf "[ ${YELLOW}${MEMTOTAL}M total${WHITE} ]"
+	printf "${NORMAL}\n\n"
+
+	##
+	# debug checkpoint
+	##
+	maybe_break fll-premount
 
 	#######################################################################
 	#	find live-media
@@ -320,9 +323,9 @@ mountroot()
 						# loop mount iso on FLL_MEDIA_MOUNTPOINT
 						##
 						if fll_finger_fstype "${FLL_MEDIA_DIR}/${FLL_MEDIA_NAME}"; then
-							mkdir -p "${FLL_MEDIA_MOUNTPOINT}"
+							mkdir -p "${rootmnt}/${FLL_MEDIA_MOUNTPOINT}"
 							if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_MEDIA_DIR}/${FLL_MEDIA_NAME}" \
-								"${FLL_MEDIA_MOUNTPOINT}"; then
+								"${rootmnt}/${FLL_MEDIA_MOUNTPOINT}"; then
 								##
 								# add block device mount point to umount stack
 								##
@@ -332,7 +335,7 @@ mountroot()
 								##
 								# update live image probe location, and dev
 								##
-								FLL_BLOCKMNT="${FLL_MEDIA_MOUNTPOINT}"
+								FLL_BLOCKMNT="${rootmnt}/${FLL_MEDIA_MOUNTPOINT}"
 								dev="iso"
 							else
 								# XXX: this should not fail
@@ -443,6 +446,11 @@ mountroot()
 	done
 
 	##
+	# debug checkpoint
+	##
+	maybe_break fll-mount
+
+	##
 	# panic on failure to detect live media
 	##
 	if [ -z "${FLL_MEDIA_FOUND}" ]; then
@@ -456,19 +464,22 @@ mountroot()
 	for dir in ${FLL_INITRAMFS_ROOTMNT}/*; do
 		if [ -d "${dir}" ]; then
 			case "${dir##*/}" in
-				dev|proc|sys)
-					cp -a "${dir}" "${rootmnt}"
-					;;
-				home|tmp)
+				dev|proc|sys|home|tmp)
 					# these are handled explicitly
 					continue
 					;;
 				*)
-					ln -s "${FLL_MOUNTPOINT#/}/${dir##*/}" \
+					ln -s "${FLL_MOUNTPOINT}/${dir##*/}" \
 						"${rootmnt}/${dir##*/}"
 					;;
 			esac
 		fi
 	done
+
+	##
+	# create dirs for dev, proc & sys
+	##
+	mkdir --mode 0755 "${rootmnt}/tmp"
+	mkdir "${rootmnt}/proc" "${rootmnt}/sys"
 }
 ###############################################################################
