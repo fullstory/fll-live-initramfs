@@ -1,3 +1,23 @@
+fll-live-initramfs (1.0.33) unstable; urgency=low
+
+  * Revert all previos braindamage, just loop mount the live media image on
+    $rootmnt for now.
+
+ -- Kel Modderman <kel@otaku42.de>  Thu, 19 Apr 2007 23:16:52 +1000
+
+fll-live-initramfs (1.0.32) unstable; urgency=low
+
+  * Try mounting compressed fs on / rather than $rootmnt.
+
+ -- Kel Modderman <kel@otaku42.de>  Thu, 19 Apr 2007 22:16:38 +1000
+
+fll-live-initramfs (1.0.31) unstable; urgency=low
+
+  * Try in vain to again strip leading / from base symlink target (to
+    FLL_MOUNTPOINT).
+
+ -- Kel Modderman <kel@otaku42.de>  Thu, 19 Apr 2007 21:36:49 +1000
+
 fll-live-initramfs (1.0.30) unstable; urgency=low
 
   * Add very hackish hacks for /dev and run-init issues faced while setting up

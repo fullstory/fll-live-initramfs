@@ -360,9 +360,9 @@ mountroot()
 						# copy to tmpfs
 						##
 						if [ "${FLL_TORAM}" ]; then
-							#
-							# required tmpfs size: compressed filesystem size + 5% buffer
-							#
+							##
+							# required tmpfs size: compressed filesystem size + 10% buffer
+							##
 							FLL_TORAM_FSSIZE=$(du -s "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" |
 								awk '{ printf("%d\n", int(($1 * 1.1) / 1024)) }')
 							# recalculate free system memory
@@ -405,9 +405,7 @@ mountroot()
 						##
 						# mount compressed filesystem, source directory: FLL_BLOCKMNT
 						##
-						FLL_INITRAMFS_ROOTMNT="${rootmnt}${FLL_MOUNTPOINT}"
-						mkdir -p "${FLL_INITRAMFS_ROOTMNT}"
-						if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "${FLL_INITRAMFS_ROOTMNT}"; then
+						if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "${rootmnt}"; then
 							printf "${GREEN}Mounted ${YELLOW}${FSTYPE}${GREEN} filesystem.${NORMAL}\n"
 						else
 							# XXX: this should not fail
@@ -459,38 +457,33 @@ mountroot()
 	fi
 
 	##
-	# create base symlinks in ${rootmnt} to ${FLL_INITRAMFS_ROOTMNT}
+	# create base symlinks in ${rootmnt} to ${FLL_MOUNTPOINT}
 	##
-	for dir in ${FLL_INITRAMFS_ROOTMNT}/*; do
-		if [ -d "${dir}" ]; then
-			case "${dir##*/}" in
-				dev|proc|sys)
-					# these are handled explicitly
-					continue
-					;;
-				*)
-					ln -s "${FLL_MOUNTPOINT}/${dir##*/}" \
-						"${rootmnt}/${dir##*/}"
-					;;
-			esac
-		fi
-	done
+	#for dir in ${FLL_MOUNTPOINT}/*; do
+	#	if [ -d "${dir}" ]; then
+	#		case "${dir##*/}" in
+	#			dev|proc|sys)
+	#				# these are handled explicitly
+	#				continue
+	#				;;
+	#			*)
+	#				ln -s "${FLL_MOUNTPOINT#/}/${dir##*/}" \
+	#					"${rootmnt}/${dir##*/}"
+	#				;;
+	#		esac
+	#	fi
+	#done
 
 	##
 	# create dirs proc & sys
 	##
-	mkdir "${rootmnt}/proc" "${rootmnt}/sys"
+	#mkdir "${rootmnt}/proc" "${rootmnt}/sys"
 
 	##
 	# hack for /dev
 	##
-	mkdir --mode 0755 "${rootmnt}/dev"
-	mount -n -o bind "${FLL_INITRAMFS_ROOTMNT}/dev" "${rootmnt}/dev"
-	
-	##
-	# hack for run-init
-	##
-	export init="${FLL_MOUNTPOINT}/sbin/init"
+	#mkdir --mode 0755 "${rootmnt}/dev"
+	#mount -n -o bind "${rootmnt}${FLL_MOUNTPOINT}/dev" "${rootmnt}/dev"
 
 	##
 	# debug checkpoint
