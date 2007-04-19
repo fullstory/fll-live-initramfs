@@ -295,7 +295,7 @@ mountroot()
 	fi
 	
 	for dev in ${FLL_BLOCKDEVS}; do
-		unset FLL_BLOCKMNT FLL_DOUMOUNT FLL_MEDIA_FOUND
+		unset FLL_BLOCKMNT FLL_DOUMOUNT FLL_DOMOVEMOUNT FLL_MEDIA_FOUND
 		##
 		# determine filesystem type of block device
 		##
@@ -306,6 +306,7 @@ mountroot()
 			##
 			mkdir -p "/mnt/${dev#/dev/}"
 			FLL_BLOCKMNT="/mnt/${dev#/dev/}"
+			FLL_DOMOVEMOUNT="${FLL_BLOCKMNT} ${FLL_DOMOVEMOUNT}"
 			##
 			# mount block device for probe
 			##
@@ -323,9 +324,9 @@ mountroot()
 						# loop mount iso on FLL_MEDIA_MOUNTPOINT
 						##
 						if fll_finger_fstype "${FLL_MEDIA_DIR}/${FLL_MEDIA_NAME}"; then
-							mkdir -p "${rootmnt}/${FLL_MEDIA_MOUNTPOINT}"
+							mkdir -p "${FLL_MEDIA_MOUNTPOINT}"
 							if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_MEDIA_DIR}/${FLL_MEDIA_NAME}" \
-								"${rootmnt}/${FLL_MEDIA_MOUNTPOINT}"; then
+								"${FLL_MEDIA_MOUNTPOINT}"; then
 								##
 								# add block device mount point to umount stack
 								##
@@ -335,7 +336,8 @@ mountroot()
 								##
 								# update live image probe location, and dev
 								##
-								FLL_BLOCKMNT="${rootmnt}/${FLL_MEDIA_MOUNTPOINT}"
+								FLL_BLOCKMNT="${FLL_MEDIA_MOUNTPOINT}"
+								FLL_DOMOVEMOUNT="${FLL_BLOCKMNT} ${FLL_DOMOVEMOUNT}"
 								dev="iso"
 							else
 								# XXX: this should not fail
@@ -431,12 +433,20 @@ mountroot()
 		# umount mount points in FLL_DOUMOUNT stack
 		##
 		for mnt in ${FLL_DOUMOUNT}; do
-			umount "${mnt}"
+			umount "${mnt}" && rmdir "${mnt}"
 		done
 		##
 		# break upon successful mount of live-media
 		##
 		if [ "${FLL_MEDIA_FOUND}" ]; then
+			##
+			# move all mounts to $rootmnt first
+			##
+			for mnt in ${FLL_DOMOVEMOUNT}; do
+				grep -q "${mnt}" /proc/mounts || continue
+				mkdir -p "${rootmnt}${mnt}"
+				mount -n -o move "${mnt}" "${rootmnt}${mnt}"
+			done
 			break
 		fi
 
@@ -455,35 +465,6 @@ mountroot()
 		printf "\n${RED}Failed to detect live media!${NORMAL}\n"
 		panic
 	fi
-
-	##
-	# create base symlinks in ${rootmnt} to ${FLL_MOUNTPOINT}
-	##
-	#for dir in ${FLL_MOUNTPOINT}/*; do
-	#	if [ -d "${dir}" ]; then
-	#		case "${dir##*/}" in
-	#			dev|proc|sys)
-	#				# these are handled explicitly
-	#				continue
-	#				;;
-	#			*)
-	#				ln -s "${FLL_MOUNTPOINT#/}/${dir##*/}" \
-	#					"${rootmnt}/${dir##*/}"
-	#				;;
-	#		esac
-	#	fi
-	#done
-
-	##
-	# create dirs proc & sys
-	##
-	#mkdir "${rootmnt}/proc" "${rootmnt}/sys"
-
-	##
-	# hack for /dev
-	##
-	#mkdir --mode 0755 "${rootmnt}/dev"
-	#mount -n -o bind "${rootmnt}${FLL_MOUNTPOINT}/dev" "${rootmnt}/dev"
 
 	##
 	# debug checkpoint
