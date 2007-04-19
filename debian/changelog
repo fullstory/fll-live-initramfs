@@ -1,3 +1,9 @@
+fll-live-initramfs (1.0.25) unstable; urgency=low
+
+  * Fix syntax of previos commit.
+
+ -- Kel Modderman <kel@otaku42.de>  Thu, 19 Apr 2007 16:23:13 +1000
+
 fll-live-initramfs (1.0.24) unstable; urgency=low
 
   * Try different approach with dev proc sys preparation, previous approach

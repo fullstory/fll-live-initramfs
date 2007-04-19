@@ -458,7 +458,7 @@ mountroot()
 			case "${dir##*/}" in
 				dev|proc|sys)
 					cp -a "${FLL_MOUNTPOINT}/${dir##*/}" \
-						"${rootmnt}/${dir##*/}"
+						"${rootmnt}"
 					;;
 				home|tmp)
 					# these are handled explicitly
