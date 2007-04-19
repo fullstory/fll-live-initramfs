@@ -367,7 +367,7 @@ mountroot()
 							# (also impose 16M minimum memory limit)
 							##
 							FLL_TORAM_FSSIZE=$(du -s "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" |
-								awk '{ printf("%d\n", int(($1 * 1.1) / 1024) + 16) }')
+								awk '{ printf("%d\n", int($1 * 1.1 / 1024) + 16) }')
 							# recalculate free system memory
 							eval $(fll_meminfo)
 							if [ "${MEMFREE}" -gt "${FLL_TORAM_FSSIZE}" ]; then
