@@ -1,3 +1,10 @@
+fll-live-initramfs (1.0.35) unstable; urgency=low
+
+  * Do the full circle: prepare $rootmount with backwards compatible mount
+    point positions. Need to rethink how to properly setup the rest of it.
+
+ -- Kel Modderman <kel@otaku42.de>  Fri, 20 Apr 2007 00:09:27 +1000
+
 fll-live-initramfs (1.0.34) unstable; urgency=low
 
   * Add FLL_DOMOVEMOUNT stack to large mount loop to track mount moints that

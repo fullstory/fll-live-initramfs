@@ -323,10 +323,10 @@ mountroot()
 						##
 						# loop mount iso on FLL_MEDIA_MOUNTPOINT
 						##
-						if fll_finger_fstype "${FLL_MEDIA_DIR}/${FLL_MEDIA_NAME}"; then
-							mkdir -p "${FLL_MEDIA_MOUNTPOINT}"
+						if fll_finger_fstype "${FLL_MEDIA_NAME}"; then
+							mkdir -p "/mnt/iso"
 							if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_MEDIA_DIR}/${FLL_MEDIA_NAME}" \
-								"${FLL_MEDIA_MOUNTPOINT}"; then
+								"/mnt/iso"; then
 								##
 								# add block device mount point to umount stack
 								##
@@ -336,7 +336,7 @@ mountroot()
 								##
 								# update live image probe location, and dev
 								##
-								FLL_BLOCKMNT="${FLL_MEDIA_MOUNTPOINT}"
+								FLL_BLOCKMNT="/mnt/iso"
 								FLL_DOMOVEMOUNT="${FLL_BLOCKMNT} ${FLL_DOMOVEMOUNT}"
 								dev="iso"
 							else
@@ -407,8 +407,10 @@ mountroot()
 						##
 						# mount compressed filesystem, source directory: FLL_BLOCKMNT
 						##
-						if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "${rootmnt}"; then
+						mkdir -p "${FLL_MOUNTPOINT}"
+						if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "${FLL_MOUNTPOINT}"; then
 							printf "${GREEN}Mounted ${YELLOW}${FSTYPE}${GREEN} filesystem.${NORMAL}\n"
+							FLL_DOMOVEMOUNT="${FLL_BLOCKMNT} ${FLL_DOMOVEMOUNT}"
 						else
 							# XXX: this should not fail
 							printf "${RED}Failed to mount ${YELLOW}${FSTYPE}${GREEN} filesystem!${NORMAL}\n"
