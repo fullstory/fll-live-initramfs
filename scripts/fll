@@ -451,24 +451,21 @@ mountroot()
 	fi
 
 	##
-	# create ${rootmnt}/{dev,proc/sys}
-	##
-	for dir in dev proc sys; do
-		mkdir "${rootmnt}/${dir}"
-	done
-	
-	##
 	# create base symlinks in ${rootmnt} to ${FLL_INITRAMFS_ROOTMNT}
 	##
 	for dir in ${FLL_INITRAMFS_ROOTMNT}/*; do
 		if [ -d "${dir}" ]; then
 			case "${dir##*/}" in
-				dev|home|proc|sys|tmp|var)
+				dev|proc|sys)
+					cp -a "${FLL_MOUNTPOINT}/${dir##*/}" \
+						"${rootmnt}/${dir##*/}"
+					;;
+				home|tmp)
 					# these are handled explicitly
 					continue
 					;;
 				*)
-					ln -s "${FLL_MOUNTPOINT}/${dir##*/}" \
+					ln -s "${FLL_MOUNTPOINT#/}/${dir##*/}" \
 						"${rootmnt}/${dir##*/}"
 					;;
 			esac
