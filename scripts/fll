@@ -410,7 +410,7 @@ mountroot()
 						mkdir -p "${FLL_MOUNTPOINT}"
 						if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "${FLL_MOUNTPOINT}"; then
 							printf "${GREEN}Mounted ${YELLOW}${FSTYPE}${GREEN} filesystem.${NORMAL}\n"
-							FLL_DOMOVEMOUNT="${FLL_BLOCKMNT} ${FLL_DOMOVEMOUNT}"
+							FLL_DOMOVEMOUNT="${FLL_MOUNTPOINT} ${FLL_DOMOVEMOUNT}"
 						else
 							# XXX: this should not fail
 							printf "${RED}Failed to mount ${YELLOW}${FSTYPE}${GREEN} filesystem!${NORMAL}\n"
