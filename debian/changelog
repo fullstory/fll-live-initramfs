@@ -1,3 +1,11 @@
+fll-live-initramfs (1.0.21) unstable; urgency=low
+
+  * Proof of concept functionality only.
+  * Improve output formatting of live media probe loop.
+  * Skip a few base symlinks (/dev, /proc, /sys).
+
+ -- Kel Modderman <kel@otaku42.de>  Thu, 19 Apr 2007 13:16:38 +1000
+
 fll-live-initramfs (1.0.20) unstable; urgency=low
 
   * Proof of concept functionality only.
