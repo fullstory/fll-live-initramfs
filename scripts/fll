@@ -48,6 +48,12 @@ fll_parse_cmdline()
 				;;
 			fromiso*)
 				FLL_FROMISO="yes"
+				# define iso name
+				case "${opt}" in
+					fromiso=*)
+						FLL_MEDIA_NAME="${opt#fromiso=}"
+						;;
+				esac
 				;;
 			image_dir=*)
 				FLL_IMAGE_DIR="${opt#image_dir=}"
@@ -56,12 +62,6 @@ fll_parse_cmdline()
 			image_name=*)
 				FLL_IMAGE_FILE="${opt#image_name=}"
 				FLL_IMAGE_LOCATION="${FLL_IMAGE_DIR}/${FLL_IMAGE_FILE}"
-				;;
-			iso_dir=*)
-				FLL_MEDIA_DIR="${opt#iso_dir=}"
-				;;
-			iso_name=*)
-				FLL_MEDIA_NAME="${opt#iso_name=}"
 				;;
 			toram)
 				FLL_TORAM="yes"
@@ -325,7 +325,7 @@ mountroot()
 						##
 						if fll_finger_fstype "${FLL_MEDIA_NAME}"; then
 							mkdir -p "/mnt/iso"
-							if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_MEDIA_DIR}/${FLL_MEDIA_NAME}" \
+							if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_MEDIA_NAME}" \
 								"/mnt/iso"; then
 								##
 								# add block device mount point to umount stack
