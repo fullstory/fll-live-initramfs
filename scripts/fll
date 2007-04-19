@@ -479,7 +479,12 @@ mountroot()
 	##
 	# create dirs for dev, proc & sys
 	##
-	mkdir --mode 0755 "${rootmnt}/tmp"
+	mkdir --mode 0755 "${rootmnt}/dev"
 	mkdir "${rootmnt}/proc" "${rootmnt}/sys"
+
+	##
+	# debug checkpoint
+	##
+	maybe_break fll-bottom
 }
 ###############################################################################

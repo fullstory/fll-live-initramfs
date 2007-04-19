@@ -1,3 +1,10 @@
+fll-live-initramfs (1.0.29) unstable; urgency=low
+
+  * Add an absolute fll-bottom break point.
+  * Really care for /dev.
+
+ -- Kel Modderman <kel@otaku42.de>  Thu, 19 Apr 2007 20:51:10 +1000
+
 fll-live-initramfs (1.0.28) unstable; urgency=low
 
   * 10% buffer on top of compressed filesystem size for toram tmpfs inode
