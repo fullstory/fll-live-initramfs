@@ -285,7 +285,7 @@ mountroot()
 	fi
 	
 	if [ "${FLL_BLOCKDEVS}" ]; then
-		printf "${GREEN}Probing devices\t${NORMAL}"
+		printf "${GREEN}Probing devices\t${WHITE}[ ${NORMAL}"
 	else
 		printf "${RED}Failed to detect any devices that may contain live media!${NORMAL}\n\n"
 		panic
@@ -297,7 +297,7 @@ mountroot()
 		# determine filesystem type of block device
 		##
 		if fll_finger_fstype "${dev}"; then
-			printf "${WHITE}[ ${YELLOW}${dev#/dev/}${NORMAL} "
+			printf "${YELLOW}${dev#/dev/}${NORMAL} "
 			##
 			# we have FSTYPE
 			##
@@ -373,8 +373,8 @@ mountroot()
 								##
 								# do the copy
 								##
-								printf "${GREEN}Copying live media from ${YELLOW}${dev}${GREEN} into ram, "
-								printf "please be patient...${NORMAL}"
+								printf "${GREEN}Copying live media from ${YELLOW}${dev}${GREEN} "
+								printf "${YELLOW}ram${GREEN}, please be patient...${NORMAL}"
 								if cp "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "/dev/shm/${FLL_IMAGE_DIR}"; then
 									##
 									# add old mnt pnt to umount stack, update FLL_BLOCKMNT and dev
@@ -405,14 +405,16 @@ mountroot()
 						FLL_INITRAMFS_ROOTMNT="${rootmnt}${FLL_MOUNTPOINT}"
 						mkdir -p "${FLL_INITRAMFS_ROOTMNT}"
 						if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "${FLL_INITRAMFS_ROOTMNT}"; then
-							printf "${GREEN}Accessing live media from ${YELLOW}${dev}${GREEN}${NORMAL}\n\n"
+							printf "${GREEN}Mounted ${YELLOW}${FSTYPE}${GREEN} filesystem.${NORMAL}\n\n"
 						else
 							# XXX: this should not fail
+							printf "${RED}Failed to mount ${YELLOW}${FSTYPE}${GREEN} filesystem!${NORMAL}\n\n"
 							unset FLL_MEDIA_FOUND
 							FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
 						fi
 					else
 						# XXX: this should not fail
+						printf "${RED}!${NORMAL} "
 						unset FLL_MEDIA_FOUND
 						FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
 					fi
@@ -437,7 +439,7 @@ mountroot()
 			break
 		fi
 
-		printf "${WHITE}]${NORMAL} \n\n"
+		printf "${WHITE}[${NORMAL} "
 	done
 
 	##
