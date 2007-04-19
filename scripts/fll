@@ -315,7 +315,7 @@ mountroot()
 						FLL_MEDIA_FOUND="${dev}"
 						printf "${WHITE}]${NORMAL}\n\n"
 						printf "${GREEN}Detected ${YELLOW}${FLL_MEDIA_NAME}${GREEN} "
-						printf "on ${YELLOW}${FLL_MEDIA_FOUND}${GREEN}.${NORMAL}\n\n"
+						printf "on ${YELLOW}${FLL_MEDIA_FOUND}${GREEN}.${NORMAL}\n"
 						##
 						# loop mount iso on FLL_MEDIA_MOUNTPOINT
 						##
@@ -352,7 +352,7 @@ mountroot()
 						FLL_MEDIA_FOUND="${dev}"
 						printf "${WHITE}]${NORMAL}\n\n"
 						printf "${GREEN}Detected live media ${YELLOW}${FSTYPE}${GREEN} "
-						printf "filesystem on ${YELLOW}${FLL_MEDIA_FOUND}${GREEN}.${NORMAL}\n\n"
+						printf "filesystem on ${YELLOW}${FLL_MEDIA_FOUND}${GREEN}.${NORMAL}\n"
 						##
 						# copy to tmpfs
 						##
@@ -382,17 +382,17 @@ mountroot()
 									FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
 									FLL_BLOCKMNT="/dev/shm"
 									dev="ram"
-									printf "${YELLOW}done${NORMAL}\n\n"
+									printf "${YELLOW}done${NORMAL}\n"
 								else
 									if [ "${FLL_FROMISO}" = "yes" ]; then
 										# we failed to copy iso contents to ram: reset umount stack
 										unset FLL_DOUMOUNT
 									fi
-									printf "${RED}failed!${NORMAL}\n\n"
+									printf "${RED}failed!${NORMAL}\n"
 								fi
 							else
 								printf "${RED}Insufficient free memory to copy live media into ram!${NORMAL}\n"
-								printf "${RED}Required free memory: ${YELLOW}${FLL_TORAM_FSSIZE} M${NORMAL}\n\n"
+								printf "${RED}Required free memory: ${YELLOW}${FLL_TORAM_FSSIZE} M${NORMAL}\n"
 								if [ "${FLL_FROMISO}" = "yes" ]; then
 									# we failed to copy iso contents to ram: reset umount stack
 									unset FLL_DOUMOUNT
@@ -405,10 +405,10 @@ mountroot()
 						FLL_INITRAMFS_ROOTMNT="${rootmnt}${FLL_MOUNTPOINT}"
 						mkdir -p "${FLL_INITRAMFS_ROOTMNT}"
 						if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "${FLL_INITRAMFS_ROOTMNT}"; then
-							printf "${GREEN}Mounted ${YELLOW}${FSTYPE}${GREEN} filesystem.${NORMAL}\n\n"
+							printf "${GREEN}Mounted ${YELLOW}${FSTYPE}${GREEN} filesystem.${NORMAL}\n"
 						else
 							# XXX: this should not fail
-							printf "${RED}Failed to mount ${YELLOW}${FSTYPE}${GREEN} filesystem!${NORMAL}\n\n"
+							printf "${RED}Failed to mount ${YELLOW}${FSTYPE}${GREEN} filesystem!${NORMAL}\n"
 							unset FLL_MEDIA_FOUND
 							FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
 						fi
@@ -446,7 +446,7 @@ mountroot()
 	# panic on failure to detect live media
 	##
 	if [ -z "${FLL_MEDIA_FOUND}" ]; then
-		printf "${RED}Failed to detect live media!${NORMAL}\n"
+		printf "\n${RED}Failed to detect live media!${NORMAL}\n"
 		panic
 	fi
 
