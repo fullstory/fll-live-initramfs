@@ -285,11 +285,7 @@ mountroot()
 	fi
 	
 	if [ "${FLL_BLOCKDEVS}" ]; then
-		printf "${GREEN}Probing devices\t${WHITE}[ ${YELLOW}"
-		for dev in ${FLL_BLOCKDEVS}; do
-			printf "${dev#/dev/} "
-		done
-		printf "${WHITE}]${NORMAL}\n\n"
+		printf "${GREEN}Probing devices\t${NORMAL}"
 	else
 		printf "${RED}Failed to detect any devices that may contain live media!${NORMAL}\n\n"
 		panic
@@ -301,6 +297,7 @@ mountroot()
 		# determine filesystem type of block device
 		##
 		if fll_finger_fstype "${dev}"; then
+			printf "${WHITE}[ ${YELLOW}${dev#/dev/}${NORMAL} "
 			##
 			# we have FSTYPE
 			##
@@ -314,11 +311,11 @@ mountroot()
 				# probe for iso image
 				##
 				if [ "${FLL_FROMISO}" = "yes" ]; then
-					if [ -f "${FLL_BLOCKMNT}/${FLL_MEDIA_DIR}/${FLL_MEDIA_NAME}" ]; then
+					if [ -f "${FLL_BLOCKMNT}/${FLL_MEDIA_NAME}" ]; then
 						FLL_MEDIA_FOUND="${dev}"
-						printf "${GREEN}Detected ISO image "
-						printf "${YELLOW}${FLL_MEDIA_DIR}/${FLL_MEDIA_NAME}${GREEN} "
-						printf "on ${YELLOW}${dev}${GREEN}.${NORMAL}\n\n"
+						printf "${WHITE}]${NORMAL}\n\n"
+						printf "${GREEN}Detected ${YELLOW}${FLL_MEDIA_NAME}${GREEN} "
+						printf "on ${YELLOW}${FLL_MEDIA_FOUND}${GREEN}.${NORMAL}\n\n"
 						##
 						# loop mount iso on FLL_MEDIA_MOUNTPOINT
 						##
@@ -333,9 +330,10 @@ mountroot()
 									FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
 								fi
 								##
-								# update live image probe location
+								# update live image probe location, and dev
 								##
 								FLL_BLOCKMNT="${FLL_MEDIA_MOUNTPOINT}"
+								dev="iso"
 							else
 								# XXX: this should not fail
 								unset FLL_MEDIA_FOUND
@@ -350,8 +348,11 @@ mountroot()
 				# probe for compressed filesystem
 				##
 				if [ -f "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" ]; then
-					FLL_MEDIA_FOUND="${dev}"
 					if fll_finger_fstype "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}"; then
+						FLL_MEDIA_FOUND="${dev}"
+						printf "${WHITE}]${NORMAL}\n\n"
+						printf "${GREEN}Detected live media ${YELLOW}${FSTYPE}${GREEN} "
+						printf "filesystem on ${YELLOW}${FLL_MEDIA_FOUND}${GREEN}.${NORMAL}\n\n"
 						##
 						# copy to tmpfs
 						##
@@ -435,13 +436,15 @@ mountroot()
 		if [ "${FLL_MEDIA_FOUND}" ]; then
 			break
 		fi
+
+		printf "${WHITE}]${NORMAL} \n\n"
 	done
 
 	##
 	# panic on failure to detect live media
 	##
 	if [ -z "${FLL_MEDIA_FOUND}" ]; then
-		printf "${RED}Failed to detect live media!${NORMAL}\n\n"
+		printf "${RED}Failed to detect live media!${NORMAL}\n"
 		panic
 	fi
 	
@@ -456,7 +459,8 @@ mountroot()
 					continue
 					;;
 				*)
-					ln -s "${FLL_MOUNTPOINT}/${dir##*/}" "${rootmnt}/${dir##*/}"
+					ln -s "${FLL_MOUNTPOINT}/${dir##*/}" \
+						"${rootmnt}/${dir##*/}"
 					;;
 			esac
 		fi
