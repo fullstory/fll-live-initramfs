@@ -451,7 +451,7 @@ mountroot()
 	for dir in ${FLL_INITRAMFS_ROOTMNT}/*; do
 		if [ -d "${dir}" ]; then
 			case "${dir##*/}" in
-				dev|home|proc|sys|var)
+				dev|home|proc|sys|tmp|var)
 					# these are handled explicitly
 					continue
 					;;
