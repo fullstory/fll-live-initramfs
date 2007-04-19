@@ -1,3 +1,10 @@
+fll-live-initramfs (1.0.30) unstable; urgency=low
+
+  * Add very hackish hacks for /dev and run-init issues faced while setting up
+    base symlinks.
+
+ -- Kel Modderman <kel@otaku42.de>  Thu, 19 Apr 2007 21:24:20 +1000
+
 fll-live-initramfs (1.0.29) unstable; urgency=low
 
   * Add an absolute fll-bottom break point.

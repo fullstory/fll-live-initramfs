@@ -464,7 +464,7 @@ mountroot()
 	for dir in ${FLL_INITRAMFS_ROOTMNT}/*; do
 		if [ -d "${dir}" ]; then
 			case "${dir##*/}" in
-				dev|proc|sys|home|tmp)
+				dev|proc|sys)
 					# these are handled explicitly
 					continue
 					;;
@@ -477,10 +477,20 @@ mountroot()
 	done
 
 	##
-	# create dirs for dev, proc & sys
+	# create dirs proc & sys
+	##
+	mkdir "${rootmnt}/proc" "${rootmnt}/sys"
+
+	##
+	# hack for /dev
 	##
 	mkdir --mode 0755 "${rootmnt}/dev"
-	mkdir "${rootmnt}/proc" "${rootmnt}/sys"
+	mount -n -o bind "${FLL_INITRAMFS_ROOTMNT}/dev" "${rootmnt}/dev"
+	
+	##
+	# hack for run-init
+	##
+	export init="${FLL_MOUNTPOINT}/sbin/init"
 
 	##
 	# debug checkpoint
