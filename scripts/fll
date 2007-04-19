@@ -162,7 +162,7 @@ fll_setup_dev_loop()
 	grep -q ^loop /proc/modules || modprobe "${MODPROBE_OPTIONS}" loop
 	
 	for n in 0 1 2 3 4 5 6 7; do
-		[ -e /dev/loop${n} ] || mknod /dev/loop b${n} 7 ${n}
+		[ -e /dev/loop${n} ] || mknod /dev/loop${n} b 7 ${n}
 	done		
 }
 ###############################################################################
@@ -374,7 +374,7 @@ mountroot()
 								# do the copy
 								##
 								printf "${GREEN}Copying live media from ${YELLOW}${dev}${GREEN} "
-								printf "${YELLOW}ram${GREEN}, please be patient...${NORMAL}"
+								printf "to ${YELLOW}ram${GREEN}, please be patient...${NORMAL}"
 								if cp "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "/dev/shm/${FLL_IMAGE_DIR}"; then
 									##
 									# add old mnt pnt to umount stack, update FLL_BLOCKMNT and dev
@@ -449,6 +449,13 @@ mountroot()
 		printf "${RED}Failed to detect live media!${NORMAL}\n"
 		panic
 	fi
+
+	##
+	# create ${rootmnt}/{dev,proc/sys}
+	##
+	for dir in dev proc sys; do
+		mkdir "${rootmnt}/${dir}"
+	done
 	
 	##
 	# create base symlinks in ${rootmnt} to ${FLL_INITRAMFS_ROOTMNT}

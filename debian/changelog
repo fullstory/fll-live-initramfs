@@ -1,3 +1,10 @@
+fll-live-initramfs (1.0.23) unstable; urgency=low
+
+  * Proof of concept functionality only.
+  * Bugfix mknod creation hack.
+  * Create dev proc and sys base dir's.
+ -- Kel Modderman <kel@otaku42.de>  Thu, 19 Apr 2007 15:26:28 +1000
+
 fll-live-initramfs (1.0.22) unstable; urgency=low
 
   * Proof of concept functionality only.
