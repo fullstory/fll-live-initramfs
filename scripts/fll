@@ -9,10 +9,6 @@
 #	F.U.L.L.S.T.O.R.Y Project Homepage:
 #	http://developer.berlios.de/projects/fullstory
 ###############################################################################
-#	expand scope of PATH
-###############################################################################
-export PATH=/root/usr/bin:/root/usr/sbin:/root/bin:/root/sbin:/usr/bin:/usr/sbin:/bin:/sbin
-###############################################################################
 #	colourful escape sequences
 ###############################################################################
 export NORMAL="[0;39m"	# NORMAL: Normal color
@@ -139,11 +135,11 @@ fll_finger_fstype()
 	unset FSTYPE FSSIZE
 	
 	# fstype from klibc-utils
-	eval $(fstype < ${1})
+	eval $(fstype < ${1} 2>/dev/null)
 
 	if ( [ -z "${FSTYPE}" ] || [ "${FSTYPE}" = "unknown" ] ) && \
 		[ -x /lib/udev/vol_id ]; then
-		FSTYPE=$(/lib/udev/vol_id -t ${1})
+		FSTYPE=$(/lib/udev/vol_id -t ${1} 2>/dev/null)
 	fi
 	
 	if [ "${FSTYPE}" ] && [ "${FSTYPE}" != "unknown" ]; then
@@ -340,7 +336,7 @@ mountroot()
 								FLL_DOMOVEMOUNT="${FLL_BLOCKMNT} ${FLL_DOMOVEMOUNT}"
 								dev="iso"
 							else
-								# XXX: this should not fail
+								printf "${RED}Failed to mount ${YELLOW}${FSTYPE}${GREEN} filesystem!${NORMAL}\n"
 								unset FLL_MEDIA_FOUND
 							fi
 						else
@@ -413,7 +409,6 @@ mountroot()
 							printf "${GREEN}Mounted ${YELLOW}${FSTYPE}${GREEN} filesystem.${NORMAL}\n"
 							FLL_DOMOVEMOUNT="${FLL_MOUNTPOINT} ${FLL_DOMOVEMOUNT}"
 						else
-							# XXX: this should not fail
 							printf "${RED}Failed to mount ${YELLOW}${FSTYPE}${GREEN} filesystem!${NORMAL}\n"
 							unset FLL_MEDIA_FOUND
 							FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"

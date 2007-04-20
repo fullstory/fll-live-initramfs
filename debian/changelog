@@ -1,3 +1,10 @@
+fll-live-initramfs (1.0.37) unstable; urgency=low
+
+  * Fix up comments about failing cases.
+  * No longer export PATH with extended scope.
+
+ -- Kel Modderman <kel@otaku42.de>  Fri, 20 Apr 2007 11:24:23 +1000
+
 fll-live-initramfs (1.0.36) unstable; urgency=low
 
   * Fixed pushing of wrong variable onto domovemount stack.
