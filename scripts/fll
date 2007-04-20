@@ -464,6 +464,25 @@ mountroot()
 		panic
 	fi
 
+	mkdir -p "${rootmnt}/proc" "${rootmnt}/sys" "${rootmnt}/mnt"
+	mkdir -m 0755 "${rootmnt}/dev"
+	# disable movement of static /dev by scripts/init-bottom/udev
+	export no_static_dev="1"
+
+	for dir in ${rootmnt}${FLL_MOUNTPOINT}/*; do
+		if [ -d "${dir}" ]; then
+			case "${dir##*/}" in
+				dev|mnt|proc|sys)
+					continue
+					;;
+				*)
+					ln -sf "${FLL_MOUNTPOINT}/${dir##*/}" \
+						"${rootmnt}/${dir##*/}"
+					;;
+			esac
+		fi
+	done
+
 	##
 	# debug checkpoint
 	##
