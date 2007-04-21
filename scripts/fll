@@ -362,10 +362,13 @@ mountroot()
 							# required tmpfs size: compressed filesystem size + 10% inode buffer
 							# (also impose 16M minimum memory limit)
 							##
-							FLL_TORAM_FSSIZE=$(du -s "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" |
-								awk '{ printf("%d\n", int($1 * 1.1 / 1024) + 16) }')
-							# recalculate free system memory
 							eval $(fll_meminfo)
+							FLL_TORAM_FSSIZE=$(du -s "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" | awk '
+								{
+									printf("%d\n", int($1 * 1.1 / 1024) + 16)
+								}
+								')
+
 							if [ "${MEMFREE}" -gt "${FLL_TORAM_FSSIZE}" ]; then
 								##
 								# prepare tmpfs
@@ -438,13 +441,20 @@ mountroot()
 		##
 		if [ "${FLL_MEDIA_FOUND}" ]; then
 			##
-			# move all mounts to $rootmnt first
+			# mount a tmpfs over $rootmnt, reserve 15% system memory
+			##
+			mount -n -t tmpfs -o size=85% tmpfs "${rootmnt}"
+			##
+			# move all mounts to $rootmnt
 			##
 			for mnt in ${FLL_DOMOVEMOUNT}; do
 				grep -q "${mnt}" /proc/mounts || continue
 				mkdir -p "${rootmnt}${mnt}"
 				mount -n -o move "${mnt}" "${rootmnt}${mnt}"
 			done
+			##
+			# exit mount loop, make final preparations for boot
+			##
 			break
 		fi
 
@@ -464,24 +474,35 @@ mountroot()
 		panic
 	fi
 
-	mkdir -p "${rootmnt}/proc" "${rootmnt}/sys" "${rootmnt}/mnt"
-	mkdir -m 0755 "${rootmnt}/dev"
-	# disable movement of static /dev by scripts/init-bottom/udev
-	export no_static_dev="1"
-
+	##
+	# create symlinks on tmpfs'd $rootmnt to $FLL_MOUNTPOINT
+	##
 	for dir in ${rootmnt}${FLL_MOUNTPOINT}/*; do
 		if [ -d "${dir}" ]; then
 			case "${dir##*/}" in
-				dev|mnt|proc|sys)
-					continue
+				dev|home|mnt|proc|sys|tmp)
+					continue	# handled below
 					;;
 				*)
-					ln -sf "${FLL_MOUNTPOINT}/${dir##*/}" \
+					ln -sf "${FLL_MOUNTPOINT#/}/${dir##*/}" \
 						"${rootmnt}/${dir##*/}"
 					;;
 			esac
 		fi
 	done
+
+	##
+	# prepare home, mnt, proc, sys & tmp
+	##
+	for dir in home mnt proc sys tmp; do
+		mkdir -p "${rootmnt}/${dir}"
+	done
+
+	##
+	# prepare dev, disable movement of static $rootmnt/dev by scripts/init-bottom/udev
+	##
+	mkdir -p -m 0755 "${rootmnt}/dev"
+	export no_static_dev="1"
 
 	##
 	# debug checkpoint

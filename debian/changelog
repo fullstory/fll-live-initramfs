@@ -1,3 +1,9 @@
+fll-live-initramfs (1.0.39) unstable; urgency=low
+
+  * Try mounting a tmpfs over $rootmnt in attempt to appease run-init.
+
+ -- Kel Modderman <kel@otaku42.de>  Sat, 21 Apr 2007 14:10:35 +1000
+
 fll-live-initramfs (1.0.38) unstable; urgency=low
 
   * Again try the symlink dance, this time avoid stuffing around with static
