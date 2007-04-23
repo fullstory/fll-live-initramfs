@@ -1,3 +1,160 @@
+fll-live-initramfs (1.0.62) unstable; urgency=low
+
+  * Put /home on the union COW.
+
+ -- Kel Modderman <kel@otaku42.de>  Mon, 23 Apr 2007 22:33:13 +1000
+
+fll-live-initramfs (1.0.61) unstable; urgency=low
+
+  * Put /media on the ramdisk.
+  * Add an extra panic point after moving all mounts to $rootmnt.
+    ${rootmnt}${FLL_MOUNTPOINT} must be moved into new root.
+
+ -- Kel Modderman <kel@otaku42.de>  Mon, 23 Apr 2007 21:21:13 +1000
+
+fll-live-initramfs (1.0.60) unstable; urgency=low
+
+  * Inhibit printk's while mounting various filesystems.
+
+ -- Kel Modderman <kel@otaku42.de>  Mon, 23 Apr 2007 18:26:00 +1000
+
+fll-live-initramfs (1.0.59) unstable; urgency=low
+
+  * Reverse printing of 2 carriage returns rather than 1 when iso has been
+    detected before, should print only 1 in that case and 2 every other time.
+
+ -- Kel Modderman <kel@otaku42.de>  Sun, 22 Apr 2007 23:42:42 +1000
+
+fll-live-initramfs (1.0.58) unstable; urgency=low
+
+  * Remove print of leading [ in device probe, it is not required now.
+
+ -- Kel Modderman <kel@otaku42.de>  Sun, 22 Apr 2007 23:20:28 +1000
+
+fll-live-initramfs (1.0.57) unstable; urgency=low
+
+  * Clean up print out of devices in device scan.
+
+ -- Kel Modderman <kel@otaku42.de>  Sun, 22 Apr 2007 23:01:56 +1000
+
+fll-live-initramfs (1.0.56) unstable; urgency=low
+
+  * Don't try and mount iso from bogus moint point, FLL_BLOCKMNT was being
+    updated too soon.
+
+ -- Kel Modderman <kel@otaku42.de>  Sun, 22 Apr 2007 22:12:23 +1000
+
+fll-live-initramfs (1.0.55) unstable; urgency=low
+
+  * Fix fromiso, forgot to prepend FLL_BLOCKMNT to iso name when probing for
+    fstype.
+
+ -- Kel Modderman <kel@otaku42.de>  Sun, 22 Apr 2007 20:55:13 +1000
+
+fll-live-initramfs (1.0.54) unstable; urgency=low
+
+  * Fix permissions of /tmp for user access. Thanks to x-un-i for debugging!
+
+ -- Kel Modderman <kel@otaku42.de>  Sun, 22 Apr 2007 19:48:47 +1000
+
+fll-live-initramfs (1.0.53) unstable; urgency=low
+
+  * Further cleanup of console output.
+
+ -- Kel Modderman <kel@otaku42.de>  Sun, 22 Apr 2007 16:12:45 +1000
+
+fll-live-initramfs (1.0.52) unstable; urgency=low
+
+  * More output handling ehancements.
+  * Make minimum allowances for possible link farm approach. The approach is
+    not yet implimented, nor even planned yet.
+
+ -- Kel Modderman <kel@otaku42.de>  Sun, 22 Apr 2007 15:48:36 +1000
+
+fll-live-initramfs (1.0.51) unstable; urgency=low
+
+  * Clean up output, and make output more verbose.
+
+ -- Kel Modderman <kel@otaku42.de>  Sun, 22 Apr 2007 14:48:38 +1000
+
+fll-live-initramfs (1.0.50) unstable; urgency=low
+
+  * Bug fix typo in loop that is meant to purge etc/rc*.d for clean live boot
+    with live-autoconfig.
+
+ -- Kel Modderman <kel@otaku42.de>  Sun, 22 Apr 2007 14:03:35 +1000
+
+fll-live-initramfs (1.0.49) unstable; urgency=low
+
+  * Port linuxrc hack over to cleanse /etc/rc?.d/ from debians initscripts,
+    and link up those of initscripts-$distro-live.
+
+ -- Kel Modderman <kel@otaku42.de>  Sun, 22 Apr 2007 13:41:45 +1000
+
+fll-live-initramfs (1.0.48) unstable; urgency=low
+
+  * Try another variation of union COW setup.
+
+ -- Kel Modderman <kel@otaku42.de>  Sun, 22 Apr 2007 12:08:10 +1000
+
+fll-live-initramfs (1.0.47) unstable; urgency=low
+
+  * Mark /UNIONFS setup as broken.
+  * Visual enhancements.
+
+ -- Kel Modderman <kel@otaku42.de>  Sun, 22 Apr 2007 04:36:08 +1000
+
+fll-live-initramfs (1.0.46) unstable; urgency=low
+
+  * Attempted bugfix at wrong union COW setup.
+
+ -- Kel Modderman <kel@otaku42.de>  Sun, 22 Apr 2007 04:19:57 +1000
+
+fll-live-initramfs (1.0.45) unstable; urgency=low
+
+  * Delay movement of staged mounts until end of mountroot()
+  * Remove delete=whiteout option for unionfs mount, for now.
+
+ -- Kel Modderman <kel@otaku42.de>  Sun, 22 Apr 2007 03:47:34 +1000
+
+fll-live-initramfs (1.0.44) unstable; urgency=low
+
+  * Fix unionfs usage, symlinks to compressed filesystem should be pointing at
+    unions COW mount, not the read only squashfs mount.
+
+ -- Kel Modderman <kel@otaku42.de>  Sun, 22 Apr 2007 03:27:07 +1000
+
+fll-live-initramfs (1.0.43) unstable; urgency=low
+
+  * Try different position for /UNIONFS setup.
+
+ -- Kel Modderman <kel@otaku42.de>  Sun, 22 Apr 2007 03:12:36 +1000
+
+fll-live-initramfs (1.0.42) unstable; urgency=low
+
+  * Very rough initial rw union attempt.
+
+ -- Kel Modderman <kel@otaku42.de>  Sun, 22 Apr 2007 03:05:13 +1000
+
+fll-live-initramfs (1.0.41) unstable; urgency=low
+
+  * Add 32M hard limit for memory required on top of toram tmpfs size.
+  * Many many comment cleanups, formatting tweaks and positional changes of
+    variables and code blocks.
+
+ -- Kel Modderman <kel@otaku42.de>  Sun, 22 Apr 2007 02:10:37 +1000
+
+fll-live-initramfs (1.0.40) unstable; urgency=low
+
+  * Comment cleansing.
+  * Remove the 16M addition to toram tmpfs calculation, instead increase
+    buffer percentage to 15%.
+  * Make base tmpfs consume 90% of system memory.
+  * Add man panic points to catch cases that simply should not fail unless
+    something is terribly wrong.
+
+ -- Kel Modderman <kel@otaku42.de>  Sat, 21 Apr 2007 23:38:38 +1000
+
 fll-live-initramfs (1.0.39) unstable; urgency=low
 
   * Try mounting a tmpfs over $rootmnt in attempt to appease run-init.
