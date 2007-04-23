@@ -1,3 +1,9 @@
+fll-live-initramfs (1.0.64) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 23 Apr 2007 19:48:57 +0200
+
 fll-live-initramfs (1.0.63) unstable; urgency=low
 
   * bump version number to circumvent package conflicts.
