@@ -40,7 +40,7 @@ fll_parse_cmdline()
 				set -x
 				;;
 			fromhd=*)
-				FLL_BLOCKDEVS="${opt#fromhd=}"
+				FLL_FROMHD="${opt#fromhd=}"
 				;;
 			fromiso*)
 				FLL_FROMISO="yes"
@@ -58,6 +58,9 @@ fll_parse_cmdline()
 			image_name=*)
 				FLL_IMAGE_FILE="${opt#image_name=}"
 				FLL_IMAGE_LOCATION="${FLL_IMAGE_DIR}/${FLL_IMAGE_FILE}"
+				;;
+			fll_maxwait=*)
+				FLL_MAXWAIT="${opt#fll_maxwait=}"
 				;;
 			toram)
 				FLL_TORAM="yes"
@@ -288,231 +291,275 @@ mountroot()
 	#######################################################################
 	#	find live-media
 	#######################################################################
-	if [ "${ROOTDELAY}" ]; then
-		slumber="${ROOTDELAY}"
+	##
+	# total time in seconds to do device scans for
+	##
+	if [ "${MAXWAIT}" ]; then
+		slumber="${FLL_MAXWAIT}"
 	else
-		##
-		# default to 5 second slumber time
-		# XXX: perhaps we should keep a default slumber value in menu.lst ?
-		##
-		slumber="5"
+		slumber="40"
 	fi
 	
 	##
-	# ROOTDELAY function adapted from initramfs local boot script
+	# rootdelay= on kernel cmdline
 	##
-	if [ "${slumber}" -gt 0 ]; then
-		printf "${GREEN}Waiting ${YELLOW}${slumber}${GREEN}s for devices to settle${NORMAL}"
-		while [ "${slumber}" -gt 0 ]; do
-			/bin/sleep 1
-			printf "${GREEN}.${NORMAL}"
-			slumber=$(( ${slumber} - 1 ))
-		done
-		printf "\n\n"
+	if [ "${ROOTDELAY}" ]; then
+		##
+		# user defined interval between now and initial device scan loop
+		##
+		interval="${ROOTDELAY}"
+	else
+		##
+		# default interval between now and initial device scan loop
+		##
+		interval="5"
 	fi
 
-	if [ -z "${FLL_BLOCKDEVS}" ]; then
-		##
-		# list of block devices to be probed for live media
-		##
-		FLL_BLOCKDEVS=$(fll_finger_blockdevs)
-	fi
+	unset FLL_BLOCKDEVS
 	
-	if [ "${FLL_BLOCKDEVS}" ]; then
-		printf "${GREEN}Probing devices\t${NORMAL}"
-	else
-		panic "${RED}Failed to detect any devices that may contain live media${NORMAL}"
-	fi
-	
-	for dev in ${FLL_BLOCKDEVS}; do
-		##
-		# FLL_BLOCKMNT		- tracks current mount point
-		#
-		# FLL_DOUMOUNT		- stack of mount points to be umounted at end of
-		#			  loop
-		#
-		# FLL_DOMOVEMOUNT	- stack of mount points to be move mounted if the
-		#			  loop is broken
-		#
-		# FLL_MEDIA_FOUND	- set only when we have the live media compressed
-		#			  filesystem located and mounted
-		##
-		unset FLL_BLOCKMNT FLL_DOUMOUNT FLL_DOMOVEMOUNT FLL_MEDIA_FOUND
+	while [ "${slumber}" -gt 0 ]; do
 		
-		##
-		# determine filesystem type of block device
-		##
-		if fll_finger_fstype "${dev}" >/dev/null 2>&1; then
-			printf "${WHITE}[${YELLOW} ${dev#/dev/}${WHITE} ]${NORMAL} "
+		if [ "${interval}" -gt 0 ]; then
+			old_interval="${interval}"
+			printf "${GREEN}Waiting ${YELLOW}${interval}${GREEN}s "
+			printf "${GREEN}(${YELLOW}${slumber}${GREEN}s remaining) "
+			printf "for devices to settle${NORMAL}"
+			while [ "${interval}" -gt 0 ]; do
+				/bin/sleep 1
+				printf "${GREEN}.${NORMAL}"
+				interval=$(( ${interval} - 1 ))
+			done
+			printf "\n\n"
+			interval="${old_interval}"
+			slumber=$(( ${slumber} - ${interval} ))
+		else
 			##
-			# we have determined FSTYPE of the device, set FLL_BLOCKMNT
+			# no interval: one shot loop
 			##
-			FLL_BLOCKMNT="/mnt/${dev#/dev/}"
-			mkdir -p "${FLL_BLOCKMNT}"
+			slumber="0"
+		fi
+		
+		if [ "${FLL_FROMHD}" ]; then
+			FLL_BLOCKDEVS_NEW="${FLL_FROMHD}"
+		else
+			unset FLL_BLOCKDEVS_NEW
 			##
-			# mount block device on FLL_BLOCKMNT for probe
+			# list of block devices to be probed for live media
 			##
-			if fll_mount "${FSTYPE}" "${dev}" "${FLL_BLOCKMNT}" ro; then
+			FLL_BLOCKDEVS_NOW=$(fll_finger_blockdevs)
+
+			if [ "${FLL_BLOCKDEVS}" ]; then
+				if [ "${FLL_BLOCKDEVS_OLD}" ]; then
+					FLL_BLOCKDEVS="${FLL_BLOCKDEVS_OLD} ${FLL_BLOCKDEVS}"
+					unset FLL_BLOCKDEVS_OLD
+				fi
+				for dev in ${FLL_BLOCKDEVS_NOW}; do
+					if echo "${FLL_BLOCKDEVS}" | grep -q "\<${dev}\>"; then
+						FLL_BLOCKDEVS_OLD="${FLL_BLOCKDEVS_OLD} ${dev}"
+					else
+						FLL_BLOCKDEVS_NEW="${FLL_BLOCKDEVS_NEW} ${dev}"
+					fi
+				done
+			else
+				FLL_BLOCKDEVS_NEW="${FLL_BLOCKDEVS_NOW}"
+			fi
+		fi
+	
+		if [ "${FLL_BLOCKDEVS_NEW}" ]; then
+			FLL_BLOCKDEVS="${FLL_BLOCKDEVS_NEW}"
+			printf "${GREEN}Probing devices\t${NORMAL}"
+		else
+			continue
+		fi
+	
+		for dev in ${FLL_BLOCKDEVS}; do
+			##
+			# FLL_BLOCKMNT		- tracks current mount point
+			#
+			# FLL_DOUMOUNT		- stack of mount points to be umounted at end of
+			#			  loop
+			#
+			# FLL_DOMOVEMOUNT	- stack of mount points to be move mounted if the
+			#			  loop is broken
+			#
+			# FLL_MEDIA_FOUND	- set only when we have the live media compressed
+			#			  filesystem located and mounted
+			##
+			unset FLL_BLOCKMNT FLL_DOUMOUNT FLL_DOMOVEMOUNT FLL_MEDIA_FOUND
+		
+			##
+			# determine filesystem type of block device
+			##
+			if fll_finger_fstype "${dev}" >/dev/null 2>&1; then
+				printf "${WHITE}[${YELLOW} ${dev#/dev/}${WHITE} ]${NORMAL} "
 				##
-				# add current FLL_BLOCKMNT to FLL_DOMOVEMOUNT stack
+				# we have determined FSTYPE of the device, set FLL_BLOCKMNT
 				##
-				FLL_DOMOVEMOUNT="${FLL_BLOCKMNT} ${FLL_DOMOVEMOUNT}"
+				FLL_BLOCKMNT="/mnt/${dev#/dev/}"
+				mkdir -p "${FLL_BLOCKMNT}"
 				##
-				# probe for iso image
+				# mount block device on FLL_BLOCKMNT for probe
 				##
-				if [ "${FLL_FROMISO}" = "yes" ]; then
-					if [ -f "${FLL_BLOCKMNT}/${FLL_MEDIA_NAME}" ]; then
-						##
-						# located iso, update dev description
-						##
-						FLL_MEDIA_FOUND="${dev}"
-						printf "\n\n"
-						printf "${GREEN}Detected ${YELLOW}${FLL_MEDIA_NAME}${GREEN} "
-						printf "on ${YELLOW}${FLL_MEDIA_FOUND}${GREEN}.${NORMAL}\n"
-						if fll_finger_fstype "${FLL_BLOCKMNT}/${FLL_MEDIA_NAME}" >/dev/null 2>&1; then
-							if [ "${FSTYPE}" != "iso9660" ]; then
-								panic "${YELLOW}${FLL_MEDIA_NAME}${RED} not an iso9660 filesystem${NORMAL}"
-							fi
-							mkdir -p /mnt/fromiso
+				if fll_mount "${FSTYPE}" "${dev}" "${FLL_BLOCKMNT}" ro; then
+					##
+					# add current FLL_BLOCKMNT to FLL_DOMOVEMOUNT stack
+					##
+					FLL_DOMOVEMOUNT="${FLL_BLOCKMNT} ${FLL_DOMOVEMOUNT}"
+					##
+					# probe for iso image
+					##
+					if [ "${FLL_FROMISO}" = "yes" ]; then
+						if [ -f "${FLL_BLOCKMNT}/${FLL_MEDIA_NAME}" ]; then
 							##
-							# loop mount iso on FLL_MEDIA_MOUNTPOINT
-							##	
-							if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_MEDIA_NAME}" /mnt/fromiso; then
-								if [ "${FLL_TORAM}" ]; then
-									##
-									# add block device mount point to umount stack
-									##
-									FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
+							# located iso, update dev description
+							##
+							FLL_MEDIA_FOUND="${dev}"
+							printf "\n\n"
+							printf "${GREEN}Detected ${YELLOW}${FLL_MEDIA_NAME}${GREEN} "
+							printf "on ${YELLOW}${FLL_MEDIA_FOUND}${GREEN}.${NORMAL}\n"
+							if fll_finger_fstype "${FLL_BLOCKMNT}/${FLL_MEDIA_NAME}" >/dev/null 2>&1; then
+								if [ "${FSTYPE}" != "iso9660" ]; then
+									panic "${YELLOW}${FLL_MEDIA_NAME}${RED} not an iso9660 filesystem${NORMAL}"
 								fi
+								mkdir -p /mnt/fromiso
 								##
-								# update FLL_BLOCKMNT, FLL_DOMOVEMOUNT stack, and dev description
-								##
-								FLL_BLOCKMNT="/mnt/fromiso"
-								FLL_DOMOVEMOUNT="${FLL_BLOCKMNT} ${FLL_DOMOVEMOUNT}"
-								dev="iso"
+								# loop mount iso on FLL_MEDIA_MOUNTPOINT
+								##	
+								if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_MEDIA_NAME}" /mnt/fromiso; then
+									if [ "${FLL_TORAM}" ]; then
+										##
+										# add block device mount point to umount stack
+										##
+										FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
+									fi
+									##
+									# update FLL_BLOCKMNT, FLL_DOMOVEMOUNT stack, and dev description
+									##
+									FLL_BLOCKMNT="/mnt/fromiso"
+									FLL_DOMOVEMOUNT="${FLL_BLOCKMNT} ${FLL_DOMOVEMOUNT}"
+									dev="iso"
+								else
+									panic "${RED}Failed to mount ${YELLOW}${FSTYPE}${RED} filesystem from iso image${NORMAL}"
+								fi
 							else
-								panic "${RED}Failed to mount ${YELLOW}${FSTYPE}${RED} filesystem from iso image${NORMAL}"
+								panic "${RED}Failed to identify filesystem type of iso${NORMAL}"
 							fi
-						else
-							panic "${RED}Failed to identify filesystem type of iso${NORMAL}"
 						fi
 					fi
-				fi
-				##
-				# probe for compressed filesystem
-				##
-				if [ -f "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" ]; then
 					##
-					# found FLL compressed filesystem
+					# probe for compressed filesystem
 					##
-					if [ "${FLL_MEDIA_FOUND}" ]; then
-						printf "\n"
-					else
-						printf "\n\n"
-					fi
-					FLL_MEDIA_FOUND="${dev}"
-					if fll_finger_fstype "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" >/dev/null 2>&1; then
-						printf "${GREEN}Detected live ${YELLOW}${FSTYPE}${GREEN} "
-						printf "filesystem on ${YELLOW}${FLL_MEDIA_FOUND}${NORMAL}\n"
+					if [ -f "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" ]; then
 						##
-						# copy to tmpfs
+						# found FLL compressed filesystem
 						##
-						if [ "${FLL_TORAM}" ]; then
+						if [ "${FLL_MEDIA_FOUND}" ]; then
+							printf "\n"
+						else
+							printf "\n\n"
+						fi
+						FLL_MEDIA_FOUND="${dev}"
+						if fll_finger_fstype "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" >/dev/null 2>&1; then
+							printf "${GREEN}Detected live ${YELLOW}${FSTYPE}${GREEN} "
+							printf "filesystem on ${YELLOW}${FLL_MEDIA_FOUND}${NORMAL}\n"
 							##
-							# required tmpfs size: compressed filesystem size + 10% buffer
+							# copy to tmpfs
 							##
-							eval $(fll_meminfo)
-							FLL_TORAM_FSSIZE=$(du -s "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" | \
-								awk '{ printf("%d\n", int($1 * 1.1 / 1024)) }')
-							##
-							# memory required to operate normally after iso has consumed memory
-							# at least 32M is required
-							##
-							FLL_TORAM_MEMREQ=$(( ${FLL_TORAM_FSSIZE} + 32 ))
-							##
-							# do we have enough free memory for toram?
-							##
-							if [ "${MEMFREE}" -gt "${FLL_TORAM_MEMREQ}" ]; then
+							if [ "${FLL_TORAM}" ]; then
 								##
-								# prepare tmpfs, aka ramdisk
+								# required tmpfs size: compressed filesystem size + 10% buffer
 								##
-								mkdir -p "/dev/shm/${FLL_IMAGE_DIR}"
-								mount -n -t tmpfs -o size="${FLL_TORAM_FSSIZE}m" tmpfs "/dev/shm/${FLL_IMAGE_DIR}"
+								eval $(fll_meminfo)
+								FLL_TORAM_FSSIZE=$(du -s "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" | \
+									awk '{ printf("%d\n", int($1 * 1.1 / 1024)) }')
 								##
-								# copy compressed filesystem to tmpfs
+								# memory required to operate normally after iso has consumed memory
+								# at least 32M is required
 								##
-								printf "${GREEN}Copying live filesystem from ${YELLOW}${dev}${GREEN} "
-								printf "to ${YELLOW}ram${GREEN}, please be patient...${NORMAL}"
-								if cp "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "/dev/shm/${FLL_IMAGE_DIR}"; then
+								FLL_TORAM_MEMREQ=$(( ${FLL_TORAM_FSSIZE} + 32 ))
+								##
+								# do we have enough free memory for toram?
+								##
+								if [ "${MEMFREE}" -gt "${FLL_TORAM_MEMREQ}" ]; then
 									##
-									# add old mnt pnt to umount stack, update FLL_BLOCKMNT and dev
+									# prepare tmpfs, aka ramdisk
 									##
-									FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
-									FLL_BLOCKMNT="/dev/shm"
-									dev="ram"
-									printf "${GREEN}done${NORMAL}\n"
+									mkdir -p "/dev/shm/${FLL_IMAGE_DIR}"
+									mount -n -t tmpfs -o size="${FLL_TORAM_FSSIZE}m" tmpfs "/dev/shm/${FLL_IMAGE_DIR}"
+									##
+									# copy compressed filesystem to tmpfs
+									##
+									printf "${GREEN}Copying live filesystem from ${YELLOW}${dev}${GREEN} "
+									printf "to ${YELLOW}ram${GREEN}, please be patient...${NORMAL}"
+									if cp "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "/dev/shm/${FLL_IMAGE_DIR}"; then
+										##
+										# add old mnt pnt to umount stack, update FLL_BLOCKMNT and dev
+										##
+										FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
+										FLL_BLOCKMNT="/dev/shm"
+										dev="ram"
+										printf "${GREEN}done${NORMAL}\n"
+									else
+										if [ "${FLL_FROMISO}" = "yes" ]; then
+											##
+											# we failed to copy iso contents to ram: reset FLL_DOUMOUNT stack
+											##
+											unset FLL_DOUMOUNT
+										fi
+										printf "${RED}failed${NORMAL}\n"
+									fi
 								else
+									printf "${RED}Insufficient free memory to copy live media into memory${NORMAL}\n"
+									printf "${RED}Required free memory: ${YELLOW}${FLL_TORAM_MEMREQ}M${NORMAL}\n"
 									if [ "${FLL_FROMISO}" = "yes" ]; then
 										##
 										# we failed to copy iso contents to ram: reset FLL_DOUMOUNT stack
 										##
 										unset FLL_DOUMOUNT
 									fi
-									printf "${RED}failed${NORMAL}\n"
-								fi
-							else
-								printf "${RED}Insufficient free memory to copy live media into memory${NORMAL}\n"
-								printf "${RED}Required free memory: ${YELLOW}${FLL_TORAM_MEMREQ}M${NORMAL}\n"
-								if [ "${FLL_FROMISO}" = "yes" ]; then
-									##
-									# we failed to copy iso contents to ram: reset FLL_DOUMOUNT stack
-									##
-									unset FLL_DOUMOUNT
 								fi
 							fi
-						fi
-						##
-						# mount compressed filesystem, source directory: FLL_BLOCKMNT
-						##
-						mkdir -p "${FLL_MOUNTPOINT}"
-						if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "${FLL_MOUNTPOINT}"; then
-							printf "${GREEN}Mounted ${YELLOW}${FSTYPE}${GREEN} filesystem "
-							printf "on ${YELLOW}${FLL_MOUNTPOINT}${NORMAL}\n\n"
-							FLL_DOMOVEMOUNT="${FLL_MOUNTPOINT} ${FLL_DOMOVEMOUNT}"
+							##
+							# mount compressed filesystem, source directory: FLL_BLOCKMNT
+							##
+							mkdir -p "${FLL_MOUNTPOINT}"
+							if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "${FLL_MOUNTPOINT}"; then
+								printf "${GREEN}Mounted ${YELLOW}${FSTYPE}${GREEN} filesystem "
+								printf "on ${YELLOW}${FLL_MOUNTPOINT}${NORMAL}\n\n"
+								FLL_DOMOVEMOUNT="${FLL_MOUNTPOINT} ${FLL_DOMOVEMOUNT}"
+							else
+								panic "${RED}Failed to mount ${YELLOW}${FSTYPE}${RED} filesystem${NORMAL}"
+							fi
 						else
-							panic "${RED}Failed to mount ${YELLOW}${FSTYPE}${RED} filesystem${NORMAL}"
+							panic "${RED}Failed to identify filesystem type of live media image${NORMAL}"
 						fi
 					else
-						panic "${RED}Failed to identify filesystem type of live media image${NORMAL}"
+						##
+						# probe next device, add current mount to FLL_DOUMOUNT stack
+						##
+						FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
 					fi
-				else
-					##
-					# probe next device, add current mount to FLL_DOUMOUNT stack
-					##
-					FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
 				fi
 			fi
-		fi
 		
-		##
-		# umount mount points in FLL_DOUMOUNT stack
-		##
-		for mnt in ${FLL_DOUMOUNT}; do
-			umount "${mnt}" && rmdir "${mnt}"
+			##
+			# umount mount points in FLL_DOUMOUNT stack
+			##
+			for mnt in ${FLL_DOUMOUNT}; do
+				umount "${mnt}" && rmdir "${mnt}"
+			done
+		
+			##
+			# break upon successful mount of live-media
+			##
+			if [ "${FLL_MEDIA_FOUND}" ]; then
+				break 2
+			fi
 		done
-		
-		##
-		# break upon successful mount of live-media
-		##
-		if [ "${FLL_MEDIA_FOUND}" ]; then
-			break
-		fi
+	##
+	# device probe loop failed, wait for new devices and do it again
+	##
 	done
-
-	##
-	# debug checkpoint
-	##
-	maybe_break fll-postmount
 
 	##
 	# panic on failure to detect live media
@@ -520,6 +567,11 @@ mountroot()
 	if [ -z "${FLL_MEDIA_FOUND}" ]; then
 		panic "${RED}Failed to detect live media${NORMAL}"
 	fi
+
+	##
+	# debug checkpoint
+	##
+	maybe_break fll-postmount
 
 	##
 	# mount a tmpfs over $rootmnt, reserving 10% system memory
