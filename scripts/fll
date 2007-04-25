@@ -160,15 +160,36 @@ fll_finger_fstype()
 	return 1
 }
 ###############################################################################
+#	modprobe loop and wait for device node creation
 #	ugly hack to create "missing" /dev/loop{0..7} device nodes
 ###############################################################################
 fll_setup_dev_loop()
 {
 	grep -q ^loop /proc/modules || modprobe "${MODPROBE_OPTIONS}" loop
 	
+	loop_wait="5"
+	loop_ready="no"
+	##
+	# loop around for max of 5 seconds and wait for /dev/loop* device nodes
+	##	
+	while [ "${loop_wait}" -gt 0 ]; do
+		for l in /dev/loop*; do
+			if [ -e "${l}" ]; then
+				loop_ready="yes"
+				break 2
+			fi
+		done
+		/bin/sleep 1
+		loop_wait=$(( ${loop_wait} - 1 ))
+	done
+
+	if [ "${loop_ready}" = "yes" ]; then
+		return 0
+	fi
+
 	for n in 0 1 2 3 4 5 6 7; do
-		[ -e /dev/loop${n} ] || mknod /dev/loop${n} b 7 ${n}
-	done		
+		mknod /dev/loop${n} b 7 ${n}
+	done
 }
 ###############################################################################
 #	generic mount function usage: fll_mount fs src mnt options
