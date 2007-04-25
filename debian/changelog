@@ -2,9 +2,9 @@ fll-live-initramfs (1.0.69) unstable; urgency=low
 
   * Again experiment with numourous bind mounts instead of symlinks. Keep /bin
     and /sbin as anchored symlinks for now.
-  * Hopefully no_static_dev workaround is required for /dev anymore.
+  * Hopefully no_static_dev workaround is not required for /dev anymore.
 
- -- Kel Modderman <kel@otaku42.de>  Wed, 25 Apr 2007 22:51:58 +1000
+ -- Kel Modderman <kel@otaku42.de>  Wed, 25 Apr 2007 22:53:25 +1000
 
 fll-live-initramfs (1.0.68) unstable; urgency=low
 
