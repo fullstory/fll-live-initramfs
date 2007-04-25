@@ -370,7 +370,7 @@ mountroot()
 			##
 			# current list of block devices that may be probed for live media
 			##
-			FLL_BLOCKDEVS_CURRENT=$(fll_finger_blockdevs)
+			FLL_BLOCKDEVS_NOW=$(fll_finger_blockdevs)
 			##
 			# FLL_BLOCKDEVS_OLD accounts for all devices probed so, it appends a copy of FLL_BLOCKDEVS
 			# for every loop
@@ -380,7 +380,7 @@ mountroot()
 				##
 				# compare all devices probed so far with list of devices discovered now
 				##
-				for dev in ${FLL_BLOCKDEVS_CURRENT}; do
+				for dev in ${FLL_BLOCKDEVS_NOW}; do
 					if echo "${FLL_BLOCKDEVS_OLD}" | grep -q "\<${dev}\>"; then
 						##
 						# we have already probed these devices
@@ -401,7 +401,7 @@ mountroot()
 				##
 				# no devices probed so far, probe all that are currently detectable at this time
 				##
-				FLL_BLOCKDEVS="${FLL_BLOCKDEVS_CURRENT}"
+				FLL_BLOCKDEVS="${FLL_BLOCKDEVS_NOW}"
 			fi
 		fi
 	
