@@ -721,25 +721,26 @@ mountroot()
 			##
 			dir="${dir##*/}"
 			case "${dir}" in
-				dev|media|mnt|proc|sys|tmp)
+				media|mnt|proc|sys|tmp)
 					##
-					# these require special care, handled below
+					# these should stay out of the unioned filesystem COW
+					# keep them directly on the ramdisk, they are handled below
 					##
 					continue
 					;;
-				home|root)
+				bin|sbin)
 					##
-					# bind /home and /root to their usual path for cosmetic purposes
+					# symlink crucial segments of PATH. note the leading . to anchor the symlink to
+					# relative dir, tricks run-init into working with our minor link farm (/sbin/init)
 					##
-					mkdir -p "${rootmnt}/${dir}"
-					mount -n -o bind "${rootmnt}${FLL_UNION_MOUNTPOINT}/${dir}" "${rootmnt}/${dir}"
+					ln -sf ".${FLL_UNION_MOUNTPOINT}/${dir}" "${rootmnt}/${dir}"
 					;;
 				*)
 					##
-					# symlink all remaining dirs. note the leading . to anchor the symlink to
-					# relative dir, tricks run-init into working with our minor link farm
+					# bind /home (and everything else) to its usual path for cosmetic purposes
 					##
-					ln -sf ".${FLL_UNION_MOUNTPOINT}/${dir}" "${rootmnt}/${dir}"
+					mkdir -p "${rootmnt}/${dir}"
+					mount -n -o bind "${rootmnt}${FLL_UNION_MOUNTPOINT}/${dir}" "${rootmnt}/${dir}"
 					;;
 			esac
 		fi
@@ -758,13 +759,6 @@ mountroot()
 	# tmp with correct permissions for users
 	##
 	mkdir -p -m 1777 "${rootmnt}/tmp"
-
-	##
-	# prepare /dev
-	# Note: disable movement of static $rootmnt/dev by scripts/init-bottom/udev
-	##
-	mkdir -p -m 0755 "${rootmnt}/dev"
-	export no_static_dev="1"
 
 	##
 	# purge /etc/rc?.d/ for live boot
