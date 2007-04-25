@@ -1,3 +1,12 @@
+fll-live-initramfs (1.0.70) unstable; urgency=low
+
+  * Turn our mknod /dev/loop* device node hack into a panic point and see
+    if/when/who ever hits the case of no loop device nodes again. Keep the 5
+    second device node creation buffer to help avoid racy conditions between
+    modprobe loop, and mount -o loop.
+
+ -- Kel Modderman <kel@otaku42.de>  Wed, 25 Apr 2007 23:20:11 +1000
+
 fll-live-initramfs (1.0.69) unstable; urgency=low
 
   * Again experiment with numourous bind mounts instead of symlinks. Keep /bin
