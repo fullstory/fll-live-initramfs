@@ -712,7 +712,7 @@ mountroot()
 	printf "${GREEN}Preparing live filesystem on ${YELLOW}${rootmnt}${GREEN}...${NORMAL}\n"
 	
 	##
-	# create mount --bind links from $FLL_UNION_MOUNTPOINT/* to /*
+	# create links on $rootmnt to real filesystem
 	##
 	for dir in ${rootmnt}${FLL_MOUNTPOINT}/*; do
 		if [ -d "${dir}" ]; then
@@ -727,12 +727,19 @@ mountroot()
 					##
 					continue
 					;;
-				*)
+				home|root)
 					##
-					# bind all other dirs in the unioned mountpoint to their usual positions
+					# bind /home and /root to their usual path for cosmetic purposes
 					##
 					mkdir -p "${rootmnt}/${dir}"
 					mount -n -o bind "${rootmnt}${FLL_UNION_MOUNTPOINT}/${dir}" "${rootmnt}/${dir}"
+					;;
+				*)
+					##
+					# symlink all remaining dirs. note the leading . to anchor the symlink to
+					# relative dir, tricks run-init into working with our minor link farm
+					##
+					ln -sf ".${FLL_UNION_MOUNTPOINT}/${dir}" "${rootmnt}/${dir}"
 					;;
 			esac
 		fi

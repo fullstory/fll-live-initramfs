@@ -1,3 +1,12 @@
+fll-live-initramfs (1.0.68) unstable; urgency=low
+
+  * Don't mount --bind every dir from $rootmnt to real mountpoint, this
+    would behave poorly on shutdown. Do this only for /home and /root
+    (cosmetically superior) and reinstate relative symlink farm for all
+    remaining dirs.
+
+ -- Kel Modderman <kel@otaku42.de>  Wed, 25 Apr 2007 22:11:24 +1000
+
 fll-live-initramfs (1.0.67) unstable; urgency=low
 
   * DO NOT RELEASE
