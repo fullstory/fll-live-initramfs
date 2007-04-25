@@ -39,8 +39,17 @@ fll_parse_cmdline()
 			fll=debug)
 				set -x
 				;;
-			fromhd=*)
-				FLL_FROMHD="${opt#fromhd=}"
+			fll_interval=*)
+				FLL_MOUNT_INTERVAL="${opt#fll_interval=}"
+				;;
+			fromhd*)
+				FLL_FROMHD="yes"
+				# define dev node
+				case "${opt}" in
+					fromhd=*)
+						FLL_FROMHD_DEV="${opt#fromhd=}"
+						;;
+				esac
 				;;
 			fromiso*)
 				FLL_FROMISO="yes"
@@ -58,9 +67,6 @@ fll_parse_cmdline()
 			image_name=*)
 				FLL_IMAGE_FILE="${opt#image_name=}"
 				FLL_IMAGE_LOCATION="${FLL_IMAGE_DIR}/${FLL_IMAGE_FILE}"
-				;;
-			fll_maxwait=*)
-				FLL_MAXWAIT="${opt#fll_maxwait=}"
 				;;
 			toram)
 				FLL_TORAM="yes"
@@ -137,11 +143,6 @@ fll_finger_fstype()
 	# fstype from klibc-utils
 	eval $(fstype < ${1} 2>/dev/null)
 
-	if ( [ -z "${FSTYPE}" ] || [ "${FSTYPE}" = "unknown" ] ) && \
-		[ -x /lib/udev/vol_id ]; then
-		FSTYPE=$(/lib/udev/vol_id -t ${1} 2>/dev/null)
-	fi
-	
 	if [ "${FSTYPE}" ] && [ "${FSTYPE}" != "unknown" ]; then
 		export FSTYPE
 		export FSSIZE
@@ -198,6 +199,12 @@ fll_mount()
 			else
 				FLL_MOUNT_OPTS="shortname=winnt"
 			fi
+			;;
+		suspend|swap|luks|lvm*)
+			##
+			# filesystem blacklist
+			##
+			return 1
 			;;
 		*)
 			if [ "${#}" -gt 0 ]; then
@@ -292,86 +299,109 @@ mountroot()
 	#	find live-media
 	#######################################################################
 	##
-	# total time in seconds to do device scans for
+	# total time in seconds to do device scans for; rootdelay= on kernel cmdline
+	# upper limit on how long we wait for devices to show up before bailing out
 	##
-	if [ "${MAXWAIT}" ]; then
-		slumber="${FLL_MAXWAIT}"
+	if [ "${ROOTDELAY}" ]; then
+		if [ "${ROOTDELAY}" -gt 0 ]; then
+			slumber="${ROOTDELAY}"
+		fi
 	else
-		slumber="40"
+		slumber="30"
 	fi
 	
 	##
-	# rootdelay= on kernel cmdline
+	# time between device scans; fll_interval= on kernel cmdline
 	##
-	if [ "${ROOTDELAY}" ]; then
+	if [ "${FLL_MOUNT_INTERVAL}" ]; then
 		##
 		# user defined interval between now and initial device scan loop
 		##
-		interval="${ROOTDELAY}"
+		if [ "${FLL_MOUNT_INTERVAL}" -gt 0 ]; then
+			interval="${FLL_MOUNT_INTERVAL}"
+		fi
 	else
 		##
-		# default interval between now and initial device scan loop
+		# default interval between device scan loops
 		##
 		interval="5"
 	fi
 
-	unset FLL_BLOCKDEVS
+	unset FLL_BLOCKDEVS FLL_BLOCKDEVS_OLD FLL_MOUNT_LOOP
 	
 	while [ "${slumber}" -gt 0 ]; do
-		
-		if [ "${interval}" -gt 0 ]; then
-			old_interval="${interval}"
-			printf "${GREEN}Waiting ${YELLOW}${interval}${GREEN}s "
-			printf "${GREEN}(${YELLOW}${slumber}${GREEN}s remaining) "
-			printf "for devices to settle${NORMAL}"
-			while [ "${interval}" -gt 0 ]; do
-				/bin/sleep 1
-				printf "${GREEN}.${NORMAL}"
-				interval=$(( ${interval} - 1 ))
-			done
-			printf "\n\n"
-			interval="${old_interval}"
+		##
+		# sleep time, we skip slumber interval for first pass for extra fast boot
+		##
+		if [ "${FLL_MOUNT_LOOP}" ]; then
+			if [ "${FLL_MOUNT_LOOP}" = 1 ]; then
+				printf "${GREEN}Waiting up to ${YELLOW}${slumber}${GREEN}s for devices to settle...${NORMAL}\n\n"
+			fi
+			/bin/sleep "${interval}"
 			slumber=$(( ${slumber} - ${interval} ))
+		fi
+
+		##
+		# mount loop counter, it enforces sleep interval on next loop
+		##
+		if [ -z "${FLL_MOUNT_LOOP}" ]; then
+			FLL_MOUNT_LOOP=1
 		else
-			##
-			# no interval: one shot loop
-			##
-			slumber="0"
+			FLL_MOUNT_LOOP=$(( ${FLL_MOUNT_LOOP} + 1 ))
 		fi
 		
-		if [ "${FLL_FROMHD}" ]; then
-			FLL_BLOCKDEVS_NEW="${FLL_FROMHD}"
+		##
+		# determine block devices to be probed on this loop
+		##
+		if [ "${FLL_FROMHD_DEV}" ]; then
+			##
+			# user defined block device
+			##
+			FLL_BLOCKDEVS="${FLL_FROMHD_DEV}"
 		else
-			unset FLL_BLOCKDEVS_NEW
 			##
-			# list of block devices to be probed for live media
+			# current list of block devices that may be probed for live media
 			##
-			FLL_BLOCKDEVS_NOW=$(fll_finger_blockdevs)
-
-			if [ "${FLL_BLOCKDEVS}" ]; then
-				if [ "${FLL_BLOCKDEVS_OLD}" ]; then
-					FLL_BLOCKDEVS="${FLL_BLOCKDEVS_OLD} ${FLL_BLOCKDEVS}"
-					unset FLL_BLOCKDEVS_OLD
-				fi
-				for dev in ${FLL_BLOCKDEVS_NOW}; do
-					if echo "${FLL_BLOCKDEVS}" | grep -q "\<${dev}\>"; then
-						FLL_BLOCKDEVS_OLD="${FLL_BLOCKDEVS_OLD} ${dev}"
+			FLL_BLOCKDEVS_CURRENT=$(fll_finger_blockdevs)
+			##
+			# FLL_BLOCKDEVS_OLD accounts for all devices probed so, it appends a copy of FLL_BLOCKDEVS
+			# for every loop
+			# FLL_BLOCKDEVS is always a list of devices that have not been probed so far
+			##
+			if [ "${FLL_BLOCKDEVS_OLD}" ]; then
+				##
+				# compare all devices probed so far with list of devices discovered now
+				##
+				for dev in ${FLL_BLOCKDEVS_CURRENT}; do
+					if echo "${FLL_BLOCKDEVS_OLD}" | grep -q "\<${dev}\>"; then
+						##
+						# we have already probed these devices
+						##
+						:
 					else
-						FLL_BLOCKDEVS_NEW="${FLL_BLOCKDEVS_NEW} ${dev}"
+						##
+						# we have yet to probe these devices
+						##
+						if [ -z "${FLL_BLOCKDEVS}" ]; then
+							FLL_BLOCKDEVS="${dev}"
+						else
+							FLL_BLOCKDEVS="${FLL_BLOCKDEVS} ${dev}"
+						fi
 					fi
 				done
 			else
-				FLL_BLOCKDEVS_NEW="${FLL_BLOCKDEVS_NOW}"
+				##
+				# no devices probed so far, probe all that are currently detectable at this time
+				##
+				FLL_BLOCKDEVS="${FLL_BLOCKDEVS_CURRENT}"
 			fi
 		fi
 	
-		if [ "${FLL_BLOCKDEVS_NEW}" ]; then
-			FLL_BLOCKDEVS="${FLL_BLOCKDEVS_NEW}"
-			printf "${GREEN}Probing devices\t${NORMAL}"
-		else
+		if [ -z "${FLL_BLOCKDEVS}" ]; then
 			continue
 		fi
-	
+		
+		printf "${GREEN}Probing devices\t${NORMAL}"
 		for dev in ${FLL_BLOCKDEVS}; do
 			##
 			# FLL_BLOCKMNT		- tracks current mount point
@@ -556,9 +586,16 @@ mountroot()
 				break 2
 			fi
 		done
-	##
-	# device probe loop failed, wait for new devices and do it again
-	##
+		
+		##
+		# keep account of what devices we have probed so far
+		##
+		if [ "${FLL_BLOCKDEVS_OLD}" ]; then
+			FLL_BLOCKDEVS_OLD="${FLL_BLOCKDEVS_OLD} ${FLL_BLOCKDEVS}"
+		else
+			FLL_BLOCKDEVS_OLD="${FLL_BLOCKDEVS}"
+		fi
+		unset FLL_BLOCKDEVS
 	done
 
 	##
