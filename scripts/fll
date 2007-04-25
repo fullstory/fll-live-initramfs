@@ -52,6 +52,7 @@ fll_parse_cmdline()
 				esac
 				;;
 			fromiso*)
+				FLL_FROMHD="yes"
 				FLL_FROMISO="yes"
 				# define iso name
 				case "${opt}" in
@@ -96,13 +97,20 @@ fll_finger_blockdevs()
 		' /proc/sys/dev/cdrom/info)"
 	fi
 
-	# give priority to cdrom devices, skip them for fromiso
-	if [ "${probed_cdroms}" ] && [ "${FLL_FROMISO}" != "yes" ]; then
+	# give priority to cdrom devices, skip them for fromhd/fromiso
+	if [ "${probed_cdroms}" ] && [ "${FLL_FROMHD}" != "yes" ]; then
 		for cdrom in ${probed_cdroms}; do
 			if [ -b "/dev/${cdrom}" ]; then
 				echo "/dev/${cdrom}"
 			fi
 		done
+	fi
+
+	##
+	# fromhd/fromiso cheatcode required for additional block device detection
+	##
+	if [ "${FLL_FROMHD}" != "yes" ]; then
+		return 0
 	fi
 
 	# generic block device detection
