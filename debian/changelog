@@ -1,11 +1,11 @@
 fll-live-initramfs (1.0.67) unstable; urgency=low
 
   * DO NOT RELEASE
-  * Add timeout loop of 5 seconds after modprobing loop module for device noes
+  * Add timeout loop of 5 seconds after modprobing loop module for device nodes
     to appear in attempt to debug suspected race condition that caused us to
     introduce ugly an mknod hack earlier.
 
- -- Kel Modderman <kel@otaku42.de>  Wed, 25 Apr 2007 21:34:58 +1000
+ -- Kel Modderman <kel@otaku42.de>  Wed, 25 Apr 2007 21:35:24 +1000
 
 fll-live-initramfs (1.0.66) unstable; urgency=low
 
