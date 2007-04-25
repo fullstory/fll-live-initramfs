@@ -691,7 +691,7 @@ mountroot()
 	printf "${GREEN}Preparing live filesystem on ${YELLOW}${rootmnt}${GREEN}...${NORMAL}\n"
 	
 	##
-	# create symlinks on tmpfs'd $rootmnt to ./$FLL_UNION_MOUNTPOINT
+	# create mount --bind links from $FLL_UNION_MOUNTPOINT/* to /*
 	##
 	for dir in ${rootmnt}${FLL_MOUNTPOINT}/*; do
 		if [ -d "${dir}" ]; then
@@ -708,18 +708,17 @@ mountroot()
 					;;
 				*)
 					##
-					# create symlinks to live filesystem mount point
-					# Note: leading . has been added to FLL_MOUNTPOINT or else symlinks
-					# in $rootmnt with absolute path are invalid at run-init time
+					# bind all other dirs in the unioned mountpoint to their usual positions
 					##
-					ln -sf ".${FLL_UNION_MOUNTPOINT}/${dir}" "${rootmnt}/${dir}"
+					mkdir -p "${rootmnt}/${dir}"
+					mount -n -o bind "${rootmnt}${FLL_UNION_MOUNTPOINT}/${dir}" "${rootmnt}/${dir}"
 					;;
 			esac
 		fi
 	done
 
 	##
-	# prepare /home /mnt /proc /sys
+	# prepare /media /mnt /proc /sys
 	##
 	for dir in media mnt proc sys; do
 		if [ ! -e "${rootmnt}/${dir}" ]; then

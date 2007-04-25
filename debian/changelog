@@ -1,11 +1,21 @@
-fll-live-initramfs (1.0.64b) unstable; urgency=low
+fll-live-initramfs (1.0.66) unstable; urgency=low
 
+  * DO NOT RELEASE
+  * Experiment with a mount -o bind farm on $rootmnt instead of minor link
+    farm.
+  * Retroactively fix up previous unreleased changelog entries.
+
+ -- Kel Modderman <kel@otaku42.de>  Wed, 25 Apr 2007 17:05:46 +1000
+
+fll-live-initramfs (1.0.65) unstable; urgency=low
+
+  * DO NOT RELEASE
   * Enforce restriction on probing block devices other than cdrom's,
     fromiso/fromhd cheatcodes are required for that functionality.
 
  -- Kel Modderman <kel@otaku42.de>  Wed, 25 Apr 2007 13:21:34 +1000
 
-fll-live-initramfs (1.0.64a) unstable; urgency=low
+fll-live-initramfs (1.0.64) unstable; urgency=low
 
   * DO NOT RELEASE
   * Add experimental timed loop device probe. We now wait for an interval of
@@ -14,12 +24,6 @@ fll-live-initramfs (1.0.64a) unstable; urgency=low
   * Add filesystem blacklist to fll_mount().
 
  -- Kel Modderman <kel@otaku42.de>  Wed, 25 Apr 2007 12:29:10 +1000
-
-fll-live-initramfs (1.0.64) UNRELEASED; urgency=low
-
-  * NOT RELEASED YET
-
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 23 Apr 2007 19:48:57 +0200
 
 fll-live-initramfs (1.0.63) unstable; urgency=low
 
