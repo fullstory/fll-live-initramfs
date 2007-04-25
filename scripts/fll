@@ -595,6 +595,10 @@ mountroot()
 		else
 			FLL_BLOCKDEVS_OLD="${FLL_BLOCKDEVS}"
 		fi
+		
+		##
+		# clear FLL_BLOCKDEVS list, it is recalculated on next loop
+		##
 		unset FLL_BLOCKDEVS
 	done
 
