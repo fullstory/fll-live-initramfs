@@ -1,3 +1,10 @@
+fll-live-initramfs (1.0.71) unstable; urgency=low
+
+  * Stop with the bind mount/symlink indecision, do that only for /home and
+    /root cosmetics and reinstate /dev special handling.
+
+ -- Kel Modderman <kel@otaku42.de>  Wed, 25 Apr 2007 23:36:40 +1000
+
 fll-live-initramfs (1.0.70) unstable; urgency=low
 
   * Turn our mknod /dev/loop* device node hack into a panic point and see
