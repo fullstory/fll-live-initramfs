@@ -384,7 +384,7 @@ mountroot()
 		#
 		# refresh these for each loop
 		#
-		unset FLL_BLOCKDEVS FLL_BLOCKDEVS_NEW
+		unset FLL_BLOCKDEVS FLL_BLOCKDEVS_NEW FLL_BLOCKDEVS_NOW
 
 		#
 		# sleep time, we skip slumber interval for first pass for extra fast boot
