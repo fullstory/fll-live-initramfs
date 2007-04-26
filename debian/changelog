@@ -2,8 +2,12 @@ fll-live-initramfs (1.0.72) UNRELEASED; urgency=low
 
   * Clean up comment style, no need for these stupid double ## header and
     footer that was being used before.
+  * Make comment style consistent throughout scripts/fll.
+  * Reduce fll_setup_dev_loop, remove unrequired variable fll_ready and return
+    as soon as loop device nodes become available. Keep mknod hack commented
+    out and present for histories sake.
 
- -- Kel Modderman <kel@otaku42.de>  Thu, 26 Apr 2007 11:43:22 +1000
+ -- Kel Modderman <kel@otaku42.de>  Thu, 26 Apr 2007 12:28:43 +1000
 
 fll-live-initramfs (1.0.71) unstable; urgency=low
 

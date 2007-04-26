@@ -86,7 +86,9 @@ fll_parse_cmdline()
 ###############################################################################
 fll_finger_blockdevs()
 {
+	#
 	# cdrom detection via /proc/sys/dev/cdrom/info
+	#
 	if [ -f /proc/sys/dev/cdrom/info ]; then
 		probed_cdroms="$(awk '
 			/name:/ {
@@ -97,7 +99,9 @@ fll_finger_blockdevs()
 		' /proc/sys/dev/cdrom/info)"
 	fi
 
+	#
 	# give priority to cdrom devices, skip them for fromhd/fromiso
+	#
 	if [ "${probed_cdroms}" ] && [ "${FLL_FROMHD}" != "yes" ]; then
 		for cdrom in ${probed_cdroms}; do
 			if [ -b "/dev/${cdrom}" ]; then
@@ -113,18 +117,24 @@ fll_finger_blockdevs()
 		return 0
 	fi
 
+	#
 	# generic block device detection
+	#
 	for dev in /sys/block/*; do
 		dev=${dev#/sys/block/}
 		
 		case "${dev}" in
+			#
 			# skip ram, loop and floppy devices
+			#
 			ram[0-9]*|loop[0-9]*|fd[0-9]*)
 				continue
 				;;
 		esac
 
+		#
 		# skip block devices already detected as cdroms
+		#
 		if [ "${probed_cdroms}" ]; then
 			for cdrom in ${probed_cdroms}; do
 				if [ "${cdrom}" = "${dev}" ]; then
@@ -132,8 +142,10 @@ fll_finger_blockdevs()
 				fi
 			done
 		fi
-
+		
+		#
 		# use shell wildcard to expand subdevices
+		#
 		for subdev in $(echo /dev/${dev}*); do
 			if [ -b "${subdev}" ]; then
 				echo "${subdev}"
@@ -148,7 +160,9 @@ fll_finger_fstype()
 {
 	unset FSTYPE FSSIZE
 	
+	#
 	# fstype from klibc-utils
+	#
 	eval $(fstype < ${1} 2>/dev/null)
 
 	if [ "${FSTYPE}" ] && [ "${FSTYPE}" != "unknown" ]; then
@@ -164,33 +178,28 @@ fll_finger_fstype()
 ###############################################################################
 fll_setup_dev_loop()
 {
+	#
+	# load loop device support
+	#
 	grep -q ^loop /proc/modules || modprobe "${MODPROBE_OPTIONS}" loop
 	
-	loop_wait="5"
-	loop_ready="no"
 	#
 	# loop around for max of 5 seconds and wait for /dev/loop* device nodes
-	#	
+	#
+	loop_wait="10"
+
 	while [ "${loop_wait}" -gt 0 ]; do
 		for l in /dev/loop*; do
 			if [ -e "${l}" ]; then
-				loop_ready="yes"
-				break 2
+				return 0
 			fi
 		done
 		/bin/sleep 1
 		loop_wait=$(( ${loop_wait} - 1 ))
 	done
 
-	if [ "${loop_ready}" = "yes" ]; then
-		return 0
-	fi
-
 	panic "${RED}Unable to setup loop mounted device, no loop device nodes exist${NORMAL}"
-	
-	#
-	# ugly hack to create "missing" /dev/loop{0..7} device nodes
-	#
+
 	#for n in 0 1 2 3 4 5 6 7; do
 	#	mknod /dev/loop${n} b 7 ${n}
 	#done
@@ -205,7 +214,9 @@ fll_mount()
 	DST="${3}"
 	shift 3
 
+	#
 	# default return value of 1, return 0 on successful mount
+	#
 	RETVAL=1
 	
 	case "${FS}" in
@@ -218,7 +229,9 @@ fll_mount()
 			fi
 			;;
 		ntfs)
+			#
 			# uid + gid of 1000: may not be true in some cases
+			#
 			if [ "${#}" -gt 0 ]; then
 				FLL_MOUNT_OPTS="${@},uid=1000,gid=1000"
 			else
@@ -226,7 +239,9 @@ fll_mount()
 			fi
 			;;
 		vfat)
+			#
 			# we need this for FLL_IMAGE on DOS-filesystems
+			#
 			if [ "${#}" -gt 0 ]; then
 				FLL_MOUNT_OPTS="${@},shortname=winnt"
 			else
@@ -246,7 +261,9 @@ fll_mount()
 			;;
 	esac
 
+	#
 	# disable kernel messages while mounting various filesystems
+	#
 	echo "0" > /proc/sys/kernel/printk
 	
 	if [ "${FLL_MOUNT_OPTS}" ]; then
@@ -259,7 +276,9 @@ fll_mount()
 		fi
 	fi
 
+	#
 	# re-enable kernel messages
+	#
 	echo "6" > /proc/sys/kernel/printk
 
 	return "${RETVAL}"
@@ -284,10 +303,14 @@ fll_meminfo()
 ###############################################################################
 mountroot()
 {
+	#
 	# source distro-defaults
+	#
 	. /etc/default/distro
 	
+	#
 	# parse fll option on cmdline
+	#
 	fll_parse_cmdline
 
 	#
