@@ -421,7 +421,7 @@ mountroot()
 		#
 		if [ "${FLL_MOUNT_LOOP}" ]; then
 			if [ "${FLL_MOUNT_LOOP}" = 1 ]; then
-				printf "${GREEN}Waiting up to ${YELLOW}${slumber}${GREEN}s for devices to settle...${NORMAL}\n\n"
+				printf "${GREEN}Waiting up to ${YELLOW}${slumber}${GREEN}s for devices to settle...${NORMAL}\n"
 			fi
 			/bin/sleep "${interval}"
 			slumber=$(( ${slumber} - ${interval} ))
