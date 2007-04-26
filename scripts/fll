@@ -646,16 +646,16 @@ mountroot()
 		#
 		# if we got here, we failed to find live media
 		#
-		if [ "${FLL_BLOCKDEVS}" ]; then
-			#
-			# keep account of what devices we have probed so far
-			#
-			FLL_BLOCKDEVS_OLD="${FLL_BLOCKDEVS_OLD} ${FLL_BLOCKDEVS}"
-			#
-			# start new probe line
-			#
-			printf "\n"
-		fi
+		
+		#
+		# keep account of what devices we have probed so far
+		#
+		FLL_BLOCKDEVS_OLD="${FLL_BLOCKDEVS_OLD} ${FLL_BLOCKDEVS}"
+		
+		#
+		# start new probe line
+		#
+		printf "\n"
 	done
 
 	#
