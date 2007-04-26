@@ -1,4 +1,4 @@
-fll-live-initramfs (1.0.72) UNRELEASED; urgency=low
+fll-live-initramfs (1.0.72) unstable; urgency=low
 
   * Clean up comment style, no need for these stupid double ## header and
     footer that was being used before.
