@@ -284,8 +284,12 @@ fll_mount()
 fll_meminfo()
 {
 	awk '
-		/^MemTotal:/			{ total=$2 }
-		/^(MemFree|Buffers|Cached):/	{ free+=$2 }
+		/^MemTotal:/{
+			total=$2
+		}
+		/^(MemFree|Buffers|Cached):/{
+			free+=$2
+		}
 		END {
 			printf("MEMTOTAL=%d\n",	int(total) / 1024)
 			printf("MEMFREE=%d\n",	int(free) / 1024)
@@ -342,10 +346,11 @@ mountroot()
 	#
 	printf "${GREEN}"
 	awk -F: '
-		/^processor/{ 
+		/^processor/{
 			printf("Processor'${YELLOW}'"$2"'${GREEN}' is\t")
 		}
-		/^model name/{ 
+		/^model name/{
+			gsub(/(\(tm\)|\(R\))/,"",$2)
 			gsub(/[ ]+/," ", $2)
 			printf("'${WHITE}'['${YELLOW}'"$2"'${WHITE}' ] ")
 		}

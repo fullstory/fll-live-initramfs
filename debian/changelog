@@ -19,8 +19,9 @@ fll-live-initramfs (1.0.72) UNRELEASED; urgency=low
     hooks/fll.
   * Introduce var_not_in_var() to identify devices not yet probed. Previous
     detection was not optimal.
+  * Remove (tm) and (R) from cpu model name.
 
- -- Kel Modderman <kel@otaku42.de>  Thu, 26 Apr 2007 21:36:36 +1000
+ -- Kel Modderman <kel@otaku42.de>  Thu, 26 Apr 2007 23:23:23 +1000
 
 fll-live-initramfs (1.0.71) unstable; urgency=low
 
