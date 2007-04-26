@@ -417,9 +417,9 @@ mountroot()
 			#
 			FLL_BLOCKDEVS_NOW=$(fll_finger_blockdevs)
 			#
-			# FLL_BLOCKDEVS_OLD accounts for all devices probed so, it appends a copy of FLL_BLOCKDEVS
-			# for every loop
-			# FLL_BLOCKDEVS is always a list of devices that have not been probed so far
+			# FLL_BLOCKDEVS_OLD accounts for all devices probed so, it appends a copy of
+			# FLL_BLOCKDEVS for every loop new devices are found
+			# FLL_BLOCKDEVS is always a list of new devices that have not been probed so far
 			#
 			if [ "${FLL_BLOCKDEVS_OLD}" ]; then
 				#
@@ -762,7 +762,8 @@ mountroot()
 				*)
 					#
 					# symlink everything else. note the leading . to anchor the symlink to
-					# relative dir, tricks run-init into working with our minor link farm (/sbin/init)
+					# relative dir, tricks run-init into working with our minor link farm
+					# /sbin/init -> ./FLL_UNION_MOUNTPOINT/sbin/init
 					#
 					ln -sf ".${FLL_UNION_MOUNTPOINT}/${dir}" "${rootmnt}/${dir}"
 					;;
