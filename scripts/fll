@@ -520,7 +520,7 @@ mountroot()
 					# probe for iso image
 					#
 					if [ "${FLL_FROMISO}" = "yes" ]; then
-						if [ -f "${FLL_BLOCKMNT}/${FLL_MEDIA_NAME}" ]; then
+						if [ -f "${FLL_BLOCKMNT}/${FLL_MEDIA_NAME#/}" ]; then
 							#
 							# located iso, update dev description
 							#
