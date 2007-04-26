@@ -1,3 +1,9 @@
+fll-live-initramfs (1.0.73) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 26 Apr 2007 17:53:36 +0200
+
 fll-live-initramfs (1.0.72) unstable; urgency=low
 
   * Clean up comment style, no need for these stupid double ## header and
