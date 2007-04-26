@@ -14,8 +14,11 @@ fll-live-initramfs (1.0.72) UNRELEASED; urgency=low
     new devices that exist now, but not on previous loop.
   * Expand cpuinfo awk parser over more lines. Chomp excess whitespace from
     cpu name.
+  * Replace fstype fallback of vol_id. klibc's fstype does a lousy job of
+    identifying M$ filesystems. Ensure it is in initramfs with a copy_exec in
+    hooks/fll.
 
- -- Kel Modderman <kel@otaku42.de>  Thu, 26 Apr 2007 17:11:34 +1000
+ -- Kel Modderman <kel@otaku42.de>  Thu, 26 Apr 2007 21:18:32 +1000
 
 fll-live-initramfs (1.0.71) unstable; urgency=low
 
