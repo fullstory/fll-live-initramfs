@@ -376,7 +376,7 @@ mountroot()
 	fi
 
 	#
-	# these variables are creating during $slumber time loop
+	# these variables are created during $slumber time loop
 	#
 	unset FLL_BLOCKDEVS_OLD FLL_MOUNT_LOOP
 	
