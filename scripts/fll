@@ -323,11 +323,22 @@ mountroot()
 	#
 	printf "${GREEN}"
 	awk -F: '
-		/^processor/	{ printf("Processor'${YELLOW}'"$2"'${GREEN}' is\t")	}
-		/^model name/	{ printf("'${WHITE}'['${YELLOW}'"$2"'${WHITE}' ] ")	}
-		/^cpu MHz/	{ printf("[ '${YELLOW}'%d MHz'${WHITE}' ] ", int($2))	}
-		/^cache size/	{ printf("['${YELLOW}'"$2" Cache'${WHITE}' ]")		}
-		/^$/		{ printf("\n'${GREEN}'")				}
+		/^processor/{ 
+			printf("Processor'${YELLOW}'"$2"'${GREEN}' is\t")
+		}
+		/^model name/{ 
+			gsub(/[ ]+/," ", $2)
+			printf("'${WHITE}'['${YELLOW}'"$2"'${WHITE}' ] ")
+		}
+		/^cpu MHz/{
+			printf("[ '${YELLOW}'%d MHz'${WHITE}' ] ", int($2))
+		}
+		/^cache size/{
+			printf("['${YELLOW}'"$2" Cache'${WHITE}' ]")
+		}
+		/^$/{
+			printf("\n'${GREEN}'")
+		}
 	' /proc/cpuinfo
 	printf "${NORMAL}\n"
 

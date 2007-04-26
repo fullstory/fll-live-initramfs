@@ -12,8 +12,10 @@ fll-live-initramfs (1.0.72) UNRELEASED; urgency=low
   * Clear FLL_BLOCKDEVS at top of each loop.
   * Introduce new FLL_BLOCKDEVS_NEW variable that acts as a transient list of
     new devices that exist now, but not on previous loop.
+  * Expand cpuinfo awk parser over more lines. Chomp excess whitespace from
+    cpu name.
 
- -- Kel Modderman <kel@otaku42.de>  Thu, 26 Apr 2007 15:50:19 +1000
+ -- Kel Modderman <kel@otaku42.de>  Thu, 26 Apr 2007 17:11:34 +1000
 
 fll-live-initramfs (1.0.71) unstable; urgency=low
 
