@@ -17,8 +17,10 @@ fll-live-initramfs (1.0.72) UNRELEASED; urgency=low
   * Replace fstype fallback of vol_id. klibc's fstype does a lousy job of
     identifying M$ filesystems. Ensure it is in initramfs with a copy_exec in
     hooks/fll.
+  * Introduce var_not_in_var() to identify devices not yet probed. Previous
+    detection was not optimal.
 
- -- Kel Modderman <kel@otaku42.de>  Thu, 26 Apr 2007 21:18:32 +1000
+ -- Kel Modderman <kel@otaku42.de>  Thu, 26 Apr 2007 21:36:36 +1000
 
 fll-live-initramfs (1.0.71) unstable; urgency=low
 

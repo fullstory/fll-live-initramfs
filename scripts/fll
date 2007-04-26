@@ -191,16 +191,16 @@ fll_setup_dev_loop()
 	#
 	# loop around for max of 5 seconds and wait for /dev/loop* device nodes
 	#
-	loop_wait="10"
+	LOOP_WAIT="10"
 
-	while [ "${loop_wait}" -gt 0 ]; do
+	while [ "${LOOP_WAIT}" -gt 0 ]; do
 		for l in /dev/loop*; do
 			if [ -e "${l}" ]; then
 				return 0
 			fi
 		done
 		/bin/sleep 1
-		loop_wait=$(( ${loop_wait} - 1 ))
+		LOOP_WAIT=$(( ${LOOP_WAIT} - 1 ))
 	done
 
 	panic "${RED}Unable to setup loop mounted device, no loop device nodes exist${NORMAL}"
@@ -292,6 +292,20 @@ fll_meminfo()
 			printf("MEMUSED=%d\n",	(int(total) - int(free)) / 1024)
 		}
 	' /proc/meminfo
+}
+###############################################################################
+#	Utility function to help with identifying devices not yet probed
+###############################################################################
+var_not_in_var()
+{
+	VAR="${1}"
+	shift
+
+	for var in ${@}; do
+		[ "${VAR}" = "${var}" ] && return 1
+	done
+
+	return 0
 }
 ###############################################################################
 # 	define mountroot() for init
@@ -400,7 +414,7 @@ mountroot()
 		#
 		# refresh these for each loop
 		#
-		unset FLL_BLOCKDEVS FLL_BLOCKDEVS_NEW FLL_BLOCKDEVS_NOW
+		unset FLL_BLOCKDEVS FLL_BLOCKDEVS_NOW
 
 		#
 		# sleep time, we skip slumber interval for first pass for extra fast boot
@@ -445,22 +459,17 @@ mountroot()
 				# compare all devices probed so far with list of devices discovered now
 				#
 				for dev in ${FLL_BLOCKDEVS_NOW}; do
-					if echo "${FLL_BLOCKDEVS_OLD}" | grep -q "\<${dev}\>"; then
+					if var_not_in_var ${dev} ${FLL_BLOCKDEVS_OLD}; then
 						#
-						# we have already probed these devices
+						# we have not yet probed these devices
 						#
-						:
-					else
-						#
-						# we have yet to probe these devices
-						#
-						FLL_BLOCKDEVS_NEW="${FLL_BLOCKDEVS_NEW} ${dev}"
+						if [ -z "${FLL_BLOCKDEVS}" ]; then
+							FLL_BLOCKDEVS="${dev}"
+						else
+							FLL_BLOCKDEVS="${FLL_BLOCKDEVS} ${dev}"
+						fi
 					fi
 				done
-
-				if [ "${FLL_BLOCKDEVS_NEW}" ]; then
-					FLL_BLOCKDEVS="${FLL_BLOCKDEVS_NEW}"
-				fi
 			else
 				#
 				# no devices probed so far, probe all that are currently detectable at this time
@@ -666,7 +675,11 @@ mountroot()
 		#
 		# keep account of what devices we have probed so far
 		#
-		FLL_BLOCKDEVS_OLD="${FLL_BLOCKDEVS_OLD} ${FLL_BLOCKDEVS}"
+		if [ -z "${FLL_BLOCKDEVS_OLD}" ]; then
+			FLL_BLOCKDEVS_OLD="${FLL_BLOCKDEVS}"
+		else
+			FLL_BLOCKDEVS_OLD="${FLL_BLOCKDEVS_OLD} ${FLL_BLOCKDEVS}"
+		fi
 		
 		#
 		# start new probe line
