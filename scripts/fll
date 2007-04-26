@@ -784,9 +784,9 @@ mountroot()
 					#
 					continue
 					;;
-				home|root)
+				home)
 					#
-					# bind /home and /root to its usual path for cosmetic purposes
+					# bind /home to its usual path for cosmetic purposes
 					#
 					mkdir -p "${rootmnt}/${dir}"
 					mount -n -o bind "${rootmnt}${FLL_UNION_MOUNTPOINT}/${dir}" "${rootmnt}/${dir}"
