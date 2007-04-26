@@ -261,11 +261,6 @@ fll_mount()
 			;;
 	esac
 
-	#
-	# disable kernel messages while mounting various filesystems
-	#
-	echo "0" > /proc/sys/kernel/printk
-	
 	if [ "${FLL_MOUNT_OPTS}" ]; then
 		if mount -t ${FS} -o ${FLL_MOUNT_OPTS} ${SRC} ${DST} >/dev/null 2>&1; then
 			RETVAL=0
@@ -275,11 +270,6 @@ fll_mount()
 			RETVAL=0
 		fi
 	fi
-
-	#
-	# re-enable kernel messages
-	#
-	echo "6" > /proc/sys/kernel/printk
 
 	return "${RETVAL}"
 }
@@ -303,6 +293,11 @@ fll_meminfo()
 ###############################################################################
 mountroot()
 {
+	#
+	# disable kernel messages while mounting various filesystems
+	#
+	echo "0" > /proc/sys/kernel/printk
+	
 	#
 	# source distro-defaults
 	#
@@ -380,9 +375,17 @@ mountroot()
 		interval="5"
 	fi
 
-	unset FLL_BLOCKDEVS FLL_BLOCKDEVS_OLD FLL_MOUNT_LOOP
+	#
+	# these variables are creating during $slumber time loop
+	#
+	unset FLL_BLOCKDEVS_OLD FLL_MOUNT_LOOP
 	
 	while [ "${slumber}" -gt 0 ]; do
+		#
+		# refresh these for each loop
+		#
+		unset FLL_BLOCKDEVS FLL_BLOCKDEVS_NEW
+
 		#
 		# sleep time, we skip slumber interval for first pass for extra fast boot
 		#
@@ -435,13 +438,13 @@ mountroot()
 						#
 						# we have yet to probe these devices
 						#
-						if [ -z "${FLL_BLOCKDEVS}" ]; then
-							FLL_BLOCKDEVS="${dev}"
-						else
-							FLL_BLOCKDEVS="${FLL_BLOCKDEVS} ${dev}"
-						fi
+						FLL_BLOCKDEVS_NEW="${FLL_BLOCKDEVS_NEW} ${dev}"
 					fi
 				done
+
+				if [ "${FLL_BLOCKDEVS_NEW}" ]; then
+					FLL_BLOCKDEVS="${FLL_BLOCKDEVS_NEW}"
+				fi
 			else
 				#
 				# no devices probed so far, probe all that are currently detectable at this time
@@ -639,20 +642,20 @@ mountroot()
 				break 2
 			fi
 		done
-		
+
 		#
-		# keep account of what devices we have probed so far
+		# if we got here, we failed to find live media
 		#
-		if [ "${FLL_BLOCKDEVS_OLD}" ]; then
+		if [ "${FLL_BLOCKDEVS}" ]; then
+			#
+			# keep account of what devices we have probed so far
+			#
 			FLL_BLOCKDEVS_OLD="${FLL_BLOCKDEVS_OLD} ${FLL_BLOCKDEVS}"
-		else
-			FLL_BLOCKDEVS_OLD="${FLL_BLOCKDEVS}"
+			#
+			# start new probe line
+			#
+			printf "\n"
 		fi
-		
-		#
-		# clear FLL_BLOCKDEVS list, it is recalculated on next loop
-		#
-		unset FLL_BLOCKDEVS
 	done
 
 	#
@@ -814,5 +817,11 @@ mountroot()
 	maybe_break fll-bottom
 
 	printf "\n${GREEN}Starting init process...${NORMAL}\n\n"
+
+	
+	#
+	# re-enable kernel messages
+	#
+	echo "6" > /proc/sys/kernel/printk
 }
 ###############################################################################
