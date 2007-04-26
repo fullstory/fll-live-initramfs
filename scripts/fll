@@ -775,7 +775,7 @@ mountroot()
 			#
 			# strip path
 			#
-			dir="${dir#*/}"
+			dir="${dir##*/}"
 			case "${dir}" in
 				dev|media|mnt|proc|sys|tmp)
 					#
