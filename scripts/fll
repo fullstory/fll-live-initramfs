@@ -350,7 +350,7 @@ mountroot()
 			printf("Processor'${YELLOW}'"$2"'${GREEN}' is\t")
 		}
 		/^model name/{
-			gsub(/(\(tm\)|\(R\))/,"",$2)
+			gsub(/(\([Tt][Mm]\)|\([Rr]\))/,"",$2)
 			gsub(/[ ]+/," ",$2)
 			printf("'${WHITE}'['${YELLOW}'"$2"'${WHITE}' ] ")
 		}
