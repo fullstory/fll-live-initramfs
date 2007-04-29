@@ -14,11 +14,3 @@ Description: fll live media initramfs glue
  generate an early userspace filesystem suitable for booting the live
  media of the F.U.L.L.S.T.O.R.Y project.
 
-Package: live-initrd-sidux
-Architecture: all
-Depends: fll-live-initramfs
-Description: dummy package for fll-live-initramfs transition
- This package is a dummy package that depends on fll-live-initramfs.
- .
- It may be removed once fll-live-initramfs is feature complete, and fll-builder
- has been adjusted to use it.

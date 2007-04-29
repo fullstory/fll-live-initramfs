@@ -1,10 +1,14 @@
-fll-live-initramfs (1.0.73) UNRELEASED; urgency=low
+fll-live-initramfs (1.0.73) unstable; urgency=low
 
+  [ Kel Modderman ]
   * Ban more commercialisms in cpu name string.
   * Provide means of falling back to aufs union support, in the event that it
     was not mentioned on cmdline.
 
- -- Kel Modderman <kel@otaku42.de>  Sun, 29 Apr 2007 21:27:55 +1000
+  [ Stefan Lippers-Hollmann ]
+  * remove live-initrd-sidux dummy package.
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 29 Apr 2007 13:51:51 +0200
 
 fll-live-initramfs (1.0.72) unstable; urgency=low
 
