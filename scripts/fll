@@ -73,9 +73,7 @@ fll_parse_cmdline()
 				FLL_TORAM="yes"
 				;;
 			unionfs|aufs)
-				if modprobe "${MODPROBE_OPTIONS}" "${opt}"; then
-					FLL_UNION_MODULE="${opt}"
-				fi
+				FLL_UNION_MODULE="${opt}"
 				;;
 		esac
 	done
@@ -736,38 +734,41 @@ mountroot()
 		panic "${RED}Failed to find ${YELLOW}${FLL_MOUNTPOINT}${GREEN} on ${YELLOW}${rootmnt}${NORMAL}"
 	fi
 
+	if [ -z "${FLL_UNION_MODULE}" ]; then
+		FLL_UNION_MODULE="aufs"
+	fi
+
+	if modprobe "${MODPROBE_OPTIONS}" "${FLL_UNION_MODULE}"; then
+		: # union filesystem support
+	else
+		panic "${RED}Failed to load union filesystem support: ${YELLOW}${FLL_UNION_MODULE}${NORMAL}"
+	fi
+
 	#
 	# prepare COW union filesystem
 	#
-	if [ "${FLL_UNION_MODULE}" ]; then
-		FLL_UNION_MOUNTPOINT="/UNIONFS"
-		FLL_UNION_COWDIR="/COW"
-		mkdir -p "${rootmnt}${FLL_UNION_MOUNTPOINT}" "${rootmnt}${FLL_UNION_COWDIR}"
-		#
-		# union module specific options
-		#
-		case "${FLL_UNION_MODULE}" in
-			aufs)
-				FLL_UNION_OPTIONS="br:${rootmnt}${FLL_UNION_COWDIR}:${rootmnt}${FLL_MOUNTPOINT}"
-				;;
-			unionfs)
-				FLL_UNION_OPTIONS="dirs=${rootmnt}${FLL_UNION_COWDIR}=rw:${rootmnt}${FLL_MOUNTPOINT}=ro"
-				;;
-		esac
-		#
-		# mount the union COW filesystem
-		#
-		printf "${GREEN}Mounting ${YELLOW}${FLL_UNION_MODULE}${GREEN} union filesystem...${NORMAL}"
-		if mount -t "${FLL_UNION_MODULE}" -o "${FLL_UNION_OPTIONS}" "${FLL_UNION_MODULE}" "${rootmnt}${FLL_UNION_MOUNTPOINT}"; then
-			printf "\n"
-		else
-			panic "${RED}Failed to prepare ${YELLOW}${FLL_UNION_MODULE}${RED} union filesystem${NORMAL}"
-		fi
+	FLL_UNION_MOUNTPOINT="/UNIONFS"
+	FLL_UNION_COWDIR="/COW"
+	mkdir -p "${rootmnt}${FLL_UNION_MOUNTPOINT}" "${rootmnt}${FLL_UNION_COWDIR}"
+	#
+	# union module specific options
+	#
+	case "${FLL_UNION_MODULE}" in
+		aufs)
+			FLL_UNION_OPTIONS="br:${rootmnt}${FLL_UNION_COWDIR}:${rootmnt}${FLL_MOUNTPOINT}"
+			;;
+		unionfs)
+			FLL_UNION_OPTIONS="dirs=${rootmnt}${FLL_UNION_COWDIR}=rw:${rootmnt}${FLL_MOUNTPOINT}=ro"
+			;;
+	esac
+	#
+	# mount the union COW filesystem
+	#
+	printf "${GREEN}Mounting ${YELLOW}${FLL_UNION_MODULE}${GREEN} union filesystem...${NORMAL}"
+	if mount -t "${FLL_UNION_MODULE}" -o "${FLL_UNION_OPTIONS}" "${FLL_UNION_MODULE}" "${rootmnt}${FLL_UNION_MOUNTPOINT}"; then
+		printf "\n"
 	else
-		#
-		# a unionless link farm could be staged here, currently not supported
-		#
-		panic "${RED}Live mode without union filesystem not supported${NORMAL}"
+		panic "${RED}Failed to prepare ${YELLOW}${FLL_UNION_MODULE}${RED} union filesystem${NORMAL}"
 	fi
 
 	printf "${GREEN}Preparing live filesystem on ${YELLOW}${rootmnt}${GREEN}...${NORMAL}\n"
