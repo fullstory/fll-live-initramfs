@@ -776,7 +776,7 @@ mountroot()
 	#
 	# create links on $rootmnt to real filesystem
 	#
-	for dir in ${rootmnt}${FLL_MOUNTPOINT}/*; do
+	for dir in ${rootmnt}${FLL_UNION_MOUNTPOINT}/*; do
 		if [ -d "${dir}" ]; then
 			#
 			# strip path
