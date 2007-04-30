@@ -804,6 +804,11 @@ mountroot()
 					# /sbin/init -> ./FLL_UNION_MOUNTPOINT/sbin/init
 					#
 					ln -sf ".${FLL_UNION_MOUNTPOINT}/${dir}" "${rootmnt}/${dir}"
+					#
+					# we *could* use bind mounts here (like for /home), it would make for a
+					# much busier /proc/mounts but perhaps make the system feel a bit more
+					# realistic and robust
+					#
 					;;
 			esac
 		fi
