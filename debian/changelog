@@ -1,4 +1,4 @@
-fll-live-initramfs (1.0.77) UNRELEASED; urgency=low
+fll-live-initramfs (1.0.77) unstable; urgency=low
 
   * Fix toram handling once again:
     - don't update FLL_BLOCKMNT location until previous location has been
