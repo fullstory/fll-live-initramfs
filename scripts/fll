@@ -610,8 +610,9 @@ mountroot()
 										#
 										# add old mnt pnt to umount stack, update FLL_BLOCKMNT and dev
 										#
-										FLL_BLOCKMNT="/mnt/fll/toram"
 										FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
+										FLL_BLOCKMNT="/mnt/fll/toram"
+										FLL_DOMOVEMOUNT="${FLL_BLOCKMNT} ${FLL_DOMOVEMOUNT}"
 										dev="ram"
 										printf "${GREEN}done${NORMAL}\n"
 									else

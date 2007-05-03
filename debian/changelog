@@ -1,8 +1,11 @@
 fll-live-initramfs (1.0.77) UNRELEASED; urgency=low
 
-  * NOT RELEASED YET
+  * Fix toram handling once again:
+    - don't update FLL_BLOCKMNT location until previous location has been
+      added to FLL_DOUMOUNT stack
+    - update FLL_DOMOVEMOUNT after FLL_BLOCKMNT location has been updated
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 03 May 2007 23:35:06 +0200
+ -- Kel Modderman <kel@otaku42.de>  Fri, 04 May 2007 07:55:34 +1000
 
 fll-live-initramfs (1.0.76) unstable; urgency=low
 
