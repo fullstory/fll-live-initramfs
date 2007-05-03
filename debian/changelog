@@ -1,3 +1,9 @@
+fll-live-initramfs (1.0.76) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 03 May 2007 14:56:59 +0200
+
 fll-live-initramfs (1.0.75) unstable; urgency=low
 
   * Mount all fll related stuff under /mnt/fll/*.
