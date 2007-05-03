@@ -1,3 +1,9 @@
+fll-live-initramfs (1.0.78) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 04 May 2007 00:01:42 +0200
+
 fll-live-initramfs (1.0.77) unstable; urgency=low
 
   * Fix toram handling once again:
