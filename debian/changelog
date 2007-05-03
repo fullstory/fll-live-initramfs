@@ -1,8 +1,9 @@
 fll-live-initramfs (1.0.75) UNRELEASED; urgency=low
 
-  * NOT RELEASED YET
+  * Mount all fll related stuff under /mnt/fll/*.
+  * Put toram contents on tmpfs in /mnt/fll/toram/*.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 01 May 2007 01:57:15 +0200
+ -- Kel Modderman <kel@otaku42.de>  Thu, 03 May 2007 22:41:45 +1000
 
 fll-live-initramfs (1.0.74) unstable; urgency=low
 

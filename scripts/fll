@@ -509,7 +509,7 @@ mountroot()
 				#
 				# we have determined FSTYPE of the device, set FLL_BLOCKMNT
 				#
-				FLL_BLOCKMNT="/mnt/${dev#/dev/}"
+				FLL_BLOCKMNT="/mnt/fll/${dev#/dev/}"
 				mkdir -p "${FLL_BLOCKMNT}"
 				#
 				# mount block device on FLL_BLOCKMNT for probe
@@ -535,11 +535,11 @@ mountroot()
 								if [ "${FSTYPE}" != "iso9660" ]; then
 									panic "${YELLOW}${FLL_MEDIA_NAME}${RED} not an iso9660 filesystem${NORMAL}"
 								fi
-								mkdir -p /mnt/fromiso
+								mkdir -p /mnt/fll/fromiso
 								#
 								# loop mount iso on FLL_MEDIA_MOUNTPOINT
 								#	
-								if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_MEDIA_NAME}" /mnt/fromiso; then
+								if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_MEDIA_NAME}" /mnt/fll/fromiso; then
 									if [ "${FLL_TORAM}" ]; then
 										#
 										# add block device mount point to umount stack
@@ -549,7 +549,7 @@ mountroot()
 									#
 									# update FLL_BLOCKMNT, FLL_DOMOVEMOUNT stack, and dev description
 									#
-									FLL_BLOCKMNT="/mnt/fromiso"
+									FLL_BLOCKMNT="/mnt/fll/fromiso"
 									FLL_DOMOVEMOUNT="${FLL_BLOCKMNT} ${FLL_DOMOVEMOUNT}"
 									dev="iso"
 								else
@@ -598,19 +598,19 @@ mountroot()
 									#
 									# prepare tmpfs, aka ramdisk
 									#
-									mkdir -p "/dev/shm/${FLL_IMAGE_DIR}"
-									mount -n -t tmpfs -o size="${FLL_TORAM_FSSIZE}m" tmpfs "/dev/shm/${FLL_IMAGE_DIR}"
+									mkdir -p "/mnt/fll/toram/${FLL_IMAGE_DIR}"
+									mount -n -t tmpfs -o size="${FLL_TORAM_FSSIZE}m" tmpfs "/mnt/fll/toram/${FLL_IMAGE_DIR}"
 									#
 									# copy compressed filesystem to tmpfs
 									#
 									printf "${GREEN}Copying live filesystem from ${YELLOW}${dev}${GREEN} "
 									printf "to ${YELLOW}ram${GREEN}, please be patient...${NORMAL}"
-									if cp "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "/dev/shm/${FLL_IMAGE_DIR}"; then
+									if cp "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "/mnt/fll/toram/${FLL_IMAGE_DIR}"; then
 										#
 										# add old mnt pnt to umount stack, update FLL_BLOCKMNT and dev
 										#
+										FLL_BLOCKMNT="/mnt/fll/toram/${FLL_IMAGE_DIR}"
 										FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
-										FLL_BLOCKMNT="/dev/shm"
 										dev="ram"
 										printf "${GREEN}done${NORMAL}\n"
 									else
@@ -792,7 +792,7 @@ mountroot()
 					;;
 				home)
 					#
-					# bind /home to its usual path for cosmetic purposes
+					# bind /home dir to its "usual" path for cosmetic purposes
 					#
 					mkdir -p "${rootmnt}/${dir}"
 					mount -n -o bind "${rootmnt}${FLL_UNION_MOUNTPOINT}/${dir}" "${rootmnt}/${dir}"
@@ -804,11 +804,6 @@ mountroot()
 					# /sbin/init -> ./FLL_UNION_MOUNTPOINT/sbin/init
 					#
 					ln -sf ".${FLL_UNION_MOUNTPOINT}/${dir}" "${rootmnt}/${dir}"
-					#
-					# we *could* use bind mounts here (like for /home), it would make for a
-					# much busier /proc/mounts but perhaps make the system feel a bit more
-					# realistic and robust
-					#
 					;;
 			esac
 		fi
