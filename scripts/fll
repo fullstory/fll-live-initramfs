@@ -598,8 +598,9 @@ mountroot()
 									#
 									# prepare tmpfs, aka ramdisk
 									#
+									mkdir -p "/mnt/fll/toram"
+									mount -n -t tmpfs -o size="${FLL_TORAM_FSSIZE}m" tmpfs "/mnt/fll/toram"
 									mkdir -p "/mnt/fll/toram/${FLL_IMAGE_DIR}"
-									mount -n -t tmpfs -o size="${FLL_TORAM_FSSIZE}m" tmpfs "/mnt/fll/toram/${FLL_IMAGE_DIR}"
 									#
 									# copy compressed filesystem to tmpfs
 									#
@@ -609,7 +610,7 @@ mountroot()
 										#
 										# add old mnt pnt to umount stack, update FLL_BLOCKMNT and dev
 										#
-										FLL_BLOCKMNT="/mnt/fll/toram/${FLL_IMAGE_DIR}"
+										FLL_BLOCKMNT="/mnt/fll/toram"
 										FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
 										dev="ram"
 										printf "${GREEN}done${NORMAL}\n"
