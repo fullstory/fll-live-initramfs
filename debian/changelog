@@ -1,4 +1,4 @@
-fll-live-initramfs (1.0.75) UNRELEASED; urgency=low
+fll-live-initramfs (1.0.75) unstable; urgency=low
 
   * Mount all fll related stuff under /mnt/fll/*.
   * Put toram contents on tmpfs in /mnt/fll/toram/*.
