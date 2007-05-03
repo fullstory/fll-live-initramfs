@@ -1,3 +1,9 @@
+fll-live-initramfs (1.0.77) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 03 May 2007 23:35:06 +0200
+
 fll-live-initramfs (1.0.76) unstable; urgency=low
 
   * Fix toram mountpoint location handling.
