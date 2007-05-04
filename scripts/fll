@@ -779,36 +779,46 @@ mountroot()
 	# create links on $rootmnt to real filesystem
 	#
 	for dir in ${rootmnt}${FLL_UNION_MOUNTPOINT}/*; do
-		if [ -d "${dir}" ]; then
-			#
-			# strip path
-			#
-			dir="${dir##*/}"
-			case "${dir}" in
-				dev|media|mnt|proc|sys|tmp)
-					#
-					# these should stay out of the unioned filesystem mount point
-					# keep them directly on the ramdisk, they are handled below
-					#
-					continue
-					;;
-				home)
-					#
-					# bind /home dir to its "usual" path for cosmetic purposes
-					#
-					mkdir -p "${rootmnt}/${dir}"
-					mount -n -o bind "${rootmnt}${FLL_UNION_MOUNTPOINT}/${dir}" "${rootmnt}/${dir}"
-					;;
-				*)
-					#
-					# symlink everything else. note the leading . to anchor the symlink to
-					# relative dir, tricks run-init into working with our minor link farm
-					# /sbin/init -> ./FLL_UNION_MOUNTPOINT/sbin/init
-					#
-					ln -sf ".${FLL_UNION_MOUNTPOINT}/${dir}" "${rootmnt}/${dir}"
-					;;
-			esac
+		if [ ! -e "${dir}" ]; then
+			continue
 		fi
+		case "${dir##*/}" in
+			dev|media|mnt|proc|sys|tmp)
+				#
+				# these should stay out of the unioned filesystem mount point
+				# keep them directly on the ramdisk, they are handled below
+				#
+				continue
+				;;
+			home)
+				mkdir -p "${rootmnt}/${dir##*/}"
+				mount -n -o bind "${dir}" "${rootmnt}/${dir##*/}"
+				;;
+			*)
+				#
+				# symlink everything else. note the leading . to anchor the symlink to
+				# relative dir, tricks run-init into working with our minor link farm
+				# /sbin/init -> ./FLL_UNION_MOUNTPOINT/sbin/init
+				#
+				ln -sf ".${FLL_UNION_MOUNTPOINT}/${dir##*/}" "${rootmnt}/${dir##*/}"
+				#
+				# below approach works, but is memory inefficient: each write is done twice to memory
+				# once in union COW, once on bind mount target (which is dir on tmpfs)
+				#
+				#if [ -L "${dir}" ] && [ -d "${dir}" ]; then
+				#	#
+				#	# /lib64 -> /lib symlink handling
+				#	#
+				#	ln -sf "$(readlink -f ${dir})" "${rootmnt}/${dir##*/}"
+				#elif [ -d "${dir}" ]; then
+				#	#
+				#	# bind mount all dirs to their "usual" location for comsetics
+				#	#
+				#	mkdir -p "${rootmnt}/${dir##*/}"
+				#	mount -n -o bind "${dir}" "${rootmnt}/${dir##*/}"
+				#fi
+				;;
+		esac
 	done
 
 	#
