@@ -1,9 +1,10 @@
-fll-live-initramfs (1.0.78) UNRELEASED; urgency=low
+fll-live-initramfs (1.0.78) unstable; urgency=low
 
-  * DO NOT RELEASE!
-  * Round 3 at attempted substitution of minor link farm with bind mounts.
+  * Home cannot be both bind mounted to a tmpfs, and part of the unioned
+    filesystem who's /COW is also on a tmpfs -> two writes to tmpfs for every
+    write to /home -> extremely memory inefficient.
 
- -- Kel Modderman <kel@otaku42.de>  Fri, 04 May 2007 10:06:27 +1000
+ -- Kel Modderman <kel@otaku42.de>  Sat, 05 May 2007 08:00:51 +1000
 
 fll-live-initramfs (1.0.77) unstable; urgency=low
 
