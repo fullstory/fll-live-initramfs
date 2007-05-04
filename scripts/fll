@@ -509,7 +509,7 @@ mountroot()
 				#
 				# we have determined FSTYPE of the device, set FLL_BLOCKMNT
 				#
-				FLL_BLOCKMNT="/mnt/fll/${dev#/dev/}"
+				FLL_BLOCKMNT="/fll/${dev#/dev/}"
 				mkdir -p "${FLL_BLOCKMNT}"
 				#
 				# mount block device on FLL_BLOCKMNT for probe
@@ -535,11 +535,11 @@ mountroot()
 								if [ "${FSTYPE}" != "iso9660" ]; then
 									panic "${YELLOW}${FLL_MEDIA_NAME}${RED} not an iso9660 filesystem${NORMAL}"
 								fi
-								mkdir -p /mnt/fll/fromiso
+								mkdir -p /fll/fromiso
 								#
 								# loop mount iso on FLL_MEDIA_MOUNTPOINT
 								#	
-								if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_MEDIA_NAME}" /mnt/fll/fromiso; then
+								if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_MEDIA_NAME}" /fll/fromiso; then
 									if [ "${FLL_TORAM}" ]; then
 										#
 										# add block device mount point to umount stack
@@ -549,7 +549,7 @@ mountroot()
 									#
 									# update FLL_BLOCKMNT, FLL_DOMOVEMOUNT stack, and dev description
 									#
-									FLL_BLOCKMNT="/mnt/fll/fromiso"
+									FLL_BLOCKMNT="/fll/fromiso"
 									FLL_DOMOVEMOUNT="${FLL_BLOCKMNT} ${FLL_DOMOVEMOUNT}"
 									dev="iso"
 								else
@@ -598,20 +598,20 @@ mountroot()
 									#
 									# prepare tmpfs, aka ramdisk
 									#
-									mkdir -p "/mnt/fll/toram"
-									mount -n -t tmpfs -o size="${FLL_TORAM_FSSIZE}m" tmpfs "/mnt/fll/toram"
-									mkdir -p "/mnt/fll/toram/${FLL_IMAGE_DIR}"
+									mkdir -p "/fll/toram"
+									mount -n -t tmpfs -o size="${FLL_TORAM_FSSIZE}m" tmpfs "/fll/toram"
+									mkdir -p "/fll/toram/${FLL_IMAGE_DIR}"
 									#
 									# copy compressed filesystem to tmpfs
 									#
 									printf "${GREEN}Copying live filesystem from ${YELLOW}${dev}${GREEN} "
 									printf "to ${YELLOW}ram${GREEN}, please be patient...${NORMAL}"
-									if cp "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "/mnt/fll/toram/${FLL_IMAGE_DIR}"; then
+									if cp "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "/fll/toram/${FLL_IMAGE_DIR}"; then
 										#
 										# add old mnt pnt to umount stack, update FLL_BLOCKMNT and dev
 										#
 										FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
-										FLL_BLOCKMNT="/mnt/fll/toram"
+										FLL_BLOCKMNT="/fll/toram"
 										FLL_DOMOVEMOUNT="${FLL_BLOCKMNT} ${FLL_DOMOVEMOUNT}"
 										dev="ram"
 										printf "${GREEN}done${NORMAL}\n"
@@ -781,7 +781,7 @@ mountroot()
 	for dir in ${rootmnt}${FLL_UNION_MOUNTPOINT}/*; do
 		if [ -d "${dir}" ]; then
 			case "${dir##*/}" in
-				dev|home|media|mnt|proc|sys|tmp)
+				dev|proc|sys|tmp)
 					#
 					# these should stay out of the unioned filesystem mount point
 					# keep them directly on the ramdisk, they are handled below
@@ -790,7 +790,7 @@ mountroot()
 					;;
 				*)
 					#
-					# symlink everything else to read-write unioned filesystem
+					# link everything else to read-write unioned filesystem
 					#
 					if [ -L "${dir}" ]; then
 						#
@@ -799,11 +799,10 @@ mountroot()
 						ln -sf "$(readlink -f ${dir})" "${rootmnt}/${dir##*/}"
 					else
 						#
-						# note the leading . to anchor the symlink to relative directory; tricks
-						# run-init into working with our minor link farm
-						# /sbin/init -> ./UNIONFS/sbin/init vs. /sbin/init -> /UNIONFS/sbin/init
+						# bind mount links to read write union
 						#
-						ln -sf ".${FLL_UNION_MOUNTPOINT}/${dir##*/}" "${rootmnt}/${dir##*/}"
+						mkdir -p "${rootmnt}/${dir##*/}"
+						mount -n -o bind "${dir}" "${rootmnt}/${dir##*/}"
 					fi
 					;;
 			esac
@@ -811,12 +810,10 @@ mountroot()
 	done
 
 	#
-	# prepare /media /mnt /proc /sys
+	# prepare /proc /sys
 	#
-	for dir in home media mnt proc sys; do
-		if [ ! -e "${rootmnt}/${dir}" ]; then
-			mkdir -p "${rootmnt}/${dir}"
-		fi
+	for dir in proc sys; do
+		mkdir -p "${rootmnt}/${dir}"
 	done
 
 	#
