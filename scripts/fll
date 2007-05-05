@@ -39,9 +39,6 @@ fll_parse_cmdline()
 			fll=debug)
 				set -x
 				;;
-			fll_interval=*)
-				FLL_MOUNT_INTERVAL="${opt#fll_interval=}"
-				;;
 			fromhd*)
 				FLL_FROMHD="yes"
 				# define dev node
@@ -383,61 +380,43 @@ mountroot()
 	# total time in seconds to do device scans for; rootdelay= on kernel cmdline
 	# upper limit on how long we wait for devices to show up before bailing out
 	#
-	if [ "${ROOTDELAY}" ]; then
-		if [ "${ROOTDELAY}" -gt 0 ]; then
-			slumber="${ROOTDELAY}"
-		fi
+	if [ "${ROOTDELAY}" ] && [ "${ROOTDELAY}" -gt 0 ]; then
+		FLL_ROOTDELAY="${ROOTDELAY}"
 	else
-		slumber="30"
+		FLL_ROOTDELAY="30"
 	fi
 	
 	#
-	# time between device scans; fll_interval= on kernel cmdline
+	# interval between device scans
 	#
-	if [ "${FLL_MOUNT_INTERVAL}" ]; then
-		#
-		# user defined interval between now and initial device scan loop
-		#
-		if [ "${FLL_MOUNT_INTERVAL}" -gt 0 ]; then
-			interval="${FLL_MOUNT_INTERVAL}"
-		fi
-	else
-		#
-		# default interval between device scan loops
-		#
-		interval="5"
-	fi
+	FLL_MOUNT_INTERVAL="5"
 
 	#
-	# these variables are created during $slumber time loop
+	# these variables are created during $FLL_ROOTDELAY time loop
 	#
 	unset FLL_BLOCKDEVS_OLD FLL_MOUNT_LOOP
 	
-	while [ "${slumber}" -gt 0 ]; do
+	while [ "${FLL_ROOTDELAY}" -gt 0 ]; do
 		#
 		# refresh these for each loop
 		#
 		unset FLL_BLOCKDEVS FLL_BLOCKDEVS_NOW
 
 		#
-		# sleep time, we skip slumber interval for first pass for extra fast boot
+		# sleep time, we skip FLL_ROOTDELAY interval for first pass for extra fast boot
 		#
 		if [ "${FLL_MOUNT_LOOP}" ]; then
 			if [ "${FLL_MOUNT_LOOP}" = 1 ]; then
-				printf "${GREEN}Waiting up to ${YELLOW}${slumber}${GREEN}s for devices to settle...${NORMAL}\n"
+				printf "${GREEN}Waiting up to ${YELLOW}${FLL_ROOTDELAY}${GREEN}s for devices to settle...${NORMAL}\n"
 			fi
-			/bin/sleep "${interval}"
-			slumber=$(( ${slumber} - ${interval} ))
+			/bin/sleep "${FLL_MOUNT_INTERVAL}"
+			FLL_ROOTDELAY=$(( ${FLL_ROOTDELAY} - ${FLL_MOUNT_INTERVAL} ))
 		fi
 
 		#
 		# mount loop counter, it enforces sleep interval on next loop
 		#
-		if [ -z "${FLL_MOUNT_LOOP}" ]; then
-			FLL_MOUNT_LOOP=1
-		else
-			FLL_MOUNT_LOOP=$(( ${FLL_MOUNT_LOOP} + 1 ))
-		fi
+		FLL_MOUNT_LOOP=$(( ${FLL_MOUNT_LOOP} + 1 ))
 		
 		#
 		# determine block devices to be probed on this loop
@@ -466,11 +445,7 @@ mountroot()
 						#
 						# we have not yet probed these devices
 						#
-						if [ -z "${FLL_BLOCKDEVS}" ]; then
-							FLL_BLOCKDEVS="${dev}"
-						else
-							FLL_BLOCKDEVS="${FLL_BLOCKDEVS} ${dev}"
-						fi
+						FLL_BLOCKDEVS="${FLL_BLOCKDEVS} ${dev}"
 					fi
 				done
 			else
@@ -680,11 +655,7 @@ mountroot()
 		#
 		# keep account of what devices we have probed so far
 		#
-		if [ -z "${FLL_BLOCKDEVS_OLD}" ]; then
-			FLL_BLOCKDEVS_OLD="${FLL_BLOCKDEVS}"
-		else
-			FLL_BLOCKDEVS_OLD="${FLL_BLOCKDEVS_OLD} ${FLL_BLOCKDEVS}"
-		fi
+		FLL_BLOCKDEVS_OLD="${FLL_BLOCKDEVS_OLD} ${FLL_BLOCKDEVS}"
 		
 		#
 		# start new probe line
