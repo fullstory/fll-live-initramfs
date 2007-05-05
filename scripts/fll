@@ -450,7 +450,7 @@ mountroot()
 		#
 		# refresh these for each loop
 		#
-		unset FLL_BLOCKDEVS FLL_BLOCKDEVS_NOW
+		unset FLL_BLOCKDEVS FLL_BLOCKDEVS_NOW FLL_BLOCKDEVS_PROBED
 
 		#
 		# sleep time, we skip FLL_ROOTDELAY interval for first pass for extra fast boot
@@ -509,8 +509,7 @@ mountroot()
 		if [ -z "${FLL_BLOCKDEVS}" ]; then
 			continue
 		fi
-		
-		printf "${GREEN}Probing devices\t${NORMAL}"
+
 		for dev in ${FLL_BLOCKDEVS}; do
 			#
 			# FLL_BLOCKMNT		- tracks current mount point
@@ -530,6 +529,10 @@ mountroot()
 			# determine filesystem type of block device
 			#
 			if fll_finger_fstype "${dev}" >/dev/null 2>&1; then
+				if [ -z "${FLL_BLOCKDEVS_PROBED}" ]; then
+					printf "${GREEN}Probing devices\t${NORMAL}"
+				fi
+				FLL_BLOCKDEVS_PROBED=$(( ${FLL_BLOCKDEVS_PROBED} + 1 ))
 				printf "${WHITE}[${YELLOW} ${dev#/dev/}${WHITE} ]${NORMAL} "
 				#
 				# we have determined FSTYPE of the device, set FLL_BLOCKMNT
