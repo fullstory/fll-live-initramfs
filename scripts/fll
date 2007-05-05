@@ -330,11 +330,11 @@ copy_with_perc()
 	FLL_FILE_COPY_PID="$!"
 
 	#
-	# update progress every 2 seconds until cp finishes or files are of same size
+	# update progress every second until cp finishes or files are of same size
 	#
 	while kill -0 "${FLL_FILE_COPY_PID}" 2>/dev/null && \
 		[ "${FLL_FILE_SIZE_COPY}" -lt "${FLL_FILE_SIZE}" ]; do
-		/bin/sleep 2
+		/bin/sleep 1
 		if [ -f "${2}/${1##*/}" ]; then
 			FLL_FILE_SIZE_COPY="$(size_of_file ${2}/${1##*/})"
 			#
