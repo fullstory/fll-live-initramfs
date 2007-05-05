@@ -274,7 +274,7 @@ fll_mount()
 	return "${RETVAL}"
 }
 ###############################################################################
-#	Calculate total, used and unused memory: MEMTOTAL MEMUSED MEMFREE
+#	calculate total, used and unused memory: MEMTOTAL MEMUSED MEMFREE
 ###############################################################################
 fll_meminfo()
 {
@@ -293,7 +293,7 @@ fll_meminfo()
 	' /proc/meminfo
 }
 ###############################################################################
-#	Utility function to help with identifying devices not yet probed
+#	utility function to help with identifying devices not yet probed
 ###############################################################################
 var_not_in_var()
 {
@@ -307,20 +307,15 @@ var_not_in_var()
 	return 0
 }
 ###############################################################################
-#	Utility functions to display update when cp'ing live media into ram
+#	utility function to display update when cp'ing live media into ram
 ###############################################################################
-size_of_file()
-{
-	du -s "${1}" | awk '{ printf("%d\n", int($1)) }'
-}
-
 copy_with_perc()
 {
 	if [ ! -f "${1}" ] || [ ! -d "${2}" ]; then
 		return 1
 	fi
 
-	FLL_FILE_SIZE="$(size_of_file ${1})"
+	FLL_FILE_SIZE="$(du -s ${1} | awk '{ printf("%d\n", int($1)) }')"
 	FLL_FILE_SIZE_COPY="0"
 	
 	#
@@ -336,7 +331,7 @@ copy_with_perc()
 		[ "${FLL_FILE_SIZE_COPY}" -lt "${FLL_FILE_SIZE}" ]; do
 		/bin/sleep 1
 		if [ -f "${2}/${1##*/}" ]; then
-			FLL_FILE_SIZE_COPY="$(size_of_file ${2}/${1##*/})"
+			FLL_FILE_SIZE_COPY="$(du -s ${2}/${1##*/} | awk '{ printf("%d\n", int($1)) }')"
 			#
 			# print in yellow the percentage of file copied so far
 			#
