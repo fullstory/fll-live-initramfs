@@ -850,11 +850,5 @@ mountroot()
 	maybe_break fll-bottom
 
 	printf "\n${GREEN}Starting init process...${NORMAL}\n\n"
-
-	
-	#
-	# re-enable kernel messages
-	#
-	echo "6" > /proc/sys/kernel/printk
 }
 ###############################################################################
