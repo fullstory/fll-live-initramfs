@@ -7,8 +7,11 @@ fll-live-initramfs (1.1.0) unstable; urgency=low
   * Don't test for empty variables when adding variables to variable stack, no
     need to be so prudent.
   * Add percentage progress functions for toram live media copy.
+  * Gracefully handle failure of toram copy and continue booting from the
+    medium on which the live media was detected. Add toram mount point to
+    FLL_DOUMOUNT stack for removal at end of loop.
 
- -- Kel Modderman <kel@otaku42.de>  Sat, 05 May 2007 20:18:30 +1000
+ -- Kel Modderman <kel@otaku42.de>  Sat, 05 May 2007 20:36:40 +1000
 
 fll-live-initramfs (1.0.78) unstable; urgency=low
 

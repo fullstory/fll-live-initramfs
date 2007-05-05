@@ -649,7 +649,7 @@ mountroot()
 										#
 										# umount the tmpfs or run-init will not be happy
 										#
-										FLL_DOUMOUNT="${FLL_BLOCKMNT} /fll/toram"
+										FLL_DOUMOUNT="/fll/toram ${FLL_DOUMOUNT}"
 										printf "${RED}failed${NORMAL}\n"
 									fi
 								else
