@@ -307,6 +307,56 @@ var_not_in_var()
 	return 0
 }
 ###############################################################################
+#	Utility functions to display update when cp'ing live media into ram
+###############################################################################
+size_of_file()
+{
+	du -s "${1}" | awk '{ printf("%d\n", int($1)) }'
+}
+
+copy_with_perc()
+{
+	if [ ! -f "${1}" ] || [ ! -d "${2}" ]; then
+		return 1
+	fi
+
+	FLL_FILE_SIZE="$(size_of_file ${1})"
+	FLL_FILE_SIZE_COPY="0"
+	
+	#
+	# background the copy, grab the process id
+	#
+	cp ${1} ${2} &
+	FLL_FILE_COPY_PID="$!"
+
+	#
+	# update progress every 2 seconds until cp finishes or files are of same size
+	#
+	while kill -0 "${FLL_FILE_COPY_PID}" 2>/dev/null && \
+		[ "${FLL_FILE_SIZE_COPY}" -lt "${FLL_FILE_SIZE}" ]; do
+		/bin/sleep 2
+		if [ -f "${2}/${1##*/}" ]; then
+			FLL_FILE_SIZE_COPY="$(size_of_file ${2}/${1##*/})"
+			#
+			# print in yellow the percentage of file copied so far
+			#
+			printf "${YELLOW}"
+			awk 'BEGIN{ printf("\b\b\b%02d%s",
+				100 * '${FLL_FILE_SIZE_COPY}' / '${FLL_FILE_SIZE}', "%") }'
+			printf "${NORMAL}"
+		else
+			break
+		fi
+	done
+
+	if [ -f "${2}/${1##*/}" ]; then
+		printf "\n"
+		return 0
+	fi
+
+	return 1
+}
+###############################################################################
 # 	define mountroot() for init
 ###############################################################################
 mountroot()
@@ -580,8 +630,8 @@ mountroot()
 									# copy compressed filesystem to tmpfs
 									#
 									printf "${GREEN}Copying live filesystem from ${YELLOW}${dev}${GREEN} "
-									printf "to ${YELLOW}ram${GREEN}, please be patient...${NORMAL}"
-									if cp "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "/fll/toram/${FLL_IMAGE_DIR}"; then
+									printf "to ${YELLOW}ram${GREEN}:${NORMAL}    "
+									if copy_with_perc "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "/fll/toram/${FLL_IMAGE_DIR}"; then
 										#
 										# add old mnt pnt to umount stack, update FLL_BLOCKMNT and dev
 										#
@@ -589,7 +639,6 @@ mountroot()
 										FLL_BLOCKMNT="/fll/toram"
 										FLL_DOMOVEMOUNT="${FLL_BLOCKMNT} ${FLL_DOMOVEMOUNT}"
 										dev="ram"
-										printf "${GREEN}done${NORMAL}\n"
 									else
 										if [ "${FLL_FROMISO}" = "yes" ]; then
 											#
@@ -597,6 +646,10 @@ mountroot()
 											#
 											unset FLL_DOUMOUNT
 										fi
+										#
+										# umount the tmpfs or run-init will not be happy
+										#
+										FLL_DOUMOUNT="${FLL_BLOCKMNT} /fll/toram"
 										printf "${RED}failed${NORMAL}\n"
 									fi
 								else

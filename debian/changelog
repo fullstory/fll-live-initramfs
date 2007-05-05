@@ -1,4 +1,4 @@
-fll-live-initramfs (1.0.79) UNRELEASED; urgency=low
+fll-live-initramfs (1.1.0) unstable; urgency=low
 
   * Prolong printk surpression to after init takes over.
   * s/slumber/FLL_ROOTDELAY/g
@@ -6,8 +6,9 @@ fll-live-initramfs (1.0.79) UNRELEASED; urgency=low
     be.
   * Don't test for empty variables when adding variables to variable stack, no
     need to be so prudent.
+  * Add percentage progress functions for toram live media copy.
 
- -- Kel Modderman <kel@otaku42.de>  Sat, 05 May 2007 16:14:25 +1000
+ -- Kel Modderman <kel@otaku42.de>  Sat, 05 May 2007 20:18:30 +1000
 
 fll-live-initramfs (1.0.78) unstable; urgency=low
 
