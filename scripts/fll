@@ -327,22 +327,22 @@ copy_with_perc()
 	#
 	# update progress every second until cp finishes or files are of same size
 	#
+	printf "${YELLOW}"
 	while kill -0 "${FLL_FILE_COPY_PID}" 2>/dev/null && \
 		[ "${FLL_FILE_SIZE_COPY}" -lt "${FLL_FILE_SIZE}" ]; do
 		/bin/sleep 1
 		if [ -f "${2}/${1##*/}" ]; then
+			#
+			# calculate and print the percentage of file copied so far
+			#
 			FLL_FILE_SIZE_COPY="$(du -s ${2}/${1##*/} | awk '{ printf("%d\n", int($1)) }')"
-			#
-			# print in yellow the percentage of file copied so far
-			#
-			printf "${YELLOW}"
 			awk 'BEGIN{ printf("\b\b\b%02d%s",
 				100 * '${FLL_FILE_SIZE_COPY}' / '${FLL_FILE_SIZE}', "%") }'
-			printf "${NORMAL}"
 		else
 			break
 		fi
 	done
+	printf "${NORMAL}"
 
 	if [ -f "${2}/${1##*/}" ]; then
 		printf "\n"
