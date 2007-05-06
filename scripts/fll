@@ -39,7 +39,7 @@ fll_finger_blockdevs()
 	# cdrom detection via /proc/sys/dev/cdrom/info
 	#
 	if [ -f /proc/sys/dev/cdrom/info ]; then
-		probed_cdroms="$(awk '
+		FLL_PROBED_CDROMS="$(awk '
 			/name:/ {
 				for (i = NF; i >= 3; i--) {
 					print($i)
@@ -51,8 +51,8 @@ fll_finger_blockdevs()
 	#
 	# give priority to cdrom devices, skip them for fromhd/fromiso
 	#
-	if [ "${probed_cdroms}" ] && [ "${FLL_FROMHD}" != "yes" ]; then
-		for cdrom in ${probed_cdroms}; do
+	if [ "${FLL_PROBED_CDROMS}" ] && [ "${FLL_FROMHD}" != "yes" ]; then
+		for cdrom in ${FLL_PROBED_CDROMS}; do
 			if [ -b "/dev/${cdrom}" ]; then
 				echo "/dev/${cdrom}"
 			fi
@@ -84,8 +84,8 @@ fll_finger_blockdevs()
 		#
 		# skip block devices already detected as cdroms
 		#
-		if [ "${probed_cdroms}" ]; then
-			for cdrom in ${probed_cdroms}; do
+		if [ "${FLL_PROBED_CDROMS}" ]; then
+			for cdrom in ${FLL_PROBED_CDROMS}; do
 				if [ "${cdrom}" = "${dev}" ]; then
 					continue 2
 				fi
