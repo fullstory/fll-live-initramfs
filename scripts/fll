@@ -30,52 +30,6 @@ case "${DPKG_ARCH}" in
 esac
 export FLL_ARCH
 ###############################################################################
-# 	parse /proc/cmdline for fll specific options
-###############################################################################
-fll_parse_cmdline()
-{
-	for opt in $(cat /proc/cmdline); do
-		case "${opt}" in
-			fll=debug)
-				set -x
-				;;
-			fromhd*)
-				FLL_FROMHD="yes"
-				# define dev node
-				case "${opt}" in
-					fromhd=*)
-						FLL_FROMHD_DEV="${opt#fromhd=}"
-						;;
-				esac
-				;;
-			fromiso*)
-				FLL_FROMHD="yes"
-				FLL_FROMISO="yes"
-				# define iso name
-				case "${opt}" in
-					fromiso=*)
-						FLL_MEDIA_NAME="${opt#fromiso=}"
-						;;
-				esac
-				;;
-			image_dir=*)
-				FLL_IMAGE_DIR="${opt#image_dir=}"
-				FLL_IMAGE_LOCATION="${FLL_IMAGE_DIR}/${FLL_IMAGE_FILE}"
-				;;
-			image_name=*)
-				FLL_IMAGE_FILE="${opt#image_name=}"
-				FLL_IMAGE_LOCATION="${FLL_IMAGE_DIR}/${FLL_IMAGE_FILE}"
-				;;
-			toram)
-				FLL_TORAM="yes"
-				;;
-			unionfs|aufs)
-				FLL_UNION_MODULE="${opt}"
-				;;
-		esac
-	done
-}
-###############################################################################
 # 	use information exported via proc and sysfs to make block device list
 # 	bubble-sort cdrom devices to top of block device stack
 ###############################################################################
@@ -367,9 +321,48 @@ mountroot()
 	. /etc/default/distro
 	
 	#
-	# parse fll option on cmdline
+	# parse fll options given on cmdline
 	#
-	fll_parse_cmdline
+	for opt in $(cat /proc/cmdline); do
+		case "${opt}" in
+			fll=debug)
+				set -x
+				;;
+			fromhd*)
+				FLL_FROMHD="yes"
+				# define dev node
+				case "${opt}" in
+					fromhd=*)
+						FLL_FROMHD_DEV="${opt#fromhd=}"
+						;;
+				esac
+				;;
+			fromiso*)
+				FLL_FROMHD="yes"
+				FLL_FROMISO="yes"
+				# define iso name
+				case "${opt}" in
+					fromiso=*)
+						FLL_MEDIA_NAME="${opt#fromiso=}"
+						;;
+				esac
+				;;
+			image_dir=*)
+				FLL_IMAGE_DIR="${opt#image_dir=}"
+				FLL_IMAGE_LOCATION="${FLL_IMAGE_DIR}/${FLL_IMAGE_FILE}"
+				;;
+			image_name=*)
+				FLL_IMAGE_FILE="${opt#image_name=}"
+				FLL_IMAGE_LOCATION="${FLL_IMAGE_DIR}/${FLL_IMAGE_FILE}"
+				;;
+			toram)
+				FLL_TORAM="yes"
+				;;
+			unionfs|aufs)
+				FLL_UNION_MODULE="${opt}"
+				;;
+		esac
+	done
 
 	#
 	# print geeky informational messages

@@ -4,8 +4,10 @@ fll-live-initramfs (1.1.1) UNRELEASED; urgency=low
     and sufficiently small enough to dissolve.
   * More efficient use of printf in copy_with_perc(). Set colour at top and
     bottom of while loop, not within in each loop.
+  * Dissolve fll_parse_cmdline() into mountroot(), it has no real purpose
+    being a seperate function.
 
- -- Kel Modderman <kel@otaku42.de>  Sun, 06 May 2007 13:23:44 +1000
+ -- Kel Modderman <kel@otaku42.de>  Sun, 06 May 2007 13:30:57 +1000
 
 fll-live-initramfs (1.1.0) unstable; urgency=low
 
