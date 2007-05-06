@@ -1,4 +1,4 @@
-fll-live-initramfs (1.1.1) UNRELEASED; urgency=low
+fll-live-initramfs (1.1.1) unstable; urgency=low
 
   * Dissolve size_of_file() into copy_with_perc(), its not used anywhere else
     and sufficiently small enough to dissolve.
