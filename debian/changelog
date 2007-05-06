@@ -1,3 +1,9 @@
+fll-live-initramfs (1.1.2) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 07 May 2007 01:53:35 +0200
+
 fll-live-initramfs (1.1.1) unstable; urgency=low
 
   * Dissolve size_of_file() into copy_with_perc(), its not used anywhere else
