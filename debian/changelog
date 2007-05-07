@@ -1,8 +1,9 @@
 fll-live-initramfs (1.1.2) UNRELEASED; urgency=low
 
-  * Use fmask and dmask ntfs mount options rather than hardcoded uid/gid.
+  * Use dmask=0022,fmask=0133 ntfs mount options rather than hardcoded
+    uid/gid.
 
- -- Kel Modderman <kel@otaku42.de>  Mon, 07 May 2007 23:21:21 +1000
+ -- Kel Modderman <kel@otaku42.de>  Tue, 08 May 2007 07:33:13 +1000
 
 fll-live-initramfs (1.1.1) unstable; urgency=low
 
