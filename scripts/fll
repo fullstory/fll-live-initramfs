@@ -187,9 +187,9 @@ fll_mount()
 			# uid + gid of 1000: may not be true in some cases
 			#
 			if [ "${#}" -gt 0 ]; then
-				FLL_MOUNT_OPTS="${@},uid=1000,gid=1000"
+				FLL_MOUNT_OPTS="${@},dmask=0755,fmask=0644"
 			else
-				FLL_MOUNT_OPTS="ro,uid=1000,gid=1000"
+				FLL_MOUNT_OPTS="ro,dmask=0755,fmask=0644"
 			fi
 			;;
 		vfat)
