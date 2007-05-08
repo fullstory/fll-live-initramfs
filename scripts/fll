@@ -764,8 +764,12 @@ mountroot()
 	#
 	# prepare COW union filesystem
 	#
-	FLL_UNION_MOUNTPOINT="/UNIONFS"
-	FLL_UNION_COWDIR="/COW"
+	if [ -z "${FLL_UNION_MOUNTPOINT}" ]; then
+		FLL_UNION_MOUNTPOINT="/UNIONFS"
+	fi
+	if [ -z "${FLL_UNION_COWDIR}" ]; then
+		FLL_UNION_COWDIR="/COW"
+	fi
 	mkdir -p "${rootmnt}${FLL_UNION_MOUNTPOINT}" "${rootmnt}${FLL_UNION_COWDIR}"
 	#
 	# union module specific options
