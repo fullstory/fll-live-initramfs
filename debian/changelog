@@ -1,4 +1,4 @@
-fll-live-initramfs (1.1.2) UNRELEASED; urgency=low
+fll-live-initramfs (1.1.2) unstable; urgency=low
 
   * Use dmask=0022,fmask=0133 ntfs mount options rather than hardcoded
     uid/gid.
