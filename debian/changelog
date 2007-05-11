@@ -1,3 +1,9 @@
+fll-live-initramfs (1.1.4) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 12 May 2007 00:11:53 +0200
+
 fll-live-initramfs (1.1.3) unstable; urgency=low
 
   * Decrease the interval of device scans in main "mount loop" from 5 seconds
