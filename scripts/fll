@@ -427,7 +427,7 @@ mountroot()
 	#
 	# interval between device scans
 	#
-	FLL_MOUNT_INTERVAL="5"
+	FLL_MOUNT_INTERVAL="3"
 
 	#
 	# these variables are created during $FLL_ROOTDELAY time loop
