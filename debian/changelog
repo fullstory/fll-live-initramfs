@@ -1,4 +1,4 @@
-fll-live-initramfs (1.1.4) UNRELEASED; urgency=low
+fll-live-initramfs (1.1.4) unstable; urgency=low
 
   * s/var_not_in_var()/fll_string_not_in_strings()/
   * s/copy_with_perc()/fll_copy_with_perc()/
