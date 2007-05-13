@@ -249,7 +249,7 @@ fll_meminfo()
 ###############################################################################
 #	utility function to help with identifying devices not yet probed
 ###############################################################################
-var_not_in_var()
+fll_string_not_in_strings()
 {
 	VAR="${1}"
 	shift
@@ -263,7 +263,7 @@ var_not_in_var()
 ###############################################################################
 #	utility function to display update when cp'ing live media into ram
 ###############################################################################
-copy_with_perc()
+fll_copy_with_perc()
 {
 	if [ ! -f "${1}" ] || [ ! -d "${2}" ]; then
 		return 1
@@ -290,8 +290,7 @@ copy_with_perc()
 			# calculate and print the percentage of file copied so far
 			#
 			FLL_FILE_SIZE_COPY="$(du -s ${2}/${1##*/} | awk '{ printf("%d\n", int($1)) }')"
-			awk 'BEGIN{ printf("\b\b\b%02d%s",
-				100 * '${FLL_FILE_SIZE_COPY}' / '${FLL_FILE_SIZE}', "%") }'
+			awk 'BEGIN{ printf("\b\b\b%02d%s", 100 * '${FLL_FILE_SIZE_COPY}' / '${FLL_FILE_SIZE}', "%") }'
 		else
 			break
 		fi
@@ -299,6 +298,10 @@ copy_with_perc()
 	printf "${NORMAL}"
 
 	if [ -f "${2}/${1##*/}" ]; then
+		#
+		# 3 second buffer before attempting to mount, above loop exits just before 100%
+		#
+		/bin/sleep 3
 		printf "\n"
 		return 0
 	fi
@@ -479,7 +482,7 @@ mountroot()
 				# compare all devices probed so far with list of devices discovered now
 				#
 				for dev in ${FLL_BLOCKDEVS_NOW}; do
-					if var_not_in_var ${dev} ${FLL_BLOCKDEVS_OLD}; then
+					if fll_string_not_in_strings ${dev} ${FLL_BLOCKDEVS_OLD}; then
 						#
 						# we have not yet probed these devices
 						#
@@ -622,7 +625,7 @@ mountroot()
 									#
 									printf "${GREEN}Copying live filesystem from ${YELLOW}${dev}${GREEN} "
 									printf "to ${YELLOW}ram${GREEN}:${NORMAL}    "
-									if copy_with_perc "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "/fll/toram/${FLL_IMAGE_DIR}"; then
+									if fll_copy_with_perc "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "/fll/toram/${FLL_IMAGE_DIR}"; then
 										#
 										# add old mnt pnt to umount stack, update FLL_BLOCKMNT and dev
 										#
