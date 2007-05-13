@@ -1,3 +1,9 @@
+fll-live-initramfs (1.1.5) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 13 May 2007 19:46:36 +0200
+
 fll-live-initramfs (1.1.4) unstable; urgency=low
 
   * s/var_not_in_var()/fll_string_not_in_strings()/
