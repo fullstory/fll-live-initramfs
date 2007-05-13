@@ -299,7 +299,9 @@ fll_copy_with_perc()
 
 	if [ -f "${2}/${1##*/}" ]; then
 		#
-		# 3 second buffer before attempting to mount, above loop exits just before 100%
+		# 3 second buffer before attempting to mount to avoid race condition with
+		# mount that follows immediately after this function exits. Any value >=
+		# to interval used in above loop should suffice.
 		#
 		/bin/sleep 3
 		printf "\n"
