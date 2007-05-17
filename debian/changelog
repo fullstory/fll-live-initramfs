@@ -1,3 +1,9 @@
+fll-live-initramfs (1.1.6) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 18 May 2007 00:46:02 +0200
+
 fll-live-initramfs (1.1.5) unstable; urgency=low
 
   * Add extra break point at moment fll live filesystem is found.
