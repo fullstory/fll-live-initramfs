@@ -593,6 +593,13 @@ mountroot()
 						else
 							printf "\n\n"
 						fi
+						#
+						# debug checkpoint
+						#
+						maybe_break fll-found
+						#
+						# set FLL_MEDIA_FOUND variable
+						#
 						FLL_MEDIA_FOUND="${dev}"
 						if fll_finger_fstype "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" >/dev/null 2>&1; then
 							printf "${GREEN}Detected live ${YELLOW}${FSTYPE}${GREEN} "
