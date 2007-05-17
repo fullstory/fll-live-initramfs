@@ -1,4 +1,4 @@
-fll-live-initramfs (1.1.5) UNRELEASED; urgency=low
+fll-live-initramfs (1.1.5) unstable; urgency=low
 
   * Add extra break point at moment fll live filesystem is found.
 
