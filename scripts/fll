@@ -311,6 +311,39 @@ fll_copy_with_perc()
 	return 1
 }
 ###############################################################################
+#	md5sum checker
+###############################################################################
+fll_md5sum_check()
+{
+	if [ ! -f "${1}/md5sums" ]; then
+		return 1
+	fi
+
+	awk -v dir=${1} '
+		{
+			sub(/^\*/, dir"/", $2)
+			
+			md5 = $1
+			file = $2
+			md5_t = ""
+			
+			if(("md5sum " file | getline) > 0)
+				md5_t = $1
+			else
+				md5_t = "unable to md5sum"
+			
+			if(md5 == md5_t)
+				next
+			
+			printf("Failed md5 check: %s\n", file)
+			printf("md5sum expected: %s\n", md5)
+			printf("md5sum returned: %s\n", md5_t)
+			exit(1)
+		}' "${1}/md5sums"
+	
+	return ${?}
+}
+###############################################################################
 # 	define mountroot() for init
 ###############################################################################
 mountroot()
@@ -359,6 +392,9 @@ mountroot()
 			image_name=*)
 				FLL_IMAGE_FILE="${opt#image_name=}"
 				FLL_IMAGE_LOCATION="${FLL_IMAGE_DIR}/${FLL_IMAGE_FILE}"
+				;;
+			testcd|testdvd)
+				FLL_MD5SUM_CHECK="yes"
 				;;
 			toram)
 				FLL_TORAM="yes"
@@ -597,6 +633,17 @@ mountroot()
 						# debug checkpoint
 						#
 						maybe_break fll-found
+						#
+						# md5sum check
+						#
+						if [ "${FLL_MD5SUM_CHECK}" ]; then
+							printf "${GREEN}Performing md5sum check of live media...${RED}\n"
+							if fll_md5sum_check ${FLL_BLOCKMNT}; then
+								printf "${GREEN}md5sum check passed.${NORMAL}\n"
+							else
+								panic "${RED}Failed md5sum check!${NORMAL}"
+							fi
+						fi
 						#
 						# set FLL_MEDIA_FOUND variable
 						#
