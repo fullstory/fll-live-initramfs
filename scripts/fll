@@ -320,8 +320,6 @@ fll_md5sum_check()
 		return 1
 	fi
 
-	printf "${RED}"
-
 	awk -v dir=${1} '
 		{
 			sub(/^\*/, "", $2)
@@ -343,8 +341,6 @@ fll_md5sum_check()
 			printf("md5sum returned: %s\n", md5_t)
 			exit(1)
 		}' "${1}/md5sums"
-	
-	printf "${NORMAL}"
 	
 	return ${?}
 }
