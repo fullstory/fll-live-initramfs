@@ -1,3 +1,9 @@
+fll-live-initramfs (1.2.1) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 18 May 2007 16:29:55 +0200
+
 fll-live-initramfs (1.2.0) unstable; urgency=low
 
   * Add most basic persistency based setup suitable for poor man
