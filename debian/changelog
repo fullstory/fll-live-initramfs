@@ -2,8 +2,9 @@ fll-live-initramfs (1.1.6) UNRELEASED; urgency=low
 
   * Initial attempt at md5sum checking within initramfs.
   * Add FLL_VERBOSITY variable activated by fll=verbose boot parameter.
+  * Use FLL_VERBOSITY switch in fll_md5sum_check() for verbosity++.
 
- -- Kel Modderman <kel@otaku42.de>  Fri, 18 May 2007 19:49:33 +1000
+ -- Kel Modderman <kel@otaku42.de>  Fri, 18 May 2007 20:14:21 +1000
 
 fll-live-initramfs (1.1.5) unstable; urgency=low
 

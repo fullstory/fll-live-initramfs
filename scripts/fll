@@ -320,7 +320,7 @@ fll_md5sum_check()
 		return 1
 	fi
 
-	awk -v dir=${1} '
+	awk -v dir=${1} -v verbosity=${FLL_VERBOSITY} '
 		{
 			sub(/^\*/, "", $2)
 			
@@ -332,6 +332,12 @@ fll_md5sum_check()
 				md5_t = $1
 			else
 				md5_t = "unable to md5sum"
+
+			if(verbosity) {
+				print "file = " file
+				print "md5 = " md5
+				print "md5_t = " md5_t
+			}
 			
 			if(md5 == md5_t)
 				next
