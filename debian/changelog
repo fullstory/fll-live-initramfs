@@ -1,4 +1,4 @@
-fll-live-initramfs (1.2.0) UNRELEASED; urgency=low
+fll-live-initramfs (1.2.0) unstable; urgency=low
 
   * Add most basic persistency based setup suitable for poor man
     installation's on native read-writeable filesystems. Thanks bfree for
