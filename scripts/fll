@@ -316,18 +316,21 @@ fll_copy_with_perc()
 fll_md5sum_check()
 {
 	if [ ! -f "${1}/md5sums" ]; then
+		printf "No md5sums file found on live media.\n"
 		return 1
 	fi
 
+	printf "${RED}"
+
 	awk -v dir=${1} '
 		{
-			sub(/^\*/, dir"/", $2)
+			sub(/^\*/, "", $2)
 			
 			md5 = $1
 			file = $2
 			md5_t = ""
 			
-			if(("md5sum " file | getline) > 0)
+			if(("md5sum " dir "/" file | getline) > 0)
 				md5_t = $1
 			else
 				md5_t = "unable to md5sum"
@@ -340,6 +343,8 @@ fll_md5sum_check()
 			printf("md5sum returned: %s\n", md5_t)
 			exit(1)
 		}' "${1}/md5sums"
+	
+	printf "${NORMAL}"
 	
 	return ${?}
 }
@@ -623,12 +628,14 @@ mountroot()
 					if [ -f "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" ]; then
 						#
 						# found FLL compressed filesystem
+						# set/update FLL_MEDIA_FOUND variable (possibly already set via fromiso)
 						#
 						if [ "${FLL_MEDIA_FOUND}" ]; then
 							printf "\n"
 						else
 							printf "\n\n"
 						fi
+						FLL_MEDIA_FOUND="${dev}"
 						#
 						# debug checkpoint
 						#
@@ -637,17 +644,16 @@ mountroot()
 						# md5sum check
 						#
 						if [ "${FLL_MD5SUM_CHECK}" ]; then
-							printf "${GREEN}Performing md5sum check of live media...${RED}\n"
+							printf "${GREEN}Performing md5sum check of live media...${NORMAL}\n"
 							if fll_md5sum_check ${FLL_BLOCKMNT}; then
-								printf "${GREEN}md5sum check passed.${NORMAL}\n"
+								printf "${GREEN}All md5sums verified successfully.${NORMAL}\n\n"
 							else
 								panic "${RED}Failed md5sum check!${NORMAL}"
 							fi
 						fi
 						#
-						# set FLL_MEDIA_FOUND variable
+						# prepare live filesystem
 						#
-						FLL_MEDIA_FOUND="${dev}"
 						if fll_finger_fstype "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" >/dev/null 2>&1; then
 							printf "${GREEN}Detected live ${YELLOW}${FSTYPE}${GREEN} "
 							printf "filesystem on ${YELLOW}${FLL_MEDIA_FOUND}${NORMAL}\n"
