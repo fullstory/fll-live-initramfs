@@ -183,9 +183,6 @@ fll_mount()
 			fi
 			;;
 		ntfs)
-			#
-			# uid + gid of 1000: may not be true in some cases
-			#
 			if [ "${#}" -gt 0 ]; then
 				FLL_MOUNT_OPTS="${@},dmask=0022,fmask=0133"
 			else
@@ -403,6 +400,13 @@ mountroot()
 				FLL_IMAGE_FILE="${opt#image_name=}"
 				FLL_IMAGE_LOCATION="${FLL_IMAGE_DIR}/${FLL_IMAGE_FILE}"
 				;;
+			persist)
+				FLL_PERSIST="yes"
+				#
+				# persitency impossible from live-cd while FLL_FROMHD is set
+				#
+				FLL_FROMHD="yes"
+				;;
 			testcd|testdvd|md5sum)
 				FLL_MD5SUM_CHECK="yes"
 				;;
@@ -578,6 +582,14 @@ mountroot()
 				#
 				FLL_BLOCKMNT="/fll/${dev#/dev/}"
 				mkdir -p "${FLL_BLOCKMNT}"
+				#
+				# save origin of media in variable for persitency
+				#
+				if [ "${FLL_PERSIST}" ]; then
+					FLL_PERSIST_BLOCKMNT="${FLL_BLOCKMNT}"
+					FLL_PERSIST_BLOCKDEV="${dev}"
+					FLL_PERSIST_BLOCKFSTYPE="${FSTYPE}"
+				fi
 				#
 				# mount block device on FLL_BLOCKMNT for probe
 				#
@@ -832,7 +844,7 @@ mountroot()
 	fi
 
 	#
-	# prepare COW union filesystem
+	# fallback definitions, these are in distro-defaults
 	#
 	if [ -z "${FLL_UNION_MOUNTPOINT}" ]; then
 		FLL_UNION_MOUNTPOINT="/UNIONFS"
@@ -840,16 +852,39 @@ mountroot()
 	if [ -z "${FLL_UNION_COWDIR}" ]; then
 		FLL_UNION_COWDIR="/COW"
 	fi
-	mkdir -p "${rootmnt}${FLL_UNION_MOUNTPOINT}" "${rootmnt}${FLL_UNION_COWDIR}"
+
+	#
+	# prepare COW union filesystem, handle persistency
+	#
+	if [ "$FLL_PERSIST" ]; then
+		FLL_UNION_COWMNTPNT="${rootmnt}${FLL_PERSIST_MOUNTBLK}"
+		#
+		# remount original fs containing live media rw (toram would umount it)
+		# XXX: sanity checking of target filesystem required
+		#
+		if mount -o remount,rw "${FLL_UNION_COWMNTPNT}" || \
+			fll_mount ${FLL_PERSIST_MOUNTFSTYPE} ${FLL_PERSIST_MOUNTDEV} ${FLL_UNION_COWMNTPNT} rw; then
+			printf "${GREEN}Remounting persistent filesystem ${YELLOW}${FLL_PERSIST_DEV}${FLL_UNION_COWDIR}${GREEN}...${NORMAL}"
+		else
+			panic "${RED}Failed to remount persistent filesystem ${YELLOW}${FLL_PERSIST_DEV}${FLL_UNION_COWDIR}${NORMAL}"
+		fi
+		#
+		# XXX: need to handle loop mounted filesystems for non *nix filesystems
+		#
+	else
+		FLL_UNION_COWMNTPNT="${rootmnt}"
+	fi
+		
+	mkdir -p "${rootmnt}${FLL_UNION_MOUNTPOINT}" "${FLL_UNION_COWMNTPNT}${FLL_UNION_COWDIR}"
 	#
 	# union module specific options
 	#
 	case "${FLL_UNION_MODULE}" in
 		aufs)
-			FLL_UNION_OPTIONS="br:${rootmnt}${FLL_UNION_COWDIR}:${rootmnt}${FLL_MOUNTPOINT}"
+			FLL_UNION_OPTIONS="br:${FLL_UNION_COWMNTPNT}${FLL_UNION_COWDIR}:${rootmnt}${FLL_MOUNTPOINT}"
 			;;
 		unionfs)
-			FLL_UNION_OPTIONS="dirs=${rootmnt}${FLL_UNION_COWDIR}=rw:${rootmnt}${FLL_MOUNTPOINT}=ro"
+			FLL_UNION_OPTIONS="dirs=${FLL_UNION_COWMNTPNT}${FLL_UNION_COWDIR}=rw:${rootmnt}${FLL_MOUNTPOINT}=ro"
 			;;
 	esac
 	#
