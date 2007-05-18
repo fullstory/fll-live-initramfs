@@ -367,6 +367,9 @@ mountroot()
 			fll=debug)
 				set -x
 				;;
+			fll=verbose)
+				FLL_VERBOSITY="yes"
+				;;
 			fromhd*)
 				FLL_FROMHD="yes"
 				# define dev node
