@@ -1,4 +1,4 @@
-fll-live-initramfs (1.1.6) UNRELEASED; urgency=low
+fll-live-initramfs (1.1.6) unstable; urgency=low
 
   * Initial attempt at md5sum checking within initramfs.
   * Add FLL_VERBOSITY variable activated by fll=verbose boot parameter.
