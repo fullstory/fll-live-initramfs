@@ -325,11 +325,7 @@ fll_md5sum_check()
 			file = $2
 
 			printf("'${WHITE}'")
-			printf("* %s\n|--> ", file)
-			printf("'${YELLOW}'")
-			printf("%s\n", md5)
-			printf("'${WHITE}'")
-			printf("`--> ")
+			printf("* %s\n|--> %s\n`--> ", file, md5)
 			printf("'${NORMAL}'")
 			
 			if(("md5sum " dir "/" file | getline) > 0) {
