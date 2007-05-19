@@ -858,6 +858,7 @@ mountroot()
 	#
 	if [ "$FLL_PERSIST" ]; then
 		FLL_UNION_COWMNTPNT="${rootmnt}${FLL_PERSIST_MOUNTBLK}"
+		mkdir -p "${rootmnt}${FLL_PERSIST_MOUNTBLK}"
 		#
 		# remount original fs containing live media rw (toram would umount it)
 		# XXX: sanity checking of target filesystem required
