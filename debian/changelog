@@ -1,10 +1,9 @@
 fll-live-initramfs (1.2.2) UNRELEASED; urgency=low
 
   * Make md5sum check verbose and colourful by default.
-  * Ensure FLL_PERSIST_* variables are sanitised on each loop.
   * Bugfix typo's when using FLL_PERSIST* variables stored by main loop.
 
- -- Kel Modderman <kel@otaku42.de>  Sat, 19 May 2007 22:46:42 +1000
+ -- Kel Modderman <kel@otaku42.de>  Sat, 19 May 2007 23:15:56 +1000
 
 fll-live-initramfs (1.2.1) unstable; urgency=low
 

@@ -509,7 +509,6 @@ mountroot()
 		# refresh these for each loop
 		#
 		unset FLL_BLOCKDEVS FLL_BLOCKDEVS_NOW FLL_BLOCKDEVS_PROBED
-		unset FLL_PERSIST_BLOCKDEV FLL_PERSIST_BLOCKFSTYPE FLL_PERSIST_BLOCKMNT
 
 		#
 		# sleep time, we skip FLL_ROOTDELAY interval for first pass for extra fast boot
