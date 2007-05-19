@@ -1,4 +1,4 @@
-fll-live-initramfs (1.2.1) UNRELEASED; urgency=low
+fll-live-initramfs (1.2.1) unstable; urgency=low
 
   * Ensure persistent mount point directory exists. It may not if toram was
     used and the mount loop cleaned up redundant mount point.
