@@ -317,31 +317,44 @@ fll_md5sum_check()
 		return 1
 	fi
 
-	awk -v dir=${1} -v verbosity=${FLL_VERBOSITY} '
+	awk -v dir=${1} '
 		{
 			sub(/^\*/, "", $2)
 			
 			md5 = $1
 			file = $2
-			md5_t = ""
-			
-			if(("md5sum " dir "/" file | getline) > 0)
-				md5_t = $1
-			else
-				md5_t = "unable to md5sum"
 
-			if(verbosity) {
-				print "file = " file
-				print "md5 = " md5
-				print "md5_t = " md5_t
+			printf("'${YELLOW}'")
+			printf("%s\n", file)
+			printf("'${WHITE}'")
+			printf("`--> ")
+			printf("'${NORMAL}'")
+			
+			if(("md5sum " dir "/" file | getline) > 0) {
+				if(md5 == $1) {
+					printf("'${GREEN}'")
+					printf("%s\n", $1)
+					printf("'${NORMAL}'")
+					next
+				}
+				else {
+					printf("'${RED}'")
+					printf("%s\n", $1)
+					printf("'${NORMAL}'")
+				}
 			}
+			else {
+				printf("'${RED}'")
+				printf("Unable to calculate md5sum!\n")
+				printf("'${NORMAL}'")
+			}
+
+			printf("\n'${RED}'")
+			printf("*******************************\n")
+			printf("***** MD5SUM CHECK FAILED *****\n")
+			printf("*******************************\n")
+			printf("'${NORMAL}'")
 			
-			if(md5 == md5_t)
-				next
-			
-			printf("Failed md5 check: %s\n", file)
-			printf("md5sum expected: %s\n", md5)
-			printf("md5sum returned: %s\n", md5_t)
 			exit(1)
 		}' "${1}/md5sums"
 	
