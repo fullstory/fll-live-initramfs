@@ -325,9 +325,9 @@ fll_md5sum_check()
 			file = $2
 
 			printf("'${WHITE}'")
-			printf("* ")
+			printf("* %s\n|--> ", file)
 			printf("'${YELLOW}'")
-			printf("%s\n", file)
+			printf("%s", md5)
 			printf("'${WHITE}'")
 			printf("`--> ")
 			printf("'${NORMAL}'")
