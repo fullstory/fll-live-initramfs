@@ -507,6 +507,7 @@ mountroot()
 		# refresh these for each loop
 		#
 		unset FLL_BLOCKDEVS FLL_BLOCKDEVS_NOW FLL_BLOCKDEVS_PROBED
+		unset FLL_PERSIST_BLOCKDEV FLL_PERSIST_BLOCKFSTYPE FLL_PERSIST_BLOCKMNT
 
 		#
 		# sleep time, we skip FLL_ROOTDELAY interval for first pass for extra fast boot
@@ -599,9 +600,9 @@ mountroot()
 				# save origin of media in variable for persitency
 				#
 				if [ "${FLL_PERSIST}" ]; then
-					FLL_PERSIST_BLOCKMNT="${FLL_BLOCKMNT}"
 					FLL_PERSIST_BLOCKDEV="${dev}"
 					FLL_PERSIST_BLOCKFSTYPE="${FSTYPE}"
+					FLL_PERSIST_BLOCKMNT="${FLL_BLOCKMNT}"
 				fi
 				#
 				# mount block device on FLL_BLOCKMNT for probe
