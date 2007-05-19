@@ -678,7 +678,7 @@ mountroot()
 						if [ "${FLL_MD5SUM_CHECK}" ]; then
 							printf "${GREEN}Performing ${YELLOW}md5sum${GREEN} integrity check of live media...${NORMAL}\n"
 							if fll_md5sum_check ${FLL_BLOCKMNT}; then
-								printf "${GREEN}All md5sums verified successfully.${NORMAL}\n\n"
+								printf "\n${GREEN}All md5sums verified successfully.${NORMAL}\n\n"
 							else
 								panic "${RED}Failed md5sum check!${NORMAL}"
 							fi
