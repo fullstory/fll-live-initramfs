@@ -871,14 +871,14 @@ mountroot()
 	# prepare COW union filesystem, handle persistency
 	#
 	if [ "$FLL_PERSIST" ]; then
-		FLL_UNION_COWMNTPNT="${rootmnt}${FLL_PERSIST_MOUNTBLK}"
-		mkdir -p "${rootmnt}${FLL_PERSIST_MOUNTBLK}"
+		FLL_UNION_COWMNTPNT="${rootmnt}${FLL_PERSIST_BLOCKMNT}"
+		mkdir -p "${rootmnt}${FLL_PERSIST_BLOCKMNT}"
 		#
 		# remount original fs containing live media rw (toram would umount it)
 		# XXX: sanity checking of target filesystem required
 		#
 		if mount -o remount,rw "${FLL_UNION_COWMNTPNT}" || \
-			fll_mount ${FLL_PERSIST_MOUNTFSTYPE} ${FLL_PERSIST_MOUNTDEV} ${FLL_UNION_COWMNTPNT} rw; then
+			fll_mount ${FLL_PERSIST_BLOCKFSTYPE} ${FLL_PERSIST_BLOCKDEV} ${FLL_UNION_COWMNTPNT} rw; then
 			printf "${GREEN}Remounting persistent filesystem ${YELLOW}${FLL_PERSIST_DEV}${FLL_UNION_COWDIR}${GREEN}...${NORMAL}"
 		else
 			panic "${RED}Failed to remount persistent filesystem ${YELLOW}${FLL_PERSIST_DEV}${FLL_UNION_COWDIR}${NORMAL}"
