@@ -592,7 +592,7 @@ mountroot()
 				#
 				# save origin of media in variable for persitency
 				#
-				if [ "${FLL_PERSIST}" ]; then
+				if [ "${FLL_PERSIST}" = "yes" ]; then
 					FLL_PERSIST_BLOCKDEV="${dev}"
 					FLL_PERSIST_BLOCKFSTYPE="${FSTYPE}"
 					FLL_PERSIST_BLOCKMNT="${FLL_BLOCKMNT}"
@@ -667,7 +667,7 @@ mountroot()
 						#
 						# md5sum check
 						#
-						if [ "${FLL_MD5SUM_CHECK}" ]; then
+						if [ "${FLL_MD5SUM_CHECK}" = "yes" ]; then
 							printf "${GREEN}Performing ${YELLOW}md5sum${GREEN} integrity check of live media...${NORMAL}\n\n"
 							if fll_md5sum_check ${FLL_BLOCKMNT}; then
 								printf "${GREEN}All md5sums verified successfully.${NORMAL}\n\n"
@@ -684,7 +684,7 @@ mountroot()
 							#
 							# copy to tmpfs
 							#
-							if [ "${FLL_TORAM}" ]; then
+							if [ "${FLL_TORAM}" = "yes" ]; then
 								#
 								# required tmpfs size: compressed filesystem size + 10% buffer
 								#
@@ -863,7 +863,7 @@ mountroot()
 	#
 	# prepare COW union filesystem, handle persistency
 	#
-	if [ "$FLL_PERSIST" ]; then
+	if [ "$FLL_PERSIST" = "yes" ]; then
 		FLL_UNION_COWMNTPNT="${rootmnt}${FLL_PERSIST_BLOCKMNT}"
 		mkdir -p "${rootmnt}${FLL_PERSIST_BLOCKMNT}"
 		#
