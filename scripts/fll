@@ -60,9 +60,9 @@ fll_finger_blockdevs()
 	fi
 
 	#
-	# fromhd/fromiso cheatcode required for additional block device detection
+	# fromhd/fromiso/persist cheatcode required for additional block device detection
 	#
-	if [ "${FLL_FROMHD}" != "yes" ]; then
+	if [ "${FLL_FROMHD}" != "yes" ] || [ "${FLL_PERSIST}" != "yes" ]; then
 		return 0
 	fi
 
@@ -413,10 +413,6 @@ mountroot()
 				;;
 			persist)
 				FLL_PERSIST="yes"
-				#
-				# persitency impossible from live-cd while FLL_FROMHD is set
-				#
-				FLL_FROMHD="yes"
 				;;
 			testcd|testdvd|md5sum)
 				FLL_MD5SUM_CHECK="yes"
@@ -672,7 +668,7 @@ mountroot()
 						# md5sum check
 						#
 						if [ "${FLL_MD5SUM_CHECK}" ]; then
-							printf "${GREEN}Performing ${YELLOW}md5sum${GREEN} integrity check of live media...${NORMAL}\n"
+							printf "${GREEN}Performing ${YELLOW}md5sum${GREEN} integrity check of live media...${NORMAL}\n\n"
 							if fll_md5sum_check ${FLL_BLOCKMNT}; then
 								printf "${GREEN}All md5sums verified successfully.${NORMAL}\n\n"
 							else
