@@ -1,4 +1,4 @@
-fll-live-initramfs (1.2.3) UNRELEASED; urgency=low
+fll-live-initramfs (1.2.3) unstable; urgency=low
 
   * Don't set FLL_FROMHD for pesistency, instead add a check in
     fll_finger_blockdevs() for persistency, and detect extra bloxk devices if
