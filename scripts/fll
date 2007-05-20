@@ -863,22 +863,32 @@ mountroot()
 	#
 	# prepare COW union filesystem, handle persistency
 	#
-	if [ "${FLL_PERSIST}" = "yes" ]; then
+	if [ "${FLL_PERSIST}" = "yes" ] && [ "${FLL_PERSIST_BLOCKMNT}" ]; then
+		case "${FLL_PERSIST_BLOCKFSTYPE}" in
+			ext*|reiser*|xfs|jfs)
+				;;
+			*)
+				#
+				# we could support vfat|msdos with a loop mounted ext* filesystem-in-a-file
+				#
+				panic "${RED}Cannot create persistent filesystem with type ${YELLOW}${FLL_PERSIST_BLOCKFSTYPE}${NORMAL}"
+				;;
+		esac
+		#
+		# FLL_PERSIST_BLOCKMNT points to position of mounted fielsystem before ot was moved
+		# to the new root filesystem. Prepend ${rootmnt}.
+		#
 		FLL_UNION_COWMNTPNT="${rootmnt}${FLL_PERSIST_BLOCKMNT}"
-		mkdir -p "${rootmnt}${FLL_PERSIST_BLOCKMNT}"
+		mkdir -p "${FLL_UNION_COWMNTPNT}"
 		#
 		# remount original fs containing live media rw (toram would umount it)
-		# XXX: sanity checking of target filesystem required
 		#
-		if mount -o remount,rw "${FLL_UNION_COWMNTPNT}" || \
+		if grep -q "${FLL_UNION_COWMNTPNT}" /proc/mounts && mount -o remount,rw "${FLL_UNION_COWMNTPNT}" || \
 			fll_mount ${FLL_PERSIST_BLOCKFSTYPE} ${FLL_PERSIST_BLOCKDEV} ${FLL_UNION_COWMNTPNT} rw; then
 			printf "${GREEN}Remounting persistent filesystem on ${YELLOW}${FLL_PERSIST_DEV}${GREEN}...${NORMAL}"
 		else
-			panic "${RED}Failed to remount persistent filesystem ${YELLOW}${FLL_PERSIST_DEV}${FLL_UNION_COWDIR}${NORMAL}"
+			panic "${RED}Failed to remount persistent filesystem on ${YELLOW}${FLL_PERSIST_DEV}${NORMAL}"
 		fi
-		#
-		# XXX: need to handle loop mounted filesystems for non *nix filesystems
-		#
 	else
 		FLL_UNION_COWMNTPNT="${rootmnt}"
 	fi

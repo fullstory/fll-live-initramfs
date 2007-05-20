@@ -6,8 +6,11 @@ fll-live-initramfs (1.2.3) UNRELEASED; urgency=low
   * Add whitespace under md5sum announcement.
   * Don't just check for existence of variables handled via cmdline parser,
     check for a value of "yes".
+  * Check that FLL_PERSIST_* variable were set before attempting to prepare
+    persistency.
+  * Make a persistent filesystem whitelist to avoid breakage for now.
 
- -- Kel Modderman <kel@otaku42.de>  Sun, 20 May 2007 18:26:51 +1000
+ -- Kel Modderman <kel@otaku42.de>  Sun, 20 May 2007 18:49:16 +1000
 
 fll-live-initramfs (1.2.2) unstable; urgency=low
 
