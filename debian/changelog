@@ -1,8 +1,9 @@
 fll-live-initramfs (1.2.4) UNRELEASED; urgency=low
 
-  * NOT RELEASED YET
+  * md5sum every file and fail at end of operation rather than immediately
+    after one file fails verification. exit with status 0 otherwise.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 20 May 2007 15:16:51 +0200
+ -- Kel Modderman <kel@otaku42.de>  Mon, 21 May 2007 18:25:28 +1000
 
 fll-live-initramfs (1.2.3) unstable; urgency=low
 

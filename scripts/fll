@@ -346,14 +346,21 @@ fll_md5sum_check()
 				printf("Unable to calculate md5sum!\n\n")
 				printf("'${NORMAL}'")
 			}
-
-			printf("'${RED}'")
-			printf("*******************************\n")
-			printf("***** MD5SUM CHECK FAILED *****\n")
-			printf("*******************************\n")
-			printf("'${NORMAL}'")
 			
-			exit(1)
+			failed++
+		}
+		
+		END{
+			if(failed) {
+				printf("'${RED}'")
+				printf("*******************************\n")
+				printf("***** MD5SUM CHECK FAILED *****\n")
+				printf("*******************************\n")
+				printf("'${NORMAL}'")
+				exit(1)
+			}
+			
+			exit(0)
 		}' "${1}/md5sums"
 	
 	return ${?}
