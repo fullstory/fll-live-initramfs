@@ -1,3 +1,9 @@
+fll-live-initramfs (1.2.5) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 21 May 2007 11:14:03 +0200
+
 fll-live-initramfs (1.2.4) unstable; urgency=low
 
   * md5sum every file and fail at end of operation rather than immediately
