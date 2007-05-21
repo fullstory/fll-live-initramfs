@@ -1,4 +1,4 @@
-fll-live-initramfs (1.2.4) UNRELEASED; urgency=low
+fll-live-initramfs (1.2.4) unstable; urgency=low
 
   * md5sum every file and fail at end of operation rather than immediately
     after one file fails verification. exit with status 0 otherwise.
