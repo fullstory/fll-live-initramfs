@@ -331,13 +331,13 @@ fll_md5sum_check()
 			if(("md5sum " dir "/" file | getline) > 0) {
 				if(md5 == $1) {
 					printf("'${GREEN}'")
-					printf("%s\n\n", $1)
+					printf("%s  OK\n\n", $1)
 					printf("'${NORMAL}'")
 					next
 				}
 				else {
 					printf("'${RED}'")
-					printf("%s\n\n", $1)
+					printf("%s  FAILED\n\n", $1)
 					printf("'${NORMAL}'")
 				}
 			}
