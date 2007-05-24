@@ -5,8 +5,11 @@ fll-live-initramfs (1.2.5) unstable; urgency=low
     to cobra for detecting and reporting the regression.
   * Quell the selinux error by disabling it at init time with an exported
     environment variable.
+  * Our immutable shells are somehow inheriting this environment after a live
+    boot, export HOME here so that root bash login sources the expected
+    rcfiles.
 
- -- Kel Modderman <kel@otaku42.de>  Thu, 24 May 2007 20:42:52 +1000
+ -- Kel Modderman <kel@otaku42.de>  Thu, 24 May 2007 20:58:57 +1000
 
 fll-live-initramfs (1.2.4) unstable; urgency=low
 
