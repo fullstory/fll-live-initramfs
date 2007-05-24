@@ -3,8 +3,10 @@ fll-live-initramfs (1.2.5) unstable; urgency=low
   * Bugfix: used wrong operator between tests for FLL_FROMISO and FLL_PERSIST
     in fll_finger_blockdevs(). This caused fromiso and fromhd to fail. Thanks
     to cobra for detecting and reporting the regression.
+  * Quell the selinux error by disabling it at init time with an exported
+    environment variable.
 
- -- Kel Modderman <kel@otaku42.de>  Thu, 24 May 2007 16:26:15 +1000
+ -- Kel Modderman <kel@otaku42.de>  Thu, 24 May 2007 20:42:52 +1000
 
 fll-live-initramfs (1.2.4) unstable; urgency=low
 
