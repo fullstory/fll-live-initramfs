@@ -62,7 +62,7 @@ fll_finger_blockdevs()
 	#
 	# fromhd/fromiso/persist cheatcode required for additional block device detection
 	#
-	if [ "${FLL_FROMHD}" != "yes" ] || [ "${FLL_PERSIST}" != "yes" ]; then
+	if [ "${FLL_FROMHD}" != "yes" ] && [ "${FLL_PERSIST}" != "yes" ]; then
 		return 0
 	fi
 
