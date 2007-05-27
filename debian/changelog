@@ -1,3 +1,9 @@
+fll-live-initramfs (1.2.8) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 27 May 2007 19:16:51 +0200
+
 fll-live-initramfs (1.2.7) unstable; urgency=low
 
   * Move unioned mount points to under /fll/ to reduce / pollution.
