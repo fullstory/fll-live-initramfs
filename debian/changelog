@@ -1,3 +1,9 @@
+fll-live-initramfs (1.2.7) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 27 May 2007 11:24:17 +0200
+
 fll-live-initramfs (1.2.6) unstable; urgency=low
 
   * Only suppress printk's when "quiet" kernel parameter is present in
