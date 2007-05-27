@@ -1,4 +1,4 @@
-fll-live-initramfs (1.2.6) UNRELEASED; urgency=low
+fll-live-initramfs (1.2.6) unstable; urgency=low
 
   * Only suppress printk's when "quiet" kernel parameter is present in
     /proc/cmdline.
