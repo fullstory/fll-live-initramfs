@@ -1,4 +1,4 @@
-fll-live-initramfs (1.2.8) UNRELEASED; urgency=low
+fll-live-initramfs (1.2.8) unstable; urgency=low
 
   * Reuse fll_string_not_in_strings() in fll_finger_blockdevs(). Move funtion
     upwards of fll_finger_blockdevs() too.
