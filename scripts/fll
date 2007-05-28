@@ -30,6 +30,20 @@ case "${DPKG_ARCH}" in
 esac
 export FLL_ARCH
 ###############################################################################
+#	utility function to help with identifying devices not yet probed
+###############################################################################
+fll_string_not_in_strings()
+{
+	VAR="${1}"
+	shift
+
+	for var in ${@}; do
+		[ "${VAR}" = "${var}" ] && return 1
+	done
+
+	return 0
+}
+###############################################################################
 # 	use information exported via proc and sysfs to make block device list
 # 	bubble-sort cdrom devices to top of block device stack
 ###############################################################################
@@ -85,11 +99,12 @@ fll_finger_blockdevs()
 		# skip block devices already detected as cdroms
 		#
 		if [ "${FLL_PROBED_CDROMS}" ]; then
-			for cdrom in ${FLL_PROBED_CDROMS}; do
-				if [ "${cdrom}" = "${dev}" ]; then
-					continue 2
-				fi
-			done
+			if ! fll_string_not_in_strings "${dev}" ${FLL_PROBED_CDROMS}; then
+				#
+				# returned 1, already identified as cdrom device
+				#
+				continue
+			fi
 		fi
 		
 		#
@@ -242,20 +257,6 @@ fll_meminfo()
 			printf("MEMUSED=%d\n",	(int(total) - int(free)) / 1024)
 		}
 	' /proc/meminfo
-}
-###############################################################################
-#	utility function to help with identifying devices not yet probed
-###############################################################################
-fll_string_not_in_strings()
-{
-	VAR="${1}"
-	shift
-
-	for var in ${@}; do
-		[ "${VAR}" = "${var}" ] && return 1
-	done
-
-	return 0
 }
 ###############################################################################
 #	utility function to display update when cp'ing live media into ram
