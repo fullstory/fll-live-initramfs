@@ -30,7 +30,7 @@ case "${DPKG_ARCH}" in
 esac
 export FLL_ARCH
 ###############################################################################
-#	utility function to help with identifying devices not yet probed
+#	utility function to help with identifying device strings within strings
 ###############################################################################
 fll_string_not_in_strings()
 {
