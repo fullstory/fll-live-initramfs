@@ -49,28 +49,27 @@ fll_string_not_in_strings()
 ###############################################################################
 fll_finger_blockdevs()
 {
-	#
-	# cdrom detection via /proc/sys/dev/cdrom/info
-	#
-	if [ -f /proc/sys/dev/cdrom/info ]; then
-		FLL_PROBED_CDROMS="$(awk '
-			/name:/ {
-				for (i = NF; i >= 3; i--) {
-					print($i)
+	if [ "${FLL_FROMHD}" != "yes" ]; then
+		#
+		# cdrom detection via /proc/sys/dev/cdrom/info
+		#
+		if [ -f /proc/sys/dev/cdrom/info ]; then
+			FLL_PROBED_CDROMS="$(awk '
+				/name:/ {
+					for (i = NF; i >= 3; i--) {
+						print($i)
+					}
 				}
-			}
-		' /proc/sys/dev/cdrom/info)"
-	fi
+			' /proc/sys/dev/cdrom/info)"
+		fi
 
-	#
-	# give priority to cdrom devices, skip them for fromhd/fromiso
-	#
-	if [ "${FLL_PROBED_CDROMS}" ] && [ "${FLL_FROMHD}" != "yes" ]; then
-		for cdrom in ${FLL_PROBED_CDROMS}; do
-			if [ -b "/dev/${cdrom}" ]; then
-				echo "/dev/${cdrom}"
-			fi
-		done
+		if [ "${FLL_PROBED_CDROMS}" ]; then
+			for cdrom in ${FLL_PROBED_CDROMS}; do
+				if [ -b "/dev/${cdrom}" ]; then
+					echo "/dev/${cdrom}"
+				fi
+			done
+		fi
 	fi
 
 	#
