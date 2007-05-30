@@ -744,7 +744,6 @@ mountroot()
 										FLL_DOUMOUNT="/fll/toram ${FLL_DOUMOUNT}"
 										printf "${RED}failed${NORMAL}\n"
 										printf "\n${GREEN}Continuing boot from live media...${NORMAL}\n"
-										/bin/sleep 3						
 									fi
 								else
 									printf "${RED}Insufficient free memory to copy live media into memory${NORMAL}\n"
@@ -756,7 +755,6 @@ mountroot()
 										#
 										unset FLL_DOUMOUNT
 									fi
-									/bin/sleep 3
 								fi
 							fi
 							#
