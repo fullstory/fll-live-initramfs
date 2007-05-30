@@ -2,8 +2,10 @@ fll-live-initramfs (1.2.9) UNRELEASED; urgency=low
 
   * Trivial cleanup of fll_finger_blockdevs(), only do cdrom detection when we
     haven't asked for fromiso/fromhd.
+  * Move static dev variable export to same position as other exports -> tail
+    of mountroot().
 
- -- Kel Modderman <kel@otaku42.de>  Wed, 30 May 2007 13:31:59 +1000
+ -- Kel Modderman <kel@otaku42.de>  Wed, 30 May 2007 13:34:13 +1000
 
 fll-live-initramfs (1.2.8) unstable; urgency=low
 

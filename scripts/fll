@@ -975,10 +975,8 @@ mountroot()
 
 	#
 	# prepare /dev
-	# Note: disable movement of static $rootmnt/dev by scripts/init-bottom/udev
 	#
 	mkdir -p -m 0755 "${rootmnt}/dev"
-	export no_static_dev="1"
 
 	#
 	# purge /etc/rc?.d/ for live boot
@@ -1000,6 +998,11 @@ mountroot()
 	# debug checkpoint
 	#
 	maybe_break fll-bottom
+
+	#
+	# disable movement of static $rootmnt/dev by scripts/init-bottom/udev
+	#
+	export no_static_dev="1"
 
 	#
 	# our immutable shells are somehow inheriting this environment after a live boot
