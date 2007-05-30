@@ -743,16 +743,20 @@ mountroot()
 										#
 										FLL_DOUMOUNT="/fll/toram ${FLL_DOUMOUNT}"
 										printf "${RED}failed${NORMAL}\n"
+										printf "\n${GREEN}Continuing boot from live media...${NORMAL}\n"
+										/bin/sleep 3						
 									fi
 								else
 									printf "${RED}Insufficient free memory to copy live media into memory${NORMAL}\n"
 									printf "${RED}Required free memory: ${YELLOW}${FLL_TORAM_MEMREQ}M${NORMAL}\n"
+									printf "\n${GREEN}Continuing boot from live media...${NORMAL}\n"
 									if [ "${FLL_FROMISO}" = "yes" ]; then
 										#
 										# we failed to copy iso contents to ram: reset FLL_DOUMOUNT stack
 										#
 										unset FLL_DOUMOUNT
 									fi
+									/bin/sleep 3
 								fi
 							fi
 							#
