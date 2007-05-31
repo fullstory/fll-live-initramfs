@@ -1,3 +1,9 @@
+fll-live-initramfs (1.2.16) unstable; urgency=low
+
+  * End this shell export madness.
+
+ -- Kel Modderman <kel@otaku42.de>  Thu, 31 May 2007 18:52:46 +1000
+
 fll-live-initramfs (1.2.15) unstable; urgency=low
 
   * No need for extraneous cd at end of mountroot().

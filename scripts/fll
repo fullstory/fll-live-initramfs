@@ -1056,12 +1056,6 @@ mountroot()
 	#
 	export SELINUX_INIT=NO
 
-	#
-	# our immutable shells are somehow inheriting this environment after a live boot
-	# export HOME and SHELL here so that root bash login sources the expected rcfiles.
-	#
-	export HOME=/root SHELL=/bin/bash
-
 	printf "\n${GREEN}Starting init process...${NORMAL}\n\n"
 }
 ###############################################################################
