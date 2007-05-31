@@ -1,5 +1,6 @@
-fll-live-initramfs (1.2.9) UNRELEASED; urgency=low
+fll-live-initramfs (1.2.9) unstable; urgency=low
 
+  * Uploaded to sidux.net/kelmo.
   * Trivial cleanup of fll_finger_blockdevs(), only do cdrom detection when we
     haven't asked for fromiso/fromhd.
   * Move static dev variable export to same position as other exports -> tail
@@ -9,7 +10,7 @@ fll-live-initramfs (1.2.9) UNRELEASED; urgency=low
     introduced for up and coming fll-live-initscripts. Sanitise runlevels
     based on a initscript whitelist.
 
- -- Kel Modderman <kel@otaku42.de>  Thu, 31 May 2007 10:34:19 +1000
+ -- Kel Modderman <kel@otaku42.de>  Thu, 31 May 2007 10:44:08 +1000
 
 fll-live-initramfs (1.2.8) unstable; urgency=low
 
