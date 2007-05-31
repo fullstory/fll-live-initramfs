@@ -1003,7 +1003,7 @@ mountroot()
 						# runlevel S .sh scripts, XXX: hwclock.sh
 						#
 						;;
-					udev|ifupdown-clean|fuse|networking|udev-mtab|ifupdown|x11-common|wpa-ifupdown|sendsigs)
+					udev|module-init-tools|ifupdown-clean|fuse|networking|udev-mtab|ifupdown|x11-common|wpa-ifupdown|sendsigs)
 						#
 						# runlevel S scripts
 						#
