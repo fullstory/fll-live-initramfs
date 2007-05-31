@@ -984,6 +984,7 @@ mountroot()
 	mkdir -p -m 0755 "${rootmnt}/dev"
 
 	if [ "${FLL_LIVE_INITSCRIPTS}" = "yes" ]; then
+		printf "${GREEN}Reconfiguring ${YELLOW}sysvinit runlevels${GREEN} for live boot...${NORMAL}\n"
 		#
 		# sanitise live SysV runlevel configuration
 		#
