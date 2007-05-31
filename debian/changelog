@@ -1,3 +1,16 @@
+fll-live-initramfs (1.2.13) unstable; urgency=low
+
+  * Revert previous change, export HOME.
+
+ -- Kel Modderman <kel@otaku42.de>  Thu, 31 May 2007 16:31:00 +1000
+
+fll-live-initramfs (1.2.12) unstable; urgency=low
+
+  * No longer export HOME for root login. It looks outright strange.
+    fll-live-initscripts will do it.
+
+ -- Kel Modderman <kel@otaku42.de>  Thu, 31 May 2007 15:01:29 +1000
+
 fll-live-initramfs (1.2.11) unstable; urgency=low
 
   * Allow module-init-tools initscript to run.
