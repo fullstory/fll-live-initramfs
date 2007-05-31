@@ -1051,16 +1051,18 @@ mountroot()
 	export no_static_dev="1"
 
 	#
-	# our immutable shells are somehow inheriting this environment after a live boot
-	# export HOME here so that root bash login sources the expected rcfiles
-	#
-	export HOME=/root
-
-	#
 	# workaround cosmetic issue with selinux on live boot. It is doubtful that
 	# anyone would find selinux a useful feature to have on an live-cd
 	#
 	export SELINUX_INIT=NO
+
+	#
+	# our immutable shells are somehow inheriting this environment after a live boot
+	# export HOME here so that root bash login sources the expected rcfiles.
+	# Take care of SHELL and PWD too.
+	#
+	export HOME=/root SHELL=/bin/bash
+	cd /
 
 	printf "\n${GREEN}Starting init process...${NORMAL}\n\n"
 }
