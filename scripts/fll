@@ -1058,11 +1058,9 @@ mountroot()
 
 	#
 	# our immutable shells are somehow inheriting this environment after a live boot
-	# export HOME here so that root bash login sources the expected rcfiles.
-	# Take care of SHELL and PWD too.
+	# export HOME and SHELL here so that root bash login sources the expected rcfiles.
 	#
 	export HOME=/root SHELL=/bin/bash
-	cd /
 
 	printf "\n${GREEN}Starting init process...${NORMAL}\n\n"
 }
