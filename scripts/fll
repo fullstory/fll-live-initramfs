@@ -9,27 +9,6 @@
 #	F.U.L.L.S.T.O.R.Y Project Homepage:
 #	http://developer.berlios.de/projects/fullstory
 ###############################################################################
-#	colourful escape sequences
-###############################################################################
-export NORMAL="[0;39m"	# NORMAL: Normal color
-export BLUE="[1;34m"		# BLUE: System mesages
-export RED="[1;31m"		# RED: Failure or error message
-export GREEN="[1;32m"		# GREEN: Success message
-export YELLOW="[1;33m"	# YELLOW: Descriptions
-export WHITE="[1;37m"		# BOLD WHITE: Hint
-###############################################################################
-#	force our arch string for i386
-###############################################################################
-case "${DPKG_ARCH}" in
-	i?86)
-		FLL_ARCH="i686"
-		;;
-	*)
-		FLL_ARCH="${DPKG_ARCH}"
-		;;
-esac
-export FLL_ARCH
-###############################################################################
 #	utility function to help with identifying device strings within strings
 ###############################################################################
 fll_string_not_in_strings()
@@ -370,6 +349,28 @@ fll_md5sum_check()
 ###############################################################################
 mountroot()
 {
+	#
+	# colourful escape sequences
+	#
+	NORMAL="[0;39m"	# NORMAL: Normal color
+	BLUE="[1;34m"		# BLUE: System mesages
+	RED="[1;31m"		# RED: Failure or error message
+	GREEN="[1;32m"	# GREEN: Success message
+	YELLOW="[1;33m"	# YELLOW: Descriptions
+	WHITE="[1;37m"	# BOLD WHITE: Hint
+	
+	#
+	# force our arch string for i386
+	#
+	case "${DPKG_ARCH}" in
+		i?86)
+			FLL_ARCH="i686"
+			;;
+		*)
+			FLL_ARCH="${DPKG_ARCH}"
+			;;
+	esac
+
 	#
 	# source distro-defaults
 	#
