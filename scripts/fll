@@ -1009,7 +1009,7 @@ mountroot()
 						# runlevel S scripts
 						#
 						;;
-					acpid|alsa-utils|dbus|hal|avahi-daemon|powernowd|powersaved|hotkey-setup|bluetooth)
+					acpid|alsa-utils|dbus|hal|avahi-daemon|powernowd|powersaved|hotkey-setup|gpm|bluetooth)
 						#
 						# default runlevel scripts
 						#

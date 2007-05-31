@@ -1,3 +1,9 @@
+fll-live-initramfs (1.2.18) unstable; urgency=low
+
+  * Add gpm to the fll-live-initscripts whitelist.
+
+ -- Kel Modderman <kel@otaku42.de>  Fri, 01 Jun 2007 00:02:00 +1000
+
 fll-live-initramfs (1.2.17) unstable; urgency=low
 
   * Avoid exporting environment variables. They are only used in mountroot(),
