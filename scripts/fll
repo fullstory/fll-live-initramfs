@@ -386,6 +386,9 @@ mountroot()
 			fll=verbose)
 				FLL_VERBOSITY="yes"
 				;;
+			fll=init)
+				FLL_LIVE_INITSCRIPTS="yes"
+				;;
 			fromhd*)
 				FLL_FROMHD="yes"
 				# define dev node
@@ -980,21 +983,61 @@ mountroot()
 	#
 	mkdir -p -m 0755 "${rootmnt}/dev"
 
-	#
-	# purge /etc/rc?.d/ for live boot
-	#
-	for dir in ${rootmnt}/etc/rc*.d; do
-		if [ -d "${dir}" ]; then
-			rm -rf "${dir}" && mkdir -p "${dir}"
-		fi
-	done
-	
-	#
-	# link up initscripts-$distro-live
-	#
-	ln -sf ../init.d/live-autoconfig	"${rootmnt}/etc/rcS.d/S00live-autoconfig"
-	ln -sf ../init.d/live-halt		"${rootmnt}/etc/rc0.d/S90live-halt"
-	ln -sf ../init.d/live-reboot		"${rootmnt}/etc/rc6.d/S90live-reboot"
+	if [ "${FLL_LIVE_INITSCRIPTS}" = "yes" ]; then
+		#
+		# sanitise live SysV runlevel configuration
+		#
+		for rl in S 0 1 2 3 4 5 6; do
+			[ -d ${rootmnt}/etc/rc${rl}.d/ ] || continue
+			for s in ${rootmnt}/etc/rc${rl}.d/[SK][0-9][0-9]*; do
+				[ -L "${s}" ] || continue
+				case "${s##*/[SK][0-9][0-9]}" in
+					fll-*)
+						#
+						# fll-live-initscripts
+						#
+						;;
+					glibc.sh|hostname.sh|mountkernfs.sh|mountdevsubfs.sh|keymap.sh|mtab.sh|console-screen.sh|umountnfs.sh)
+						#
+						# runlevel S .sh scripts, XXX: hwclock.sh
+						#
+						;;
+					udev|ifupdown-clean|fuse|networking|udev-mtab|ifupdown|x11-common|wpa-ifupdown|sendsigs)
+						#
+						# runlevel S scripts
+						#
+						;;
+					acpid|alsa-utils|dbus|hal|avahi-daemon|powernowd|powersaved|hotkey-setup|bluetooth)
+						#
+						# default runlevel scripts
+						#
+						;;
+					*)
+						#
+						# purge everything else
+						#
+						rm -f "${s}"
+						;;
+				esac
+			done
+		done
+	else
+		#
+		# purge /etc/rc?.d/ for live boot
+		#
+		for dir in ${rootmnt}/etc/rc*.d; do
+			if [ -d "${dir}" ]; then
+				rm -rf "${dir}" && mkdir -p "${dir}"
+			fi
+		done
+
+		#
+		# link up initscripts-$distro-live
+		#
+		ln -sf ../init.d/live-autoconfig	"${rootmnt}/etc/rcS.d/S00live-autoconfig"
+		ln -sf ../init.d/live-halt		"${rootmnt}/etc/rc0.d/S90live-halt"
+		ln -sf ../init.d/live-reboot		"${rootmnt}/etc/rc6.d/S90live-reboot"
+	fi
 
 	#
 	# debug checkpoint
