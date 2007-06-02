@@ -1,3 +1,10 @@
+fll-live-initramfs (1.2.19) unstable; urgency=low
+
+  * Default runlevel configuration is now done by fll-live-initscripts, legacy
+    initscripts-sidux-live are no longer supported as of this version.
+
+ -- Kel Modderman <kel@otaku42.de>  Sun, 03 Jun 2007 09:56:51 +1000
+
 fll-live-initramfs (1.2.18) unstable; urgency=low
 
   * Add gpm to the fll-live-initscripts whitelist.
