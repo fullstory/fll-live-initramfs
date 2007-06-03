@@ -998,12 +998,12 @@ mountroot()
 					# fll-live-initscripts
 					#
 					;;
-				glibc.sh|hostname.sh|mountkernfs.sh|mountdevsubfs.sh|keymap.sh|mtab.sh|console-screen.sh|umountnfs.sh)
+				glibc.sh|bootmisc.sh|hostname.sh|mountkernfs.sh|mountdevsubfs.sh|keymap.sh|mtab.sh|console-screen.sh|umountnfs.sh)
 					#
 					# runlevel S .sh scripts, XXX: hwclock.sh
 					#
 					;;
-				udev|module-init-tools|ifupdown-clean|fuse|networking|udev-mtab|ifupdown|x11-common|wpa-ifupdown|sendsigs)
+				udev|module-init-tools|ifupdown-clean|fuse|networking|udev-mtab|ifupdown|x11-common|wpa-ifupdown|sendsigs|rmnologin)
 					#
 					# runlevel S scripts
 					#
