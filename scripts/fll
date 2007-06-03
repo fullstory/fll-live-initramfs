@@ -1007,7 +1007,7 @@ mountroot()
 					# runlevel S scripts
 					#
 					;;
-				acpid|alsa-utils|dbus|hal|avahi-daemon|powernowd|powersaved|hotkey-setup|gpm|bluetooth|pcmciautils)
+				acpid|alsa-utils|dbus|hal|avahi-daemon|powernowd|powersaved|hotkey-setup|gpm|bluetooth|pcmciautils|cupsys)
 					#
 					# default runlevel scripts and fll-live-initscripts managed services
 					#
