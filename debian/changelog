@@ -1,9 +1,8 @@
-fll-live-initramfs (1.2.25) UNRELEASED; urgency=low
+fll-live-initramfs (1.2.25) unstable; urgency=low
 
-  * NOT RELEASED YET
   * add an ugly hack to allow booting in qemu.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 04 Jun 2007 17:15:01 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 04 Jun 2007 19:24:20 +0200
 
 fll-live-initramfs (1.2.24) unstable; urgency=low
 
