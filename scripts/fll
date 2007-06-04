@@ -533,6 +533,14 @@ mountroot()
 		#
 		FLL_MOUNT_LOOP=$(( ${FLL_MOUNT_LOOP} + 1 ))
 		
+		# XXX: ugly hack to allow booting in qemu
+		if [ "${FLL_ROOTDELAY}" -le "$(( ${FLL_MOUNT_INTERVAL} ))" ] && ! grep -q ^ide.generic /proc/modules; then
+			# only load me as last resort in case nothing helps.
+			# Intel ICH7 and friends honour me with abysmal
+			# performance.
+			modprobe ide-generic
+		fi
+		
 		#
 		# determine block devices to be probed on this loop
 		#
