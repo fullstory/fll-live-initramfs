@@ -1,4 +1,4 @@
-fll-live-initramfs (1.2.26) UNRELEASED; urgency=low
+fll-live-initramfs (1.2.26) unstable; urgency=low
 
   * Reduce the qemu hack to an unconditional last resort hack.
 
