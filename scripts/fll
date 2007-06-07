@@ -431,6 +431,14 @@ mountroot()
 			unionfs|aufs)
 				FLL_UNION_MODULE="${opt}"
 				;;
+			1)
+				###
+				# runlevel one is not supported
+				###
+				printf "${R}You have opted to boot into Runlevel 1 by appending \"1\" to cmdline.${N}\n"
+				printf "${R}You probably want to use the \"${Y}single${R}\" cheatcode instead.${N}\n"
+				panic "${R}Runlevel 1 is not supported${N}"
+				;;
 		esac
 	done
 
