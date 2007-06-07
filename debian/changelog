@@ -1,4 +1,4 @@
-fll-live-initramfs (1.2.27) UNRELEASED; urgency=low
+fll-live-initramfs (1.2.27) unstable; urgency=low
 
   * Print big red warning if "1" is appended to cmdline. Runlevel 1 not
     supported, use "single" instead.
