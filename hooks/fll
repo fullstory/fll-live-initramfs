@@ -35,7 +35,7 @@ sed 's/^FLL_DISTRO_MODE.*/FLL_DISTRO_MODE="live"/' \
 
 # filesystem unioning modules
 manual_add_modules unionfs
-manual_add_modules aufs || true
+manual_add_modules aufs
 
 # squashfs and loop
 manual_add_modules squashfs
