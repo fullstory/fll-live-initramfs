@@ -946,6 +946,11 @@ mountroot()
 		panic "${R}Failed to prepare ${Y}${FLL_UNION_MODULE}${R} union filesystem${N}"
 	fi
 
+	#
+	# debug checkpoint
+	#
+	maybe_break fll-unionmount
+
 	printf "${G}Preparing live filesystem on ${Y}${rootmnt}${G}${N}...\n"
 	
 	#
@@ -981,6 +986,11 @@ mountroot()
 			esac
 		fi
 	done
+
+	#
+	# debug checkpoint
+	#
+	maybe_break fll-bindmount
 
 	#
 	# prepare /proc /sys
