@@ -1,4 +1,4 @@
-fll-live-initramfs (1.2.28) UNRELEASED; urgency=low
+fll-live-initramfs (1.2.28) unstable; urgency=low
 
   * Add mountall.sh, mountall-bootclean.sh, mountnfs.sh and mountnfs-
     bootclean.sh to initscript whitelist. This will improve persistency.
