@@ -1013,7 +1013,7 @@ mountroot()
 					# fll-live-initscripts
 					#
 					;;
-				glibc.sh|bootmisc.sh|hostname.sh|mountkernfs.sh|mountdevsubfs.sh|keymap.sh|mtab.sh|console-screen.sh|umountnfs.sh)
+				glibc.sh|bootmisc.sh|hostname.sh|mountkernfs.sh|mountdevsubfs.sh|mountall.sh|mountall-bootclean.sh|mountnfs.sh|mountnfs-bootclean.sh|keymap.sh|mtab.sh|console-screen.sh|umountnfs.sh)
 					#
 					# runlevel S .sh scripts, XXX: hwclock.sh
 					#
