@@ -1,3 +1,9 @@
+fll-live-initramfs (1.2.29) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 14 Jun 2007 13:25:05 +0200
+
 fll-live-initramfs (1.2.28) unstable; urgency=low
 
   * Add mountall.sh, mountall-bootclean.sh, mountnfs.sh and mountnfs-
