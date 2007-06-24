@@ -1,4 +1,4 @@
-fll-live-initramfs (1.2.29) UNRELEASED; urgency=low
+fll-live-initramfs (1.2.29) unstable; urgency=low
 
   * Add fll_umount() to "umount and remove a stack of mount points".
   * Use fll_umount() to process FLL_DOUMOUNT stack before every panic point.
