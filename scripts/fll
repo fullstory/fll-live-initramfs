@@ -218,6 +218,17 @@ fll_mount()
 	return "${RETVAL}"
 }
 ###############################################################################
+#	umount and remove a stack of mount points
+###############################################################################
+fll_umount()
+{
+	[ "${#}" -ge 1 ] || return 0
+	
+	for m in ${@}; do
+		umount "${m}" && rmdir "${m}"
+	done
+}
+###############################################################################
 #	calculate total, used and unused memory: MEMTOTAL MEMUSED MEMFREE
 ###############################################################################
 fll_meminfo()
@@ -541,7 +552,7 @@ mountroot()
 		#
 		FLL_MOUNT_LOOP=$(( ${FLL_MOUNT_LOOP} + 1 ))
 		
-		# XXX: ugly hack to allow booting in qemu
+		# ugly hack to allow booting in qemu
 		if [ "${FLL_ROOTDELAY}" -le "${FLL_MOUNT_INTERVAL}" ]; then
 			# only load me as last resort in case nothing helps.
 			# Intel ICH7 and friends honour me with abysmal
@@ -670,9 +681,11 @@ mountroot()
 									FLL_DOMOVEMOUNT="${FLL_BLOCKMNT} ${FLL_DOMOVEMOUNT}"
 									dev="iso"
 								else
+									fll_umount ${FLL_DOUMOUNT}
 									panic "${R}Failed to mount ${Y}${FSTYPE}${R} filesystem from iso image${N}"
 								fi
 							else
+								fll_umount ${FLL_DOUMOUNT}
 								panic "${R}Failed to identify filesystem type of iso${N}"
 							fi
 						fi
@@ -703,6 +716,7 @@ mountroot()
 							if fll_md5sum_check ${FLL_BLOCKMNT}; then
 								printf "${G}All md5sums verified successfully.${N}\n\n"
 							else
+								fll_umount ${FLL_DOUMOUNT}
 								panic "${R}Failed md5sum check!${N}"
 							fi
 						fi
@@ -781,13 +795,24 @@ mountroot()
 							#
 							mkdir -p "${FLL_MOUNTPOINT}"
 							if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "${FLL_MOUNTPOINT}"; then
+								if [ ! -e "${FLL_MOUNTPOINT}/boot/vmlinuz-$(uname -r)" ]; then
+									printf "${R}Kernel mismatch: ${Y}${FLL_MOUNTPOINT}/boot/vmlinuz-$(uname -r)${R} not found.\n${N}"
+									printf "${R}Kernel(s) found on the live filesystem are:\n${n}"
+									for kernel in ${FLL_MOUNTPOINT}/boot/vmlinuz-*; do
+										[ -e "${kernel}" ] && printf "${Y}\t${kernel#*/boot/}\n${N}"
+									done
+									fll_umount ${FLL_DOUMOUNT}
+									panic "${R}Kernel mismatch${N}"
+								fi
 								printf "${G}Mounted ${Y}${FSTYPE}${G} filesystem "
 								printf "on ${Y}${FLL_MOUNTPOINT}${N}\n\n"
 								FLL_DOMOVEMOUNT="${FLL_MOUNTPOINT} ${FLL_DOMOVEMOUNT}"
 							else
+								fll_umount ${FLL_DOUMOUNT}
 								panic "${R}Failed to mount ${Y}${FSTYPE}${R} filesystem${N}"
 							fi
 						else
+							fll_umount ${FLL_DOUMOUNT}
 							panic "${R}Failed to identify filesystem type of live media image${N}"
 						fi
 					else
@@ -802,9 +827,7 @@ mountroot()
 			#
 			# umount mount points in FLL_DOUMOUNT stack
 			#
-			for mnt in ${FLL_DOUMOUNT}; do
-				umount "${mnt}" && rmdir "${mnt}"
-			done
+			fll_umount ${FLL_DOUMOUNT}
 		
 			#
 			# break upon successful mount of live-media
