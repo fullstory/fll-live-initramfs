@@ -782,13 +782,15 @@ mountroot()
 							mkdir -p "${FLL_MOUNTPOINT}"
 							if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "${FLL_MOUNTPOINT}"; then
 								if [ ! -e "${FLL_MOUNTPOINT}/boot/vmlinuz-$(uname -r)" ]; then
-									printf "${R}Kernel mismatch: ${Y}${FLL_MOUNTPOINT}/boot/vmlinuz-$(uname -r)${R} not found.\n${N}"
+									printf "${R}Kernel mismatch: ${Y}vmlinuz-$(uname -r)${R} not found on live filesystem.\n${N}"
 									printf "${R}Kernel(s) found on the live filesystem are:\n${n}"
 									for kernel in ${FLL_MOUNTPOINT}/boot/vmlinuz-*; do
 										[ -e "${kernel}" ] && printf "${Y}\t${kernel#*/boot/}\n${N}"
 									done
 									fll_umount ${FLL_DOUMOUNT}
-									panic "${R}Kernel mismatch${N}"
+									printf "${R}You must use the correct vmlinuz version (and matching initrd.img) to boot successfully.\n${N}"
+									printf "${R}The correct vmlinuz and initrd.img files can be found in the /boot folder of live media.\n${N}"
+									panic
 								fi
 								printf "${G}Mounted ${Y}${FSTYPE}${G} filesystem "
 								printf "on ${Y}${FLL_MOUNTPOINT}${N}\n\n"

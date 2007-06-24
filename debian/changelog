@@ -1,8 +1,8 @@
 fll-live-initramfs (1.2.30) UNRELEASED; urgency=low
 
-  * NOT RELEASED YET
+  * Improve output of kernel/initrd.img - iso mismatch detection.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 24 Jun 2007 15:09:33 +0200
+ -- Kel Modderman <kel@otaku42.de>  Mon, 25 Jun 2007 08:10:22 +1000
 
 fll-live-initramfs (1.2.29) unstable; urgency=low
 
