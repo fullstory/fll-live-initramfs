@@ -229,6 +229,33 @@ fll_umount()
 	done
 }
 ###############################################################################
+#	display processor name and highlights
+###############################################################################
+fll_cpuinfo
+{
+	printf "${G}"
+	awk -F: '
+		/^processor/{
+			printf("Processor'${Y}'"$2"'${G}' is\t")
+		}
+		/^model name/{
+			gsub(/(\([Tt][Mm]\)|\([Rr]\))/,"",$2)
+			gsub(/[ ]+/," ",$2)
+			printf("'${W}'['${Y}'"$2"'${W}' ] ")
+		}
+		/^cpu MHz/{
+			printf("[ '${Y}'%d MHz'${W}' ] ", int($2))
+		}
+		/^cache size/{
+			printf("['${Y}'"$2" Cache'${W}' ]")
+		}
+		/^$/{
+			printf("\n'${G}'")
+		}
+	' /proc/cpuinfo
+	printf "${N}\n"
+}
+###############################################################################
 #	calculate total, used and unused memory: MEMTOTAL MEMUSED MEMFREE
 ###############################################################################
 fll_meminfo()
@@ -256,46 +283,62 @@ fll_copy_with_perc()
 		return 1
 	fi
 
-	FLL_FILE_SIZE="$(du -s ${1} | awk '{ printf("%d\n", int($1)) }')"
-	FLL_FILE_SIZE_COPY="0"
-	
 	#
 	# background the copy, grab the process id
 	#
 	cp ${1} ${2} &
-	FLL_FILE_COPY_PID="$!"
+	
+	awk -v pid="${!}" -v origfile="${1}" -v destfile="${2}/${1##*/}" '
+		function size_of(file,	size)
+		{
+			if(("du -s " file | getline) > 0) {
+				size = sprintf("%d\n", int($1))
+				close("du -s " file)
+				return size
+			}
+			
+			return 0
+		}
 
-	#
-	# update progress every second until cp finishes or files are of same size
-	#
-	printf "${Y}"
-	while kill -0 "${FLL_FILE_COPY_PID}" 2>/dev/null && \
-		[ "${FLL_FILE_SIZE_COPY}" -lt "${FLL_FILE_SIZE}" ]; do
-		/bin/sleep 1
-		if [ -f "${2}/${1##*/}" ]; then
-			#
-			# calculate and print the percentage of file copied so far
-			#
-			FLL_FILE_SIZE_COPY="$(du -s ${2}/${1##*/} | awk '{ printf("%d\n", int($1)) }')"
-			awk 'BEGIN{ printf("\b\b\b%02d%s", 100 * '${FLL_FILE_SIZE_COPY}' / '${FLL_FILE_SIZE}', "%") }'
-		else
-			break
-		fi
-	done
-	printf "${N}"
+		BEGIN {
+			size_dest = 0
+			
+			size_orig = size_of(origfile)
+			if(size_orig <= 0) {
+				printf("'${R}'")
+				printf("Error calculating origfile size\n")
+				printf("'${N}'")
+				exit(1)
+			}
 
-	if [ -f "${2}/${1##*/}" ]; then
-		#
-		# 3 second buffer before attempting to mount to avoid race condition with
-		# mount that follows immediately after this function exits. Any value >=
-		# to interval used in above loop should suffice.
-		#
-		/bin/sleep 3
-		printf "\n"
-		return 0
-	fi
+			do {
+				system("/bin/sleep 1")
+				
+				size_dest = size_of(destfile)
+				if(size_dest <= 0) {
+					printf("'${R}'")
+					printf("Error calculating destfile size\n")
+					printf("'${N}'")
+					exit(1)
+				}
+				
+				printf("'${Y}'")
+				printf("\b\b\b%02d%s", int(100 * size_dest / size_orig), "%")
+				printf("'${N}'")
 
-	return 1
+			} while (system("kill -0 " pid " 2>/dev/null") == 0 && size_dest < size_orig)
+
+			system("/bin/sleep 3")
+			printf("\n")
+
+			size_dest = size_of(destfile)
+			if(size_dest == size_orig)
+				exit(0)
+			else
+				exit(1)
+		}'
+	
+	return ${?}
 }
 ###############################################################################
 #	md5sum checker
@@ -459,27 +502,7 @@ mountroot()
 	#
 	# Print CPU info
 	#
-	printf "${G}"
-	awk -F: '
-		/^processor/{
-			printf("Processor'${Y}'"$2"'${G}' is\t")
-		}
-		/^model name/{
-			gsub(/(\([Tt][Mm]\)|\([Rr]\))/,"",$2)
-			gsub(/[ ]+/," ",$2)
-			printf("'${W}'['${Y}'"$2"'${W}' ] ")
-		}
-		/^cpu MHz/{
-			printf("[ '${Y}'%d MHz'${W}' ] ", int($2))
-		}
-		/^cache size/{
-			printf("['${Y}'"$2" Cache'${W}' ]")
-		}
-		/^$/{
-			printf("\n'${G}'")
-		}
-	' /proc/cpuinfo
-	printf "${N}\n"
+	fll_cpuinfo
 
 	#
 	# Print System Memory info
