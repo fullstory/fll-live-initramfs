@@ -1,4 +1,4 @@
-fll-live-initramfs (1.2.31) UNRELEASED; urgency=low
+fll-live-initramfs (1.2.31) unstable; urgency=low
 
   * Rewrite fll_copy_with_perc() as a mostly awk function. This is a bit more
     efficient than previous shell function and provides more stringent sanity
