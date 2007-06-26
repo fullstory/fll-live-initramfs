@@ -468,7 +468,9 @@ mountroot()
 				FLL_PERSIST="yes"
 				;;
 			quiet)
-				FLL_SUPPRESS_PRINTK="yes"
+				if [ -f /proc/sys/kernel/printk ]; then
+					echo "0" > /proc/sys/kernel/printk
+				fi
 				;;
 			testcd|testdvd|md5sum)
 				FLL_MD5SUM_CHECK="yes"
@@ -481,13 +483,6 @@ mountroot()
 				;;
 		esac
 	done
-
-	#
-	# disable kernel messages while mounting various filesystems
-	#
-	if [ "${FLL_SUPPRESS_PRINTK}" = "yes" ]; then
-		echo "0" > /proc/sys/kernel/printk
-	fi
 
 	#
 	# print geeky informational messages
