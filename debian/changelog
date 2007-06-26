@@ -1,3 +1,9 @@
+fll-live-initramfs (1.2.33) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 26 Jun 2007 11:15:12 +0200
+
 fll-live-initramfs (1.2.32) unstable; urgency=low
 
   * Bugfix: typo while defining fll_cpuinfo, forgot to add () to signal it was
