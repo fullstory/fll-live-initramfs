@@ -1,4 +1,4 @@
-fll-live-initramfs (1.2.32) UNRELEASED; urgency=low
+fll-live-initramfs (1.2.32) unstable; urgency=low
 
   * Bugfix: typo while defining fll_cpuinfo, forgot to add () to signal it was
     a function.
