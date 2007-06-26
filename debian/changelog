@@ -3,12 +3,18 @@ fll-live-initramfs (1.2.32) UNRELEASED; urgency=low
   * Bugfix: typo while defining fll_cpuinfo, forgot to add () to signal it was
     a function.
   * fll_umount: grep /proc/mounts before umounting.
-  * toram related breakages fixes:
+  * toram related breakage fixes:
     - give full path to cp on bg'd copy
     - don't use size_dest < size_orig as a condition for the do/while loop
+    - keep track of percentage copied so far, only print in loop if perc < 100
+    - always print 100% on loop exit
+    - put the system call to sleep in condition of do-while statement
+    - no more need for unconditional sleep after loop, cp will have finished
+    - destfile on tmpfs will be marginally larger than that of origfile, use
+      size_of(destfile) >= orig_size as final comparison
     - manual cleanup of /fll/toram on failure
 
- -- Kel Modderman <kel@otaku42.de>  Tue, 26 Jun 2007 12:55:21 +1000
+ -- Kel Modderman <kel@otaku42.de>  Tue, 26 Jun 2007 15:19:29 +1000
 
 fll-live-initramfs (1.2.31) unstable; urgency=low
 

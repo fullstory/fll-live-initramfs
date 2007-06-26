@@ -296,48 +296,43 @@ fll_copy_with_perc()
 			if(("du -s " file | getline) > 0) {
 				size = sprintf("%d\n", int($1))
 				close("du -s " file)
-				return size
+				if(size > 0)
+					return size
 			}
-			
+
 			return 0
 		}
 
 		BEGIN {
-			size_dest = 0
-			
+			size_dest = perc = 0
 			size_orig = size_of(origfile)
-			if(size_orig <= 0) {
-				printf("'${R}'")
-				printf("Error calculating origfile size\n")
-				printf("'${N}'")
+			if(size_orig <= 0)
 				exit(1)
-			}
 
 			do {
-				system("/bin/sleep 1")
-				
-				size_dest = size_of(destfile)
-				if(size_dest <= 0) {
-					printf("'${R}'")
-					printf("Error calculating destfile size\n")
+				perc = int(100 * size_of(destfile) / size_orig)
+				if(perc < 100) {
+					printf("'${Y}'")
+					printf("\b\b\b%02d%s", perc, "%")
 					printf("'${N}'")
-					exit(1)
 				}
-				
+			} while (system("kill -0 " pid " 2>/dev/null") == 0 && system("/bin/sleep 2") == 0)
+
+			#
+			# destfile size is > origfile size on tmpfs
+			#
+			if(size_of(destfile) >= size_orig) {
 				printf("'${Y}'")
-				printf("\b\b\b%02d%s", int(100 * size_dest / size_orig), "%")
+				printf("\b\b\b%s\n", "100%")
 				printf("'${N}'")
-
-			} while (system("kill -0 " pid " 2>/dev/null") == 0)
-
-			system("/bin/sleep 3")
-			printf("\n")
-
-			size_dest = size_of(destfile)
-			if(size_dest == size_orig)
 				exit(0)
-			else
+			}
+			else {
+				printf("'${R}'")
+				printf("\nFailed to copy %s to ram\n", origfile)
+				printf("'${N}'")			
 				exit(1)
+			}
 		}'
 	
 	return ${?}
@@ -781,7 +776,6 @@ mountroot()
 										#
 										rm -rf "/fll/toram/${FLL_IMAGE_DIR}"
 										fll_umount /fll/toram
-										printf "${R}failed${N}\n"
 										printf "\n${G}Continuing boot from live media${N}...\n"
 									fi
 								else
