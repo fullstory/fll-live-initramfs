@@ -291,7 +291,7 @@ fll_copy_with_perc()
 	cp "${1}" "${2}/${1##*/}" &
 	
 	awk -v pid="${!}" -v origfile="${1}" -v destfile="${2}/${1##*/}" '
-		function size_of(file,	size)
+		function size_of(file,    cmd, size)
 		{
 			cmd = "du -s " file
 			if((cmd | getline) > 0) {
