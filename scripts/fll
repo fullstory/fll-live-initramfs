@@ -293,9 +293,10 @@ fll_copy_with_perc()
 	awk -v pid="${!}" -v origfile="${1}" -v destfile="${2}/${1##*/}" '
 		function size_of(file,	size)
 		{
-			if(("du -s " file | getline) > 0) {
+			cmd = "du -s " file
+			if((cmd | getline) > 0) {
 				size = sprintf("%d\n", int($1))
-				close("du -s " file)
+				close(cmd)
 				if(size > 0)
 					return size
 			}
