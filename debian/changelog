@@ -1,4 +1,4 @@
-fll-live-initramfs (1.2.33) UNRELEASED; urgency=low
+fll-live-initramfs (1.2.33) unstable; urgency=low
 
   * Put du -s $file into cmd variable, and pipe that through awk's getline.
   * Put cmd into list of function variables in fll_cp_with_perc().
