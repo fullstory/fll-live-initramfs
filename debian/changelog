@@ -1,4 +1,4 @@
-fll-live-initramfs (1.2.34) UNRELEASED; urgency=low
+fll-live-initramfs (1.2.34) unstable; urgency=low
 
   * After toram succeeds, make it bleedingly obvious that the cd may be
     ejected.
