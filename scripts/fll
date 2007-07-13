@@ -765,6 +765,9 @@ mountroot()
 										FLL_BLOCKMNT="/fll/toram"
 										FLL_DOMOVEMOUNT="${FLL_BLOCKMNT} ${FLL_DOMOVEMOUNT}"
 										dev="ram"
+										printf "${Y}#############################${N}\n"
+										printf "${G}You may now eject the cd/dvd.${N}\n"
+										printf "${Y}#############################${N}\n"
 									else
 										if [ "${FLL_FROMISO}" = "yes" ]; then
 											#
@@ -807,8 +810,7 @@ mountroot()
 									printf "${R}The correct vmlinuz and initrd.img files can be found in the /boot folder of live media.\n${N}"
 									panic
 								fi
-								printf "${G}Mounted ${Y}${FSTYPE}${G} filesystem "
-								printf "on ${Y}${FLL_MOUNTPOINT}${N}\n\n"
+								printf "${G}Mounted ${Y}${FSTYPE}${G} filesystem on ${Y}${FLL_MOUNTPOINT}${N}\n\n"
 								FLL_DOMOVEMOUNT="${FLL_MOUNTPOINT} ${FLL_DOMOVEMOUNT}"
 							else
 								fll_umount ${FLL_DOUMOUNT}

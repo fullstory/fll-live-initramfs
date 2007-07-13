@@ -1,8 +1,9 @@
 fll-live-initramfs (1.2.34) UNRELEASED; urgency=low
 
-  * NOT RELEASED YET
+  * After toram succeeds, make it bleedingly obvious that the cd may be
+    ejected.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 28 Jun 2007 13:54:21 +0200
+ -- Kel Modderman <kel@otaku42.de>  Fri, 13 Jul 2007 11:41:10 +1000
 
 fll-live-initramfs (1.2.33) unstable; urgency=low
 
