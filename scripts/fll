@@ -252,7 +252,7 @@ fll_cpuinfo()
 			printf("['${Y}'"$2" Cache'${W}' ]")
 		}
 		/^$/{
-			printf("\n'${G}'")
+			printf("'${G}'")
 		}
 	' /proc/cpuinfo
 	printf "${N}\n"
@@ -490,7 +490,7 @@ mountroot()
 	#
 	# Print kernel info
 	#
-	printf "${G}Linux Kernel\t${W}[ ${Y}$(uname -r)${W} ]${N}\n\n"
+	printf "${G}Linux Kernel\t${W}[ ${Y}$(uname -r)${W} ]${N}\n"
 
 	#
 	# Print CPU info
@@ -505,7 +505,7 @@ mountroot()
 	printf "[ ${Y}${MEMUSED}M used ${W}] "
 	printf "[ ${Y}${MEMFREE}M free${W} ] "
 	printf "[ ${Y}${MEMTOTAL}M total${W} ]"
-	printf "${N}\n\n"
+	printf "${N}\n"
 
 	#
 	# debug checkpoint
