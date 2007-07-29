@@ -252,10 +252,10 @@ fll_cpuinfo()
 			printf("['${Y}'"$2" Cache'${W}' ]")
 		}
 		/^$/{
-			printf("'${G}'")
+			printf("\n'${G}'")
 		}
 	' /proc/cpuinfo
-	printf "${N}\n"
+	printf "${N}"
 }
 ###############################################################################
 #	calculate total, used and unused memory: MEMTOTAL MEMUSED MEMFREE
