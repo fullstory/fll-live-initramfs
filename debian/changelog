@@ -1,3 +1,9 @@
+fll-live-initramfs (1.2.36) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 29 Jul 2007 19:09:20 +0200
+
 fll-live-initramfs (1.2.35) unstable; urgency=low
 
   * compress vertical white space for system info.
