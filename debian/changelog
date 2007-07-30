@@ -1,4 +1,4 @@
-fll-live-initramfs (1.2.37) UNRELEASED; urgency=low
+fll-live-initramfs (1.2.37) unstable; urgency=low
 
   * To assist SysV-Init sanitization, removed hardcoded init script names from
     here, instead grep a conffile that is generated at build time.
