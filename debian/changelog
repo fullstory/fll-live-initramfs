@@ -1,8 +1,9 @@
 fll-live-initramfs (1.2.38) UNRELEASED; urgency=low
 
-  * NOT RELEASED YET
+  * Remove useless use of echo to expand shell regexp, use the regexp in for
+    loop directly.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 30 Jul 2007 20:50:44 +0200
+ -- Kel Modderman <kel@otaku42.de>  Tue, 31 Jul 2007 08:07:47 +1000
 
 fll-live-initramfs (1.2.37) unstable; urgency=low
 

@@ -1050,8 +1050,7 @@ mountroot()
 			*)	# purge everything not in the fll-init whitelist
 				if ! grep -q "^${i_name}" "${rootmnt}/etc/default/fll-init"; then
 					# allow shell to expand filenames
-					i_links=$(echo ${rootmnt}/etc/rc[0-9S].d/[SK][0-9][0-9]${i_name})
-					for l in ${i_links}; do
+					for l in ${rootmnt}/etc/rc[0-9S].d/[SK][0-9][0-9]${i_name}; do
 						[ -L "${l}" ] && rm -f "${l}"
 					done
 				fi
