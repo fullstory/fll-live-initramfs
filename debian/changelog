@@ -1,3 +1,9 @@
+fll-live-initramfs (1.2.38) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 30 Jul 2007 20:50:44 +0200
+
 fll-live-initramfs (1.2.37) unstable; urgency=low
 
   * To assist SysV-Init sanitization, removed hardcoded init script names from
