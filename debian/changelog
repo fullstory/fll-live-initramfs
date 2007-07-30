@@ -1,8 +1,9 @@
 fll-live-initramfs (1.2.37) UNRELEASED; urgency=low
 
-  * NOT RELEASED YET
+  * To assist SysV-Init sanitization, removed hardcoded init script names from
+    here, instead grep a conffile that is generated at build time.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 30 Jul 2007 01:40:58 +0200
+ -- Kel Modderman <kel@otaku42.de>  Mon, 30 Jul 2007 22:50:20 +1000
 
 fll-live-initramfs (1.2.36) unstable; urgency=low
 

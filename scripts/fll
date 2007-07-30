@@ -1045,32 +1045,12 @@ mountroot()
 		[ -d ${rootmnt}/etc/rc${rl}.d/ ] || continue
 		for s in ${rootmnt}/etc/rc${rl}.d/[SK][0-9][0-9]*; do
 			[ -L "${s}" ] || continue
-			case "${s##*/[SK][0-9][0-9]}" in
-				fll-*)
-					#
-					# fll-live-initscripts
-					#
+			s_name="${s##*/[SK][0-9][0-9]}"
+			case "${s_name}" in
+				fll-*)	# fll-live-initscripts
 					;;
-				glibc.sh|bootmisc.sh|hostname.sh|mountkernfs.sh|mountdevsubfs.sh|mountall.sh|mountall-bootclean.sh|mountnfs.sh|mountnfs-bootclean.sh|keymap.sh|mtab.sh|console-screen.sh|umountnfs.sh)
-					#
-					# runlevel S .sh scripts, XXX: hwclock.sh
-					#
-					;;
-				udev|module-init-tools|ifupdown-clean|fuse|networking|udev-mtab|ifupdown|x11-common|wpa-ifupdown|killprocs|sendsigs|rmnologin|single)
-					#
-					# runlevel S scripts
-					#
-					;;
-				acpid|alsa-utils|dbus|hal|avahi-daemon|powernowd|powersaved|hotkey-setup|gpm|bluetooth|pcmciautils|cupsys)
-					#
-					# default runlevel scripts and fll-live-initscripts managed services
-					#
-					;;
-				*)
-					#
-					# purge everything else
-					#
-					rm -f "${s}"
+				*)	# purge everything not in the fll-init whitelist
+					grep -q "^${s_name}" "${rootmnt}/etc/default/fll-init" || rm -f "${s}"
 					;;
 			esac
 		done
