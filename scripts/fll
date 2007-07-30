@@ -1041,19 +1041,22 @@ mountroot()
 	#
 	# sanitise live SysV runlevel configuration
 	#
-	for rl in S 0 1 2 3 4 5 6; do
-		[ -d ${rootmnt}/etc/rc${rl}.d/ ] || continue
-		for s in ${rootmnt}/etc/rc${rl}.d/[SK][0-9][0-9]*; do
-			[ -L "${s}" ] || continue
-			s_name="${s##*/[SK][0-9][0-9]}"
-			case "${s_name}" in
-				fll-*)	# fll-live-initscripts
-					;;
-				*)	# purge everything not in the fll-init whitelist
-					grep -q "^${s_name}" "${rootmnt}/etc/default/fll-init" || rm -f "${s}"
-					;;
-			esac
-		done
+	for i in ${rootmnt}/etc/init.d/*; do
+		[ -x "${i}" ] || continue
+		i_name="${i#*/etc/init.d/}"
+		case "${i_name}" in
+			fll-*)	# fll-live-initscripts
+				;;
+			*)	# purge everything not in the fll-init whitelist
+				if ! grep -q "^${i_name}" "${rootmnt}/etc/default/fll-init"; then
+					# allow shell to expand filenames
+					i_links=$(echo /etc/rc[0-9S].d/[SK][0-9][0-9]${i_name})
+					for l in ${i_links}; do
+						[ -L "${l}" ] && rm -f "${l}"
+					done
+				fi
+				;;
+		esac
 	done
 
 	#
