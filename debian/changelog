@@ -1,4 +1,4 @@
-fll-live-initramfs (1.2.38) UNRELEASED; urgency=low
+fll-live-initramfs (1.2.38) unstable; urgency=low
 
   * Remove useless use of echo to expand shell regexp, use the regexp in for
     loop directly.
