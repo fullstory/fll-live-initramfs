@@ -765,9 +765,6 @@ mountroot()
 										FLL_BLOCKMNT="/fll/toram"
 										FLL_DOMOVEMOUNT="${FLL_BLOCKMNT} ${FLL_DOMOVEMOUNT}"
 										dev="ram"
-										printf "${Y}#############################${N}\n"
-										printf "${G}You may now eject the cd/dvd.${N}\n"
-										printf "${Y}#############################${N}\n"
 									else
 										if [ "${FLL_FROMISO}" = "yes" ]; then
 											#
