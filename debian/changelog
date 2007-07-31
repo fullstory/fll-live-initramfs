@@ -1,4 +1,4 @@
-fll-live-initramfs (1.2.39) UNRELEASED; urgency=low
+fll-live-initramfs (1.2.39) unstable; urgency=low
 
   * Don't announce anything after copying media to ram, what if we are not
     copying from cd or dvd? Stay proper and do not say it at all.
