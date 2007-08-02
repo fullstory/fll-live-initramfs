@@ -554,14 +554,6 @@ mountroot()
 		#
 		FLL_MOUNT_LOOP=$(( ${FLL_MOUNT_LOOP} + 1 ))
 		
-		# ugly hack to allow booting in qemu
-		if [ "${FLL_ROOTDELAY}" -le "${FLL_MOUNT_INTERVAL}" ]; then
-			# only load me as last resort in case nothing helps.
-			# Intel ICH7 and friends honour me with abysmal
-			# performance.
-			modprobe ide-generic
-		fi
-		
 		#
 		# determine block devices to be probed on this loop
 		#
@@ -1038,6 +1030,10 @@ mountroot()
 	#
 	# sanitise live SysV runlevel configuration
 	#
+	if [ ! -f "${rootmnt}/etc/default/fll-init" ]; then
+		panic "${R}fll-init initscript whitelist not found${N}"
+	fi
+
 	for i in ${rootmnt}/etc/init.d/*; do
 		[ -x "${i}" ] || continue
 		i_name="${i#*/etc/init.d/}"
