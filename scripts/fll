@@ -1041,8 +1041,7 @@ mountroot()
 			fll-*)	# fll-live-initscripts
 				;;
 			*)	# purge everything not in the fll-init whitelist
-				#grep -q "^# ${i_name}$" "${rootmnt}/etc/default/fll-init" && continue
-				grep -q "^${i_name}" "${rootmnt}/etc/default/fll-init" && continue
+				grep -q "^# ${i_name}$" "${rootmnt}/etc/default/fll-init" && continue
 				
 				# allow shell to expand filenames
 				for l in ${rootmnt}/etc/rc[0-6S].d/[SK][0-9][0-9]${i_name}; do
