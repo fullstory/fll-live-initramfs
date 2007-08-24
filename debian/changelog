@@ -1,4 +1,4 @@
-fll-live-initramfs (1.3.1) UNRELEASED; urgency=low
+fll-live-initramfs (1.3.1) unstable; urgency=low
 
   * Simplify the init purge loop, and prepare to make fll-init.default safer.
   * Modify grep of fll-init.default.
