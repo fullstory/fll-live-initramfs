@@ -1,9 +1,10 @@
-fll-live-initramfs (1.3.2) UNRELEASED; urgency=low
+fll-live-initramfs (1.3.2) unstable; urgency=low
 
-  * NOT RELEASED YET
   * add VCS control headers.
+  * add busybox to hard dependencies, it's only recommended by initramfs-tools
+    these days.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 11 Sep 2007 20:10:12 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 12 Sep 2007 12:02:28 +0200
 
 fll-live-initramfs (1.3.1) unstable; urgency=low
 
