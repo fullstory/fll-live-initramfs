@@ -161,11 +161,6 @@ fll_mount()
 	DST="${3}"
 	shift 3
 
-	#
-	# default return value of 1, return 0 on successful mount
-	#
-	RETVAL=1
-	
 	case "${FS}" in
 		iso9660|squashfs)
 			if [ -f "${SRC}" ] && [ ! -b "${SRC}" ]; then
@@ -200,22 +195,22 @@ fll_mount()
 			;;
 		*)
 			if [ "${#}" -gt 0 ]; then
-				FLL_MOUNT_OPTS="${@}"
+				FLL_MOUNT_OPTS="noatime,${@}"
 			fi
 			;;
 	esac
 
 	if [ "${FLL_MOUNT_OPTS}" ]; then
 		if mount -t ${FS} -o ${FLL_MOUNT_OPTS} ${SRC} ${DST} >/dev/null 2>&1; then
-			RETVAL=0
+			return 0
 		fi
 	else
 		if mount -t ${FS} ${SRC} ${DST} >/dev/null 2>&1; then
-			RETVAL=0
+			return 0
 		fi
 	fi
 
-	return "${RETVAL}"
+	return 1
 }
 ###############################################################################
 #	umount and remove a stack of mount points
