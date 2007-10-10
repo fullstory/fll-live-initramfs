@@ -1026,25 +1026,14 @@ mountroot()
 	# sanitise live SysV runlevel configuration
 	#
 	if [ ! -f "${rootmnt}/etc/default/fll-init" ]; then
-		panic "${R}fll-init initscript whitelist not found${N}"
+		panic "${R}fll-init initscript blacklist not found${N}"
 	fi
 
-	for i in ${rootmnt}/etc/init.d/*; do
-		[ -x "${i}" ] || continue
-		i_name="${i#*/etc/init.d/}"
-		case "${i_name}" in
-			fll-*)	# fll-live-initscripts
-				;;
-			*)	# purge everything not in the fll-init whitelist
-				grep -q "^# ${i_name}$" "${rootmnt}/etc/default/fll-init" && continue
-				
-				# allow shell to expand filenames
-				for l in ${rootmnt}/etc/rc[0-6S].d/[SK][0-9][0-9]${i_name}; do
-					[ -L "${l}" ] && rm -f "${l}"
-				done
-				;;
-		esac
-	done
+	while read init; do
+		if [ -x "${rootmnt}/etc/init.d/${init}" ]; then
+			rm -f ${rootmnt}/etc/rc[0-6S]\.d/[SK]??${init}
+		fi
+	done < "${rootmnt}/etc/default/fll-init"
 
 	#
 	# debug checkpoint
