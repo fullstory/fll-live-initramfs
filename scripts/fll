@@ -293,7 +293,9 @@ fll_copy_with_perc()
 				size = sprintf("%d\n", int($1))
 				close(cmd)
 				if(size > 0)
+				{
 					return size
+				}
 			}
 
 			return 0
@@ -302,17 +304,25 @@ fll_copy_with_perc()
 		BEGIN {
 			do {
 				if(system("test -f " destfile) == 0)
+				{
 					break
+				}
 				else if(system("/bin/sleep 1") == 0)
+				{
 					wait++
+				}
 				else
+				{
 					exit(1)
+				}
 			} while (wait < 15)
 
 			size_dest = perc = 0
 			size_orig = size_of(origfile)
 			if(size_orig <= 0)
+			{
 				exit(1)
+			}
 
 			do {
 				perc = int(100 * size_of(destfile) / size_orig)
