@@ -1,4 +1,4 @@
-fll-live-initramfs (1.3.6) UNRELEASED; urgency=low
+fll-live-initramfs (1.3.6) unstable; urgency=low
 
   * Loop wait for maximum 15 seconds after backgrounding copy of live image to
     ram in fll_cp_with_perc() otherwise we may bail out to early when loading
