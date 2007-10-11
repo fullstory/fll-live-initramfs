@@ -1041,11 +1041,16 @@ mountroot()
 	maybe_break fll-bottom
 
 	#
+	# alsa should not be persistent
+	#
+	rm -f ${rootmnt}/var/lib/alsa/asound.state
+
+	#
 	# disable persistent udev rules. we have "persistency" logic for data but
 	# we should remain hardware agnostic
 	#
 	rm -f ${rootmnt}/etc/udev/rules.d/z25_persistent-*.rules
-
+	
 	#
 	# disable movement of static $rootmnt/dev by scripts/init-bottom/udev
 	#
