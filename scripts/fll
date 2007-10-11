@@ -300,6 +300,15 @@ fll_copy_with_perc()
 		}
 
 		BEGIN {
+			do {
+				if(system("test -f " destfile) == 0)
+					break
+				else if(system("/bin/sleep 1") == 0)
+					wait++
+				else
+					exit(1)
+			} while (wait < 10)
+
 			size_dest = perc = 0
 			size_orig = size_of(origfile)
 			if(size_orig <= 0)
@@ -312,7 +321,8 @@ fll_copy_with_perc()
 					printf("\b\b\b%02d%s", perc, "%")
 					printf("'${N}'")
 				}
-			} while (system("kill -0 " pid " 2>/dev/null") == 0 && system("/bin/sleep 2") == 0)
+			} while (system("kill -0 " pid " 2>/dev/null") == 0 &&
+				 system("/bin/sleep 2") == 0)
 
 			#
 			# destfile size is > origfile size on tmpfs
