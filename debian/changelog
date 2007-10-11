@@ -1,3 +1,9 @@
+fll-live-initramfs (1.3.8) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 12 Oct 2007 00:48:32 +0200
+
 fll-live-initramfs (1.3.7) unstable; urgency=low
 
   * actually use curly braces in awk if/else if block in fll_cp_with_perc(),
