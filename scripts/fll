@@ -307,7 +307,7 @@ fll_copy_with_perc()
 					wait++
 				else
 					exit(1)
-			} while (wait < 10)
+			} while (wait < 15)
 
 			size_dest = perc = 0
 			size_orig = size_of(origfile)
