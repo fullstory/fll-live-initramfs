@@ -569,7 +569,17 @@ mountroot()
 			#
 			# user defined block device
 			#
-			FLL_BLOCKDEVS="${FLL_FROMHD_DEV}"
+			case "${FLL_FROMHD_DEV}" in
+				LABEL=*)
+					FLL_BLOCKDEVS="/dev/disk/by-label/${FLL_FROMHD_DEV#LABEL=}"
+					;;
+				UUID=*)
+					FLL_BLOCKDEVS="/dev/disk/by-uuid/${FLL_FROMHD_DEV#UUID=}"
+					;;
+				*)
+					FLL_BLOCKDEVS="${FLL_FROMHD_DEV}"
+					;;
+			esac
 		else
 			#
 			# current list of block devices that may be probed for live media
@@ -627,11 +637,11 @@ mountroot()
 					printf "${G}Probing devices\t${N}"
 				fi
 				FLL_BLOCKDEVS_PROBED=$(( ${FLL_BLOCKDEVS_PROBED} + 1 ))
-				printf "${W}[${Y} ${dev#/dev/}${W} ]${N} "
+				printf "${W}[${Y} ${dev##*/}${W} ]${N} "
 				#
 				# we have determined FSTYPE of the device, set FLL_BLOCKMNT
 				#
-				FLL_BLOCKMNT="/fll/${dev#/dev/}"
+				FLL_BLOCKMNT="/fll/${dev##*/}"
 				mkdir -p "${FLL_BLOCKMNT}"
 				#
 				# save origin of media in variable for persitency
