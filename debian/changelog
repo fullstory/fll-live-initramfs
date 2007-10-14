@@ -1,4 +1,4 @@
-fll-live-initramfs (1.3.9) UNRELEASED; urgency=low
+fll-live-initramfs (1.3.9) unstable; urgency=low
 
   * Cosmetic fixup of output when fromhd= cheatcode is used; prevent a newline
     from being printed on each loop of device detection.
