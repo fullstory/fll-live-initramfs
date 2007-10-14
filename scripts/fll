@@ -854,6 +854,10 @@ mountroot()
 		# if we got here, we failed to find live media
 		#
 		
+		if [ "${FLL_FROMHD_DEV}" ]; then
+			continue
+		fi
+		
 		#
 		# keep account of what devices we have probed so far
 		#
