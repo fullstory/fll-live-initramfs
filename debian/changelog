@@ -1,4 +1,4 @@
-fll-live-initramfs (2.0.0) UNRELEASED; urgency=low
+fll-live-initramfs (2.0.0) unstable; urgency=low
 
   * Bump major version.
   * Cosmetic alteration of announced device names, strip leading pathnames to
