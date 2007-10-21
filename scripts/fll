@@ -183,9 +183,9 @@ fll_mount()
 			# we need this for FLL_IMAGE on DOS-filesystems
 			#
 			if [ "${#}" -gt 0 ]; then
-				FLL_MOUNT_OPTS="${@},shortname=winnt"
+				FLL_MOUNT_OPTS="${@},shortname=winnt,umask=0"
 			else
-				FLL_MOUNT_OPTS="shortname=winnt"
+				FLL_MOUNT_OPTS="shortname=winnt,umask=0"
 			fi
 			;;
 		suspend|swap|luks|lvm*)
@@ -809,7 +809,7 @@ mountroot()
 							if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "${FLL_MOUNTPOINT}"; then
 								if [ ! -e "${FLL_MOUNTPOINT}/boot/vmlinuz-$(uname -r)" ]; then
 									printf "${R}Kernel mismatch: ${Y}vmlinuz-$(uname -r)${R} not found on live filesystem.\n${N}"
-									printf "${R}Kernel(s) found on the live filesystem are:\n${n}"
+									printf "${R}Kernel(s) found on the live filesystem are:\n${N}"
 									for kernel in ${FLL_MOUNTPOINT}/boot/vmlinuz-*; do
 										[ -e "${kernel}" ] && printf "${Y}\t${kernel#*/boot/}\n${N}"
 									done
