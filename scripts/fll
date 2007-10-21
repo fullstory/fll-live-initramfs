@@ -934,7 +934,7 @@ mountroot()
 	#
 	if [ "${FLL_PERSIST}" = "yes" ] && [ "${FLL_PERSIST_BLOCKMNT}" ]; then
 		case "${FLL_PERSIST_BLOCKFSTYPE}" in
-			ext*|reiser*|xfs|jfs|vfat)
+			ext*|reiser*|xfs|jfs|msdos|vfat)
 				#
 				# FLL_PERSIST_BLOCKMNT points to position of mounted fielsystem before it was moved
 				# to the new root filesystem. Prepend ${rootmnt}.
@@ -953,8 +953,9 @@ mountroot()
 				#
 				#
 				#
-				if [ "${FLL_PERSIST_BLOCKFSTYPE}" = "vfat" ]; then
-					if [ -e "${FLL_UNION_COWMNTPNT}/${FLL_DISTRO_NAME}-rw" ]; then
+				if [ "${FLL_PERSIST_BLOCKFSTYPE}" = "msdos" ] || [ "${FLL_PERSIST_BLOCKFSTYPE}" = "vfat" ]; then
+					if [ -e "${FLL_UNION_COWMNTPNT}/${FLL_DISTRO_NAME}-rw" ] && \
+						fll_finger_fstype "${FLL_UNION_COWMNTPNT}/${FLL_DISTRO_NAME}-rw"; then
 						: # found filesystem-in-a-file, mount it and update FLL_UNION_COWMNTPNT
 					else
 						: # panic - no filesystem-in-a-file
