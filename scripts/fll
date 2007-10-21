@@ -934,7 +934,7 @@ mountroot()
 	#
 	if [ "${FLL_PERSIST}" = "yes" ] && [ "${FLL_PERSIST_BLOCKMNT}" ]; then
 		case "${FLL_PERSIST_BLOCKFSTYPE}" in
-			ext*|reiser*|xfs|jfs)
+			ext*|reiser*|xfs|jfs|vfat)
 				#
 				# FLL_PERSIST_BLOCKMNT points to position of mounted fielsystem before it was moved
 				# to the new root filesystem. Prepend ${rootmnt}.
@@ -949,6 +949,16 @@ mountroot()
 					printf "${G}Remounting persistent filesystem on ${Y}${FLL_PERSIST_BLOCKDEV##*/}${G}${N}...\n"
 				else
 					panic "${R}Failed to remount persistent filesystem on ${Y}${FLL_PERSIST_DEV##*/}${N}"
+				fi
+				#
+				#
+				#
+				if [ "${FLL_PERSIST_BLOCKFSTYPE}" = "vfat" ]; then
+					if [ -e "${FLL_UNION_COWMNTPNT}/${FLL_DISTRO_NAME}-rw" ]; then
+						: # found filesystem-in-a-file, mount it and update FLL_UNION_COWMNTPNT
+					else
+						: # panic - no filesystem-in-a-file
+					fi
 				fi
 				;;
 			*)

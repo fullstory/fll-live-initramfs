@@ -1,11 +1,14 @@
 fll-live-initramfs (2.0.1) UNRELEASED; urgency=low
 
+  * DO NOT UPLOAD - WIP
   * Mount vfat with umask=0 option.
   * Fix ansi escape variable typo ${n} -> ${N}.
   * Move block of code that remounts persistent union on native linux fs into
     case construct.
+  * Add stub for vfat filesystem-in-a-file patch, must decipher what the
+    original submitter wants to do here...
 
- -- Kel Modderman <kel@otaku42.de>  Mon, 22 Oct 2007 00:24:12 +1000
+ -- Kel Modderman <kel@otaku42.de>  Mon, 22 Oct 2007 00:44:31 +1000
 
 fll-live-initramfs (2.0.0) unstable; urgency=low
 
