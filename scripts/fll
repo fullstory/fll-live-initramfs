@@ -935,6 +935,21 @@ mountroot()
 	if [ "${FLL_PERSIST}" = "yes" ] && [ "${FLL_PERSIST_BLOCKMNT}" ]; then
 		case "${FLL_PERSIST_BLOCKFSTYPE}" in
 			ext*|reiser*|xfs|jfs)
+				#
+				# FLL_PERSIST_BLOCKMNT points to position of mounted fielsystem before it was moved
+				# to the new root filesystem. Prepend ${rootmnt}.
+				#
+				FLL_UNION_COWMNTPNT="${rootmnt}${FLL_PERSIST_BLOCKMNT}"
+				mkdir -p "${FLL_UNION_COWMNTPNT}"
+				#
+				# remount original fs containing live media rw (toram would umount it)
+				#
+				if grep -q "${FLL_UNION_COWMNTPNT}" /proc/mounts && mount -o remount,rw "${FLL_UNION_COWMNTPNT}" || \
+					fll_mount ${FLL_PERSIST_BLOCKFSTYPE} ${FLL_PERSIST_BLOCKDEV} ${FLL_UNION_COWMNTPNT} rw; then
+					printf "${G}Remounting persistent filesystem on ${Y}${FLL_PERSIST_BLOCKDEV##*/}${G}${N}...\n"
+				else
+					panic "${R}Failed to remount persistent filesystem on ${Y}${FLL_PERSIST_DEV##*/}${N}"
+				fi
 				;;
 			*)
 				#
@@ -943,21 +958,6 @@ mountroot()
 				panic "${R}Cannot create persistent filesystem with type ${Y}${FLL_PERSIST_BLOCKFSTYPE}${N}"
 				;;
 		esac
-		#
-		# FLL_PERSIST_BLOCKMNT points to position of mounted fielsystem before it was moved
-		# to the new root filesystem. Prepend ${rootmnt}.
-		#
-		FLL_UNION_COWMNTPNT="${rootmnt}${FLL_PERSIST_BLOCKMNT}"
-		mkdir -p "${FLL_UNION_COWMNTPNT}"
-		#
-		# remount original fs containing live media rw (toram would umount it)
-		#
-		if grep -q "${FLL_UNION_COWMNTPNT}" /proc/mounts && mount -o remount,rw "${FLL_UNION_COWMNTPNT}" || \
-			fll_mount ${FLL_PERSIST_BLOCKFSTYPE} ${FLL_PERSIST_BLOCKDEV} ${FLL_UNION_COWMNTPNT} rw; then
-			printf "${G}Remounting persistent filesystem on ${Y}${FLL_PERSIST_BLOCKDEV##*/}${G}${N}...\n"
-		else
-			panic "${R}Failed to remount persistent filesystem on ${Y}${FLL_PERSIST_DEV##*/}${N}"
-		fi
 	else
 		FLL_UNION_COWMNTPNT="${rootmnt}"
 	fi
