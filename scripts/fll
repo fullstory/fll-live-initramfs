@@ -944,7 +944,7 @@ mountroot()
 				;;
 		esac
 		#
-		# FLL_PERSIST_BLOCKMNT points to position of mounted fielsystem before ot was moved
+		# FLL_PERSIST_BLOCKMNT points to position of mounted fielsystem before it was moved
 		# to the new root filesystem. Prepend ${rootmnt}.
 		#
 		FLL_UNION_COWMNTPNT="${rootmnt}${FLL_PERSIST_BLOCKMNT}"
