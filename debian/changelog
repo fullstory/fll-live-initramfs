@@ -1,4 +1,4 @@
-fll-live-initramfs (2.0.1) UNRELEASED; urgency=low
+fll-live-initramfs (2.0.1) unstable; urgency=low
 
   * Mount vfat with umask=0 option.
   * Fix ansi escape variable typo ${n} -> ${N}.
