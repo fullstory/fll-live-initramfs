@@ -473,6 +473,13 @@ mountroot()
 				;;
 			persist)
 				FLL_PERSIST="yes"
+				FLL_PERSIST_FILE="${FLL_DISTRO_NAME}-rw"
+				case "${opt}" in
+					persist=*)
+						FLL_PERSIST_FILE="${opt#persist=}"
+						FLL_UNION_COWDIR="${opt#persist=}"
+						;;
+				esac
 				;;
 			quiet)
 				if [ -f /proc/sys/kernel/printk ]; then
@@ -925,9 +932,10 @@ mountroot()
 
 	#
 	# unioned filesystem mount points
+	# persist may already have set FLL_UNION_COWDIR
 	#
 	FLL_UNION_MOUNTPOINT="/fll/${FLL_UNION_MODULE}"
-	FLL_UNION_COWDIR="/fll/cow"
+	[ -z "$FLL_UNION_COWDIR" ] && FLL_UNION_COWDIR="/fll/cow"
 
 	#
 	# prepare COW union filesystem, handle persistency
@@ -954,22 +962,27 @@ mountroot()
 				# mount a persistent filesystem-in-a-file on microsoft filesystems
 				#
 				if [ "${FLL_PERSIST_BLOCKFSTYPE}" = "msdos" ] || [ "${FLL_PERSIST_BLOCKFSTYPE}" = "vfat" ]; then
-					if [ -f "${FLL_UNION_COWMNTPNT}/${FLL_DISTRO_NAME}-rw" ] && \
-						fll_finger_fstype "${FLL_UNION_COWMNTPNT}/${FLL_DISTRO_NAME}-rw"; then
-						printf "${G}Mounting ${Y}${FLL_DISTRO_NAME}-rw${G} filesystem-in-a-file${N}..."
+					if [ -f "${FLL_UNION_COWMNTPNT}/${FLL_PERSIST_FILE}" ] && \
+						fll_finger_fstype "${FLL_UNION_COWMNTPNT}/${FLL_PERSIST_FILE}"; then
+						printf "${G}Mounting ${Y}${FLL_PERSIST_FILE}${G} filesystem-in-a-file${N}..."
 						#
 						# identify filesystem of loopback file, mount it and update FLL_UNION_COWMNTPNT
 						#
-						mkdir -p "${rootmnt}/fll/${FLL_DISTRO_NAME}-rw"
-						if fll_mount "${FSTYPE}" "${FLL_UNION_COWMNTPNT}/${FLL_DISTRO_NAME}-rw" \
-							"${rootmnt}/fll/${FLL_DISTRO_NAME}-rw" loop; then
+						mkdir -p "${rootmnt}/fll/persist"
+						if fll_mount "${FSTYPE}" "${FLL_UNION_COWMNTPNT}/${FLL_PERSIST_FILE}" \
+							"${rootmnt}/fll/persist" loop; then
 							printf "\n"
-							FLL_UNION_COWMNTPNT="${rootmnt}/fll/${FLL_DISTRO_NAME}-rw"
+							FLL_UNION_COWMNTPNT="${rootmnt}/fll/persist"
+							#
+							# We have now found a persistent file setup
+							# We can revert any custom cowdir set by persist
+							#
+							FLL_UNION_COWDIR="/fll/cow"
 						else
-							panic "${R}Failed to mount ${Y}${FLL_DISTRO_NAME}-rw${R} persistent filesystem-in-a-file${N}"
+							panic "${R}Failed to mount ${Y}${FLL_PERSIST_FILE}${R} persistent filesystem-in-a-file${N}"
 						fi
 					else
-						panic "${R}Invalid/missing ${Y}${FLL_DISTRO_NAME}-rw${R} persistent filesystem-in-a-file${N}"
+						panic "${R}Invalid/missing ${Y}${FLL_PERSIST_FILE}${R} persistent filesystem-in-a-file${N}"
 					fi
 				fi
 				;;

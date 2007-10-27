@@ -1,8 +1,14 @@
 fll-live-initramfs (2.0.2) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 24 Oct 2007 00:34:31 +0200
+  [ Niall Walsh ]
+  * Create persist=foo cheatcode.   Normally sets the folder to find and use
+    on the fromhd device for persistance.  On fat sets the name of the file to
+    use for the loopback filesystem.
+
+ -- Niall Walsh <niallwalsh@users.berlios.de>  Sat, 27 Oct 2007 07:16:44 +0100
 
 fll-live-initramfs (2.0.1) unstable; urgency=low
 
