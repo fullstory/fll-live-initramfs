@@ -1,9 +1,5 @@
-fll-live-initramfs (2.0.3) UNRELEASED; urgency=low
+fll-live-initramfs (2.0.3) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Niall Walsh ]
   * Fix persist case handling so it matches persist* as intended!
 
  -- Niall Walsh <niallwalsh@users.berlios.de>  Thu, 01 Nov 2007 18:08:51 +0000
