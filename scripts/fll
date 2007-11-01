@@ -471,7 +471,7 @@ mountroot()
 				FLL_IMAGE_FILE="${opt#image_name=}"
 				FLL_IMAGE_LOCATION="${FLL_IMAGE_DIR}/${FLL_IMAGE_FILE}"
 				;;
-			persist)
+			persist*)
 				FLL_PERSIST="yes"
 				FLL_PERSIST_FILE="${FLL_DISTRO_NAME}-rw"
 				case "${opt}" in
