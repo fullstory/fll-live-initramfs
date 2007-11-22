@@ -10,7 +10,7 @@
 #	F.U.L.L.S.T.O.R.Y Project Homepage:
 #	http://developer.berlios.de/projects/fullstory
 ###############################################################################
-#	utility function to help with identifying device strings within strings
+#	utility function to help with identifying device strings within a list
 ###############################################################################
 fll_string_not_in_strings()
 {
@@ -147,10 +147,6 @@ fll_setup_dev_loop()
 	done
 
 	panic "${R}Unable to setup loop mounted device, no loop device nodes exist${N}"
-
-	#for n in 0 1 2 3 4 5 6 7; do
-	#	mknod /dev/loop${n} b 7 ${n}
-	#done
 }
 ###############################################################################
 #	generic mount function usage: fll_mount fs src mnt options
@@ -233,23 +229,15 @@ fll_cpuinfo()
 {
 	printf "${G}"
 	awk -F: '
-		/^processor/{
-			printf("Processor'${Y}'"$2"'${G}' is\t")
-		}
-		/^model name/{
+		/^processor/ { printf("Processor'${Y}'"$2"'${G}' is\t") }
+		/^model name/ {
 			gsub(/(\([Tt][Mm]\)|\([Rr]\))/,"",$2)
 			gsub(/[ ]+/," ",$2)
 			printf("'${W}'['${Y}'"$2"'${W}' ] ")
 		}
-		/^cpu MHz/{
-			printf("[ '${Y}'%d MHz'${W}' ] ", int($2))
-		}
-		/^cache size/{
-			printf("['${Y}'"$2" Cache'${W}' ]")
-		}
-		/^$/{
-			printf("\n'${G}'")
-		}
+		/^cpu MHz/ { printf("[ '${Y}'%d MHz'${W}' ] ", int($2)) }
+		/^cache size/ { printf("['${Y}'"$2" Cache'${W}' ]") }
+		/^$/ { printf("\n'${G}'") }
 	' /proc/cpuinfo
 	printf "${N}"
 }
@@ -259,12 +247,8 @@ fll_cpuinfo()
 fll_meminfo()
 {
 	awk '
-		/^MemTotal:/{
-			total=$2
-		}
-		/^(MemFree|Buffers|Cached):/{
-			free+=$2
-		}
+		/^MemTotal:/ { total=$2 }
+		/^(MemFree|Buffers|Cached):/ { free+=$2 }
 		END {
 			printf("MEMTOTAL=%d\n",	int(total) / 1024)
 			printf("MEMFREE=%d\n",	int(free) / 1024)
@@ -290,10 +274,10 @@ fll_copy_with_perc()
 		function size_of(file,    cmd, size)
 		{
 			cmd = "du -s " file
-			if((cmd | getline) > 0) {
+			if ((cmd | getline) > 0) {
 				size = sprintf("%d\n", int($1))
 				close(cmd)
-				if(size > 0)
+				if (size > 0)
 					return size
 			}
 
@@ -302,10 +286,10 @@ fll_copy_with_perc()
 
 		BEGIN {
 			do {
-				if(system("test -f " destfile) == 0) {
+				if (system("test -f " destfile) == 0) {
 					break
 				}
-				else if(system("/bin/sleep 1") == 0) {
+				else if (system("/bin/sleep 1") == 0) {
 					wait++
 				}
 				else {
@@ -315,12 +299,12 @@ fll_copy_with_perc()
 
 			size_dest = perc = 0
 			size_orig = size_of(origfile)
-			if(size_orig <= 0)
+			if (size_orig <= 0)
 				exit(1)
 
 			do {
 				perc = int(100 * size_of(destfile) / size_orig)
-				if(perc < 100) {
+				if (perc < 100) {
 					printf("'${Y}'")
 					printf("\b\b\b%02d%s", perc, "%")
 					printf("'${N}'")
@@ -331,7 +315,7 @@ fll_copy_with_perc()
 			#
 			# destfile size is > origfile size on tmpfs
 			#
-			if(size_of(destfile) >= size_orig) {
+			if (size_of(destfile) >= size_orig) {
 				printf("'${Y}'")
 				printf("\b\b\b%s\n", "100%")
 				printf("'${N}'")
@@ -368,8 +352,8 @@ fll_md5sum_check()
 			printf("* %s\n|--> %s\n`--> ", file, md5)
 			printf("'${N}'")
 			
-			if(("md5sum " dir "/" file | getline) > 0) {
-				if(md5 == $1) {
+			if (("md5sum " dir "/" file | getline) > 0) {
+				if (md5 == $1) {
 					printf("'${G}'")
 					printf("%s  OK\n\n", $1)
 					printf("'${N}'")
@@ -391,7 +375,7 @@ fll_md5sum_check()
 		}
 		
 		END{
-			if(failed) {
+			if (failed) {
 				printf("'${R}'")
 				printf("*******************************\n")
 				printf("***** MD5SUM CHECK FAILED *****\n")
