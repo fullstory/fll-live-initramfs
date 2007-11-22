@@ -1,4 +1,4 @@
-fll-live-initramfs (2.0.4) UNRELEASED; urgency=low
+fll-live-initramfs (2.0.4) unstable; urgency=low
 
   * A little tidy up of awk code style and comments.
 
