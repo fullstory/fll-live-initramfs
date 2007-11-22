@@ -1,3 +1,9 @@
+fll-live-initramfs (2.0.5) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 22 Nov 2007 14:39:02 +0100
+
 fll-live-initramfs (2.0.4) unstable; urgency=low
 
   * A little tidy up of awk code style and comments.
