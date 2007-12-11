@@ -122,17 +122,10 @@ fll_finger_fstype()
 	if ( [ -z "${FSTYPE}" ] || [ "${FSTYPE}" = "unknown" ] ) && \
 		[ ! -b "${1}" ]; then
 		case "$(dd if=${1} bs=4 count=1 2>/dev/null)" in
-			"hsqs")
-				# zlib
+			"hsqs"|"shsq")
+				# zlib|lzma
 				FSTYPE="squashfs"
 				;;
-			"shsq")
-				# lzma
-				FSTYPE="sqlzma"
-				;;
-			#"#!/b")
-			#	FSTYPE="cloop"
-			#	;;
 		esac
 	fi
 
@@ -181,21 +174,12 @@ fll_mount()
 	shift 3
 
 	case "${FS}" in
-		iso9660|squashfs|sqlzma)
+		iso9660|squashfs)
 			if [ -f "${SRC}" ] && [ ! -b "${SRC}" ]; then
 				fll_setup_dev_loop
 				FLL_MOUNT_OPTS="ro,loop"
 			else
 				FLL_MOUNT_OPTS="ro"
-			fi
-
-			if [ "${FS}" = "sqlzma" ]; then
-				if modprobe "${MODPROBE_OPTIONS}" "${FS}"; then
-					# mount fstype is squashfs for lzma variant
-					FS="squashfs"
-				else
-					panic "${R}Unable to modprobe sqlzma${N}"
-				fi
 			fi
 			;;
 		ntfs)
