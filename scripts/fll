@@ -101,21 +101,43 @@ fll_finger_blockdevs()
 ###############################################################################
 fll_finger_fstype()
 {
-	unset FSTYPE FSSIZE
+	unset FSTYPE
 	
 	#
-	# fstype from klibc-utils
+	# fstype, displays FSTYPE and FSSIZE
 	#
 	eval $(fstype < ${1} 2>/dev/null)
 
+	#
+	# try vol_id if fstype failed to detect FSTYPE
+	#
 	if ( [ -z "${FSTYPE}" ] || [ "${FSTYPE}" = "unknown" ] ) && \
 		[ -x /lib/udev/vol_id ]; then
 		FSTYPE=$(/lib/udev/vol_id -t ${1} 2>/dev/null)
 	fi
 
+	#
+	# fallback detection for squashfs variants on non-block devices
+	#
+	if ( [ -z "${FSTYPE}" ] || [ "${FSTYPE}" = "unknown" ] ) && \
+		[ ! -b "${1}" ]; then
+		case "$(dd if=${1} bs=4 count=1 2>/dev/null)" in
+			"hsqs")
+				# zlib
+				FSTYPE="squashfs"
+				;;
+			"shsq")
+				# lzma
+				FSTYPE="sqlzma"
+				;;
+			#"#!/b")
+			#	FSTYPE="cloop"
+			#	;;
+		esac
+	fi
+
 	if [ "${FSTYPE}" ] && [ "${FSTYPE}" != "unknown" ]; then
 		export FSTYPE
-		export FSSIZE
 		return 0
 	fi
 	
@@ -159,12 +181,21 @@ fll_mount()
 	shift 3
 
 	case "${FS}" in
-		iso9660|squashfs)
+		iso9660|squashfs|sqlzma)
 			if [ -f "${SRC}" ] && [ ! -b "${SRC}" ]; then
 				fll_setup_dev_loop
 				FLL_MOUNT_OPTS="ro,loop"
 			else
 				FLL_MOUNT_OPTS="ro"
+			fi
+
+			if [ "${FS}" = "sqlzma" ]; then
+				if modprobe "${MODPROBE_OPTIONS}" "${FS}"; then
+					# mount fstype is squashfs for lzma variant
+					FS="squashfs"
+				else
+					panic "${R}Unable to modprobe sqlzma${N}"
+				fi
 			fi
 			;;
 		ntfs)
