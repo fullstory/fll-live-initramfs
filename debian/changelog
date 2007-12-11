@@ -1,4 +1,4 @@
-fll-live-initramfs (2.0.6) UNRELEASED; urgency=low
+fll-live-initramfs (2.0.6) unstable; urgency=low
 
   * Initial sqlzma support. fll_finger_fstype() now employs a fallback method
     of filesystem detection by nibbling the first few bytes of the file and
