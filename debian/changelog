@@ -1,3 +1,9 @@
+fll-live-initramfs (2.0.8) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 06 Jan 2008 01:47:00 +0100
+
 fll-live-initramfs (2.0.7) unstable; urgency=low
 
   * suggest lvm2, we need to to load/ detect lvm2 volumes in the generated
