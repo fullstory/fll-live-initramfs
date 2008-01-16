@@ -927,7 +927,7 @@ mountroot()
 	fi
 
 	if [ -z "${FLL_UNION_MODULE}" ]; then
-		FLL_UNION_MODULE="aufs"
+		FLL_UNION_MODULE="unionfs"
 	fi
 
 	if modprobe "${MODPROBE_OPTIONS}" "${FLL_UNION_MODULE}"; then

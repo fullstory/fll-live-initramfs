@@ -1,8 +1,8 @@
-fll-live-initramfs (2.0.8) UNRELEASED; urgency=low
+fll-live-initramfs (2.0.8) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * give unionfs 2.2.x a chance and prefer it over aufs as default.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 06 Jan 2008 01:47:00 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 16 Jan 2008 21:34:55 +0100
 
 fll-live-initramfs (2.0.7) unstable; urgency=low
 
