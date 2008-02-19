@@ -1,4 +1,4 @@
-fll-live-initramfs (2.0.12) UNRELEASED; urgency=low
+fll-live-initramfs (2.0.12) unstable; urgency=low
 
   * Remove debian/README.Debian, it contained false information.
   * Drop dependency on cdbs, debian/rules is now debhelper centric.
