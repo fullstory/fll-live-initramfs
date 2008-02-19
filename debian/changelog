@@ -1,8 +1,8 @@
 fll-live-initramfs (2.0.12) UNRELEASED; urgency=low
 
-  * NOT RELEASED YET
+  * Remove debian/README.Debian, it contained false information.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 07 Feb 2008 22:26:53 +0100
+ -- Kel Modderman <kel@otaku42.de>  Tue, 19 Feb 2008 15:12:26 +1000
 
 fll-live-initramfs (2.0.11) unstable; urgency=low
 
