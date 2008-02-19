@@ -1,8 +1,9 @@
 fll-live-initramfs (2.0.12) UNRELEASED; urgency=low
 
   * Remove debian/README.Debian, it contained false information.
+  * Drop dependency on cdbs, debian/rules is now debhelper centric.
 
- -- Kel Modderman <kel@otaku42.de>  Tue, 19 Feb 2008 15:12:26 +1000
+ -- Kel Modderman <kel@otaku42.de>  Tue, 19 Feb 2008 15:35:11 +1000
 
 fll-live-initramfs (2.0.11) unstable; urgency=low
 
