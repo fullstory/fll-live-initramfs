@@ -28,11 +28,11 @@ esac
 
 . /usr/share/initramfs-tools/hook-functions
 
+[ -s /etc/default/distro ] || exit 0
+
 # distro-defaults
-mkdir -p ${DESTDIR}/etc/default
-# enforce live mode
-sed 's/^FLL_DISTRO_MODE.*/FLL_DISTRO_MODE="live"/' \
-	/etc/default/distro > ${DESTDIR}/etc/default/distro
+install -m 0644 -D /etc/default/distro \
+	${DESTDIR}/etc/default/distro
 
 # filesystem unioning modules
 manual_add_modules unionfs
