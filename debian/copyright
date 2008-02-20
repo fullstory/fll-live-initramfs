@@ -2,27 +2,27 @@ This is fll-live-initramfs, written and maintained by Kel Modderman
 <kel@otaku42.de> on Fri, 16 Feb 2007 20:44:49 +1000.
 
 The original source can always be found at:
-	http://developer.berlios.de/projects/fullstory
+    http://developer.berlios.de/projects/fullstory
 
 Copyright:
-	(C) 2007 Kel Modderman <kel@otaku42.de>
-	(C) 2007 Stefan Lippers-Hollmann <s.l-h@gmx.de>
+    Copyright © 2007 Kel Modderman <kel@otaku42.de>
+    Copyright © 2007 Stefan Lippers-Hollmann <s.l-h@gmx.de>
 
 Some parts of initramfs scripts are derived from the KNOPPIX/KANOTIX linuxrc
 contained in live-initrd-sidux.
 Copyright:
-	(C) Klaus Knopper <knoppix@knopper.net>
-	(C) 2003-2006 Joerg Schirottke <master@kanotix.com>
-	(C) 2006 Stefan Lippers-Hollmann <s.l-h@gmx.de>
+    Copyright © Klaus Knopper <knoppix@knopper.net>
+    Copyright © 2003-2006 Joerg Schirottke <master@kanotix.com>
+    Copyright © 2006 Stefan Lippers-Hollmann <s.l-h@gmx.de>
 License: GPL V2.
 http://sidux.com/debian/pool/main/l/live-initrd-sidux/
 
 Some code and ideas taken from the debian-live and ubuntu project; casper.
 Copyright:
-	(C) 2006 Marco Amadori <marco.amadori@gmail.com>
-	(C) 2005-2006 Canonical Ltd. <http://www.cannonical.com/>
+   Copyright © 2006 Marco Amadori <marco.amadori@gmail.com>
+   Copyright © 2005-2006 Canonical Ltd. <http://www.canonical.com/>
 License: GPL
-ftp://ftp.debian.org/debian/pool/main/c/casper/
+   ftp://ftp.debian.org/debian/pool/main/c/casper/
 
 License:
 

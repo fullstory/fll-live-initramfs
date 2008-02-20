@@ -1,10 +1,14 @@
 fll-live-initramfs (2.0.13) unstable; urgency=low
 
+  [ Kel Modderman ]
   * fll hook exits if /etc/default/distro is not installed.
   * fll hook no longer bothers to sed hack the FLL_DISTRO_MODE variable, it is
     ignored by the fll boot script.
 
- -- Kel Modderman <kel@otaku42.de>  Thu, 21 Feb 2008 02:38:47 +1000
+  [ Stefan Lippers-Hollmann ]
+  * appease lintian and write (C) as © in debian/copyright.
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 20 Feb 2008 22:15:16 +0100
 
 fll-live-initramfs (2.0.12) unstable; urgency=low
 
