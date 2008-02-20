@@ -1,4 +1,4 @@
-fll-live-initramfs (2.0.13) UNRELEASED; urgency=low
+fll-live-initramfs (2.0.13) unstable; urgency=low
 
   * fll hook exits if /etc/default/distro is not installed.
   * fll hook no longer bothers to sed hack the FLL_DISTRO_MODE variable, it is
