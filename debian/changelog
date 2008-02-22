@@ -1,8 +1,8 @@
-fll-live-initramfs (2.0.14) UNRELEASED; urgency=low
+fll-live-initramfs (2.0.14) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * reintroduce SELINUX_INIT=NO again, it's till needed.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 20 Feb 2008 22:16:19 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 22 Feb 2008 23:35:16 +0100
 
 fll-live-initramfs (2.0.13) unstable; urgency=low
 
