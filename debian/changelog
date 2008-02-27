@@ -1,4 +1,4 @@
-fll-live-initramfs (2.0.16) UNRELEASED; urgency=low
+fll-live-initramfs (2.0.16) unstable; urgency=low
 
   * Make top level /selinux directory if not provided by the compressed
     chroot.
