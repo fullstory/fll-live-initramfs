@@ -1074,9 +1074,9 @@ mountroot()
 	maybe_break fll-bindmount
 
 	#
-	# prepare /proc /sys
+	# prepare /proc /sys and /selinux
 	#
-	for dir in proc sys; do
+	for dir in proc sys selinux; do
 		mkdir -p "${rootmnt}/${dir}"
 	done
 
@@ -1099,6 +1099,11 @@ mountroot()
 	fi
 
 	while read init; do
+		case "${init}" in
+			'#'*)
+				continue
+				;;
+		esac
 		if [ -x "${rootmnt}/etc/init.d/${init}" ]; then
 			rm -f ${rootmnt}/etc/rc[0-6S]\.d/[SK]??${init}
 		fi

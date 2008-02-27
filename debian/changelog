@@ -1,8 +1,10 @@
 fll-live-initramfs (2.0.16) UNRELEASED; urgency=low
 
-  * NOT RELEASED YET
+  * Make top level /selinux directory if not provided by the compressed
+    chroot.
+  * When processing /etc/default/fll-init, check for file comments properly.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 23 Feb 2008 23:07:14 +0100
+ -- Kel Modderman <kel@otaku42.de>  Wed, 27 Feb 2008 18:21:51 +1000
 
 fll-live-initramfs (2.0.15) unstable; urgency=low
 
