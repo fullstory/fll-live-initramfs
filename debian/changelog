@@ -1,8 +1,9 @@
 fll-live-initramfs (2.0.17) UNRELEASED; urgency=low
 
-  * NOT RELEASED YET
+  * Add a quick and dirty hack to cleanup irqbalance runlevel configuration,
+    it need not stop anything in runlevels 0 and 6.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 27 Feb 2008 10:42:13 +0100
+ -- Kel Modderman <kel@otaku42.de>  Fri, 29 Feb 2008 16:56:28 +1000
 
 fll-live-initramfs (2.0.16) unstable; urgency=low
 

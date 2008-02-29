@@ -1108,6 +1108,10 @@ mountroot()
 			rm -f ${rootmnt}/etc/rc[0-6S]\.d/[SK]??${init}
 		fi
 	done < "${rootmnt}/etc/default/fll-init"
+	#
+	# Do not wait for maintainer to fix his package...
+	#
+	rm -f ${rootmnt}/etc/rc[06].d/K??irqbalance
 
 	#
 	# debug checkpoint
