@@ -485,6 +485,9 @@ mountroot()
 					echo "0" > /proc/sys/kernel/printk
 				fi
 				;;
+			startpar)
+				FLL_INIT_STARTPAR="yes"
+				;;
 			testcd|testdvd|md5sum)
 				FLL_MD5SUM_CHECK="yes"
 				;;
@@ -1108,6 +1111,14 @@ mountroot()
 			rm -f ${rootmnt}/etc/rc[0-6S]\.d/[SK]??${init}
 		fi
 	done < "${rootmnt}/etc/default/fll-init"
+
+	if [ "${FLL_INIT_STARTPAR}" = "yes" ]; then
+		if [ -x ${rootmnt}/sbin/insserv ] && [ -f ${rootmnt}/etc/default/rcS ] && \
+			! grep -q "^CONCURRENCY=" ${rootmnt}/etc/default/rcS; then
+			printf "${G}Activating ${Y}startpar${G} sysvinit concurrency${N}...\n"
+			echo 'CONCURRENCY=startpar' >> ${rootmnt}/etc/default/rcS
+		fi
+	fi
 
 	#
 	# debug checkpoint
