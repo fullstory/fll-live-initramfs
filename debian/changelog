@@ -1,3 +1,9 @@
+fll-live-initramfs (2.0.19) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 01 Mar 2008 13:16:02 +0100
+
 fll-live-initramfs (2.0.18) unstable; urgency=low
 
   * Move irqbalance hack to where the other hacks live -> fll builder.
