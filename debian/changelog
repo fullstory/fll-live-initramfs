@@ -1,4 +1,4 @@
-fll-live-initramfs (2.0.18) UNRELEASED; urgency=low
+fll-live-initramfs (2.0.18) unstable; urgency=low
 
   * Move irqbalance hack to where the other hacks live -> fll builder.
 
