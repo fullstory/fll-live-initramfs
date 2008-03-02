@@ -1,3 +1,9 @@
+fll-live-initramfs (2.0.20) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 02 Mar 2008 03:09:23 +0100
+
 fll-live-initramfs (2.0.19) unstable; urgency=low
 
   * Add a "startpar" cheatcode for testing of live parrallel booting with
