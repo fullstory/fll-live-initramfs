@@ -1,3 +1,9 @@
+fll-live-initramfs (2.0.21) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 02 Mar 2008 17:33:32 +0100
+
 fll-live-initramfs (2.0.20) unstable; urgency=low
 
   * Use the chroots update-rc.d to unlink blacklisted initscripts before
