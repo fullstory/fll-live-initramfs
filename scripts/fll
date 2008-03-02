@@ -1102,13 +1102,13 @@ mountroot()
 	fi
 
 	while read init; do
-		case "${init}" in
+		case "${i}" in
 			'#'*)
 				continue
 				;;
 		esac
-		if [ -x "${rootmnt}/etc/init.d/${init}" ]; then
-			rm -f ${rootmnt}/etc/rc[0-6S]\.d/[SK]??${init}
+		if [ -x "${rootmnt}/etc/init.d/${i}" ]; then
+			rm -f ${rootmnt}/etc/rc[0-6S]\.d/[SK]??${i}
 		fi
 	done < "${rootmnt}/etc/default/fll-init"
 

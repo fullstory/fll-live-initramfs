@@ -2,8 +2,9 @@ fll-live-initramfs (2.0.19) UNRELEASED; urgency=low
 
   * Add a "startpar" cheatcode for testing of live parrallel booting with
     insserv and startpar concurrency.
+  * Bugfix: do not clobber special init variable in scripts/fll.
 
- -- Kel Modderman <kel@otaku42.de>  Sun, 02 Mar 2008 01:33:38 +1000
+ -- Kel Modderman <kel@otaku42.de>  Sun, 02 Mar 2008 11:20:58 +1000
 
 fll-live-initramfs (2.0.18) unstable; urgency=low
 
