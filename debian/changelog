@@ -1,4 +1,4 @@
-fll-live-initramfs (2.0.19) UNRELEASED; urgency=low
+fll-live-initramfs (2.0.19) unstable; urgency=low
 
   * Add a "startpar" cheatcode for testing of live parrallel booting with
     insserv and startpar concurrency.
