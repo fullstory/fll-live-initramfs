@@ -1101,7 +1101,7 @@ mountroot()
 		panic "${R}fll-init initscript blacklist not found${N}"
 	fi
 
-	while read init; do
+	while read i; do
 		case "${i}" in
 			'#'*)
 				continue
