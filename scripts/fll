@@ -1108,7 +1108,8 @@ mountroot()
 				;;
 		esac
 		if [ -x "${rootmnt}/etc/init.d/${i}" ]; then
-			rm -f ${rootmnt}/etc/rc[0-6S]\.d/[SK]??${i}
+			#rm -f ${rootmnt}/etc/rc[0-6S]\.d/[SK]??${i}
+			chroot ${rootmnt} /usr/sbin/update-rc.d -f ${i} remove >/dev/null
 		fi
 	done < "${rootmnt}/etc/default/fll-init"
 

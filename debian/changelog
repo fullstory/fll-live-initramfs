@@ -1,8 +1,9 @@
 fll-live-initramfs (2.0.20) UNRELEASED; urgency=low
 
-  * NOT RELEASED YET
+  * Use the chroots update-rc.d to unlink blacklisted initscripts before
+    handing of to init.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 02 Mar 2008 03:09:23 +0100
+ -- Kel Modderman <kel@otaku42.de>  Mon, 03 Mar 2008 01:05:00 +1000
 
 fll-live-initramfs (2.0.19) unstable; urgency=low
 
