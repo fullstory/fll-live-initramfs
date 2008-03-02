@@ -1,4 +1,4 @@
-fll-live-initramfs (2.0.20) UNRELEASED; urgency=low
+fll-live-initramfs (2.0.20) unstable; urgency=low
 
   * Use the chroots update-rc.d to unlink blacklisted initscripts before
     handing of to init.
