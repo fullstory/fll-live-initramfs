@@ -1,3 +1,9 @@
+fll-live-initramfs (2.0.22) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 04 Mar 2008 06:40:17 +0100
+
 fll-live-initramfs (2.0.21) unstable; urgency=low
 
   * Using the chroot's update-rc.d to unlink initscript symlinks from the
