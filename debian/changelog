@@ -1,4 +1,4 @@
-fll-live-initramfs (2.0.21) UNRELEASED; urgency=low
+fll-live-initramfs (2.0.21) unstable; urgency=low
 
   * Using the chroot's update-rc.d to unlink initscript symlinks from the
     runlevel directories is overkill; it is slower and totally uneccessary. It
