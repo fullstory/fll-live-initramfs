@@ -1112,6 +1112,8 @@ mountroot()
 		fi
 	done < "${rootmnt}/etc/default/fll-init"
 
+	rm -f ${rootmnt}/etc/rc[06].d/K??irqbalance
+
 	if [ "${FLL_INIT_STARTPAR}" = "yes" ]; then
 		if [ -x ${rootmnt}/sbin/insserv ] && [ -f ${rootmnt}/etc/default/rcS ] && \
 			! grep -q "^CONCURRENCY=" ${rootmnt}/etc/default/rcS; then

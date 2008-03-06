@@ -1,8 +1,10 @@
 fll-live-initramfs (2.0.22) UNRELEASED; urgency=low
 
-  * NOT RELEASED YET
+  * Due to indecision, we now "tweak" irqbalance initscript runlevel
+    configuration here, as we are do similar actions for other scripts at this
+    point.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 04 Mar 2008 06:40:17 +0100
+ -- Kel Modderman <kel@otaku42.de>  Thu, 06 Mar 2008 16:12:08 +1000
 
 fll-live-initramfs (2.0.21) unstable; urgency=low
 
