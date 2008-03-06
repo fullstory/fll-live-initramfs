@@ -1,4 +1,4 @@
-fll-live-initramfs (2.0.22) UNRELEASED; urgency=low
+fll-live-initramfs (2.0.22) unstable; urgency=low
 
   * Due to indecision, we now "tweak" irqbalance initscript runlevel
     configuration here, as we are do similar actions for other scripts at this
