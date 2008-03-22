@@ -116,19 +116,6 @@ fll_finger_fstype()
 		FSTYPE=$(/lib/udev/vol_id -t ${1} 2>/dev/null)
 	fi
 
-	#
-	# fallback detection for squashfs variants on non-block devices
-	#
-	if ( [ -z "${FSTYPE}" ] || [ "${FSTYPE}" = "unknown" ] ) && \
-		[ ! -b "${1}" ]; then
-		case "$(dd if=${1} bs=4 count=1 2>/dev/null)" in
-			"hsqs"|"shsq")
-				# zlib|lzma
-				FSTYPE="squashfs"
-				;;
-		esac
-	fi
-
 	if [ "${FSTYPE}" ] && [ "${FSTYPE}" != "unknown" ]; then
 		export FSTYPE
 		return 0
