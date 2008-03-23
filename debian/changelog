@@ -1,4 +1,4 @@
-fll-live-initramfs (2.0.23) UNRELEASED; urgency=low
+fll-live-initramfs (2.0.23) unstable; urgency=low
 
   * Remove fallback detection of lzma infected squashfs images, klibc's fstype
     utility is capable of its detection.
