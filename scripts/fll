@@ -29,13 +29,15 @@ fll_string_not_in_strings()
 ###############################################################################
 fll_finger_blockdevs()
 {
+	unset FLL_PROBED_CDROMS
+
 	if [ "${FLL_FROMHD}" != "yes" ]; then
 		#
 		# cdrom detection via /proc/sys/dev/cdrom/info
 		#
 		if [ -f /proc/sys/dev/cdrom/info ]; then
 			FLL_PROBED_CDROMS="$(awk '
-				/name:/ {
+				/^drive name:/ {
 					for (i = NF; i >= 3; i--) {
 						print($i)
 					}
@@ -43,13 +45,11 @@ fll_finger_blockdevs()
 			' /proc/sys/dev/cdrom/info)"
 		fi
 
-		if [ "${FLL_PROBED_CDROMS}" ]; then
-			for cdrom in ${FLL_PROBED_CDROMS}; do
-				if [ -b "/dev/${cdrom}" ]; then
-					echo "/dev/${cdrom}"
-				fi
-			done
-		fi
+		for cdrom in ${FLL_PROBED_CDROMS}; do
+			if [ -b "/dev/${cdrom}" ]; then
+				echo "/dev/${cdrom}"
+			fi
+		done
 	fi
 
 	#
@@ -66,26 +66,22 @@ fll_finger_blockdevs()
 		dev=${dev#/sys/block/}
 		
 		case "${dev}" in
-			#
-			# skip ram, loop and floppy devices
-			#
 			ram[0-9]*|loop[0-9]*|fd[0-9]*)
+				#
+				# skip ram, loop and floppy devices
+				#
 				continue
+				;;
+			*)
+				if ! fll_string_not_in_strings "${dev}" ${FLL_PROBED_CDROMS}; then
+					#
+					# already identified as cdrom device
+					#
+					continue
+				fi
 				;;
 		esac
 
-		#
-		# skip block devices already detected as cdroms
-		#
-		if [ "${FLL_PROBED_CDROMS}" ]; then
-			if ! fll_string_not_in_strings "${dev}" ${FLL_PROBED_CDROMS}; then
-				#
-				# returned 1, already identified as cdrom device
-				#
-				continue
-			fi
-		fi
-		
 		#
 		# use shell wildcard to expand subdevices
 		#
@@ -131,7 +127,7 @@ fll_setup_dev_loop()
 	#
 	# load loop device support
 	#
-	grep -q ^loop /proc/modules || modprobe "${MODPROBE_OPTIONS}" loop
+	modprobe "${MODPROBE_OPTIONS}" loop
 	
 	#
 	# loop around for max of 5 seconds and wait for /dev/loop* device nodes
