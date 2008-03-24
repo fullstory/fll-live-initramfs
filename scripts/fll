@@ -140,7 +140,7 @@ fll_setup_dev_loop()
 				return 0
 			fi
 		done
-		/bin/sleep 1
+		sleep 1
 		LOOP_WAIT=$(( ${LOOP_WAIT} - 1 ))
 	done
 
@@ -287,7 +287,7 @@ fll_copy_with_perc()
 				if (system("test -f " destfile) == 0) {
 					break
 				}
-				else if (system("/bin/sleep 1") == 0) {
+				else if (system("sleep 1") == 0) {
 					wait++
 				}
 				else {
@@ -308,7 +308,7 @@ fll_copy_with_perc()
 					printf("'${N}'")
 				}
 			} while (system("kill -0 " pid " 2>/dev/null") == 0 &&
-				 system("/bin/sleep 2") == 0)
+				 system("sleep 2") == 0)
 
 			#
 			# destfile size is > origfile size on tmpfs
@@ -553,7 +553,7 @@ mountroot()
 			if [ "${FLL_MOUNT_LOOP}" = 1 ]; then
 				printf "${G}Waiting up to ${Y}${FLL_ROOTDELAY}${G}s for devices to settle${N}...\n"
 			fi
-			/bin/sleep "${FLL_MOUNT_INTERVAL}"
+			sleep "${FLL_MOUNT_INTERVAL}"
 			FLL_ROOTDELAY=$(( ${FLL_ROOTDELAY} - ${FLL_MOUNT_INTERVAL} ))
 		fi
 

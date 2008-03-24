@@ -2,8 +2,9 @@ fll-live-initramfs (2.0.24) UNRELEASED; urgency=low
 
   * General shell flow cleanup of fll_finger_blockdevs().
   * Unconditionally modprobe loop before loop-mounting files/devices.
+  * Don't hardcode the path to sleep.
 
- -- Kel Modderman <kel@otaku42.de>  Mon, 24 Mar 2008 20:52:13 +1000
+ -- Kel Modderman <kel@otaku42.de>  Mon, 24 Mar 2008 21:08:51 +1000
 
 fll-live-initramfs (2.0.23) unstable; urgency=low
 
