@@ -1,4 +1,4 @@
-fll-live-initramfs (2.0.24) UNRELEASED; urgency=low
+fll-live-initramfs (2.1.0) UNRELEASED; urgency=low
 
   * General shell flow cleanup of fll_finger_blockdevs().
   * Unconditionally modprobe loop before loop-mounting files/devices.
@@ -6,7 +6,7 @@ fll-live-initramfs (2.0.24) UNRELEASED; urgency=low
   * Print a progress bar as well as percentage metre when copying media to
     ram.
 
- -- Kel Modderman <kel@otaku42.de>  Mon, 24 Mar 2008 22:50:13 +1000
+ -- Kel Modderman <kel@otaku42.de>  Mon, 24 Mar 2008 22:58:40 +1000
 
 fll-live-initramfs (2.0.23) unstable; urgency=low
 
