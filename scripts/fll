@@ -273,7 +273,7 @@ fll_copy_with_perc()
 		{
 			cmd = "du -s " file
 			if ((cmd | getline) > 0) {
-				size = sprintf("%d\n", int($1))
+				size = int($1)
 				close(cmd)
 				if (size > 0)
 					return size
@@ -303,19 +303,28 @@ fll_copy_with_perc()
 			do {
 				perc = int(100 * size_of(destfile) / size_orig)
 				if (perc < 100) {
-					printf("'${Y}'")
-					printf("\b\b\b%02d%s", perc, "%")
+					printf("\r'${W}'['${G}'")
+					for (i = 0; i <= perc; i += 2)
+						printf("=")
+					printf("'${W}'>")
+					for (i = perc; i < 100; i += 2)
+						printf(" ")
+					printf("]  ")
+					printf("%02d%s", perc, "%")
 					printf("'${N}'")
 				}
-			} while (system("kill -0 " pid " 2>/dev/null") == 0 &&
+			} while (system("test -d /proc/" pid) == 0 &&
 				 system("sleep 2") == 0)
 
 			#
 			# destfile size is > origfile size on tmpfs
 			#
 			if (size_of(destfile) >= size_orig) {
-				printf("'${Y}'")
-				printf("\b\b\b%s\n", "100%")
+				printf("\r'${W}'['${G}'")
+				for (i = 0; i <= 100; i += 2)
+					printf("=")
+				printf("='${W}'] ")
+				printf("%s\n", "100%")
 				printf("'${N}'")
 				exit(0)
 			}
@@ -766,7 +775,7 @@ mountroot()
 									#
 									# copy compressed filesystem to tmpfs
 									#
-									printf "${G}Copying live filesystem from ${Y}${dev}${G} to ${Y}ram${G}:${N}    "
+									printf "${G}Copying live filesystem from ${Y}${dev}${G} to ${Y}ram${G}${N}...\n"
 									if fll_copy_with_perc "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "/fll/toram/${FLL_IMAGE_DIR}"; then
 										#
 										# add old mnt pnt to umount stack, update FLL_BLOCKMNT and dev
