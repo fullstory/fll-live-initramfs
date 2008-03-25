@@ -10,6 +10,25 @@
 #	F.U.L.L.S.T.O.R.Y Project Homepage:
 #	http://developer.berlios.de/projects/fullstory
 ###############################################################################
+#	safety overrides - we want to esnure we know exactly what tool
+#	is being used, it could be provided by klibc or busybox, but both
+#	have functional differences
+###############################################################################
+mount()
+{
+	# can loop mount files, klibc's mount cannot without first binding
+	# file to loop (block) device node with losetup
+	/bin/busybox mount "${@}"
+	return "${?}"
+}
+
+sleep()
+{
+	# klibs'c sleep accepts < 1 second interval as argument
+	/bin/sleep "${@}"
+	return "${?}"
+}
+###############################################################################
 #	utility function to help with identifying device strings within a list
 ###############################################################################
 fll_string_not_in_strings()
@@ -196,16 +215,12 @@ fll_mount()
 	esac
 
 	if [ "${FLL_MOUNT_OPTS}" ]; then
-		if mount -t ${FS} -o ${FLL_MOUNT_OPTS} ${SRC} ${DST} >/dev/null 2>&1; then
-			return 0
-		fi
+		mount -t ${FS} -o ${FLL_MOUNT_OPTS} ${SRC} ${DST} >/dev/null 2>&1
+		return "${?}"
 	else
-		if mount -t ${FS} ${SRC} ${DST} >/dev/null 2>&1; then
-			return 0
-		fi
+		mount -t ${FS} ${SRC} ${DST} >/dev/null 2>&1
+		return "${?}"
 	fi
-
-	return 1
 }
 ###############################################################################
 #	umount and remove a stack of mount points

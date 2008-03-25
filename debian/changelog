@@ -1,8 +1,10 @@
 fll-live-initramfs (2.1.1) UNRELEASED; urgency=low
 
-  * NOT RELEASED YET
+  * Add shell functions to pedantically select the exact binary that will be
+    called as 'mount' and 'sleep'.
+  * Simplify return code usage in fll_mount().
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 25 Mar 2008 01:29:50 +0100
+ -- Kel Modderman <kel@otaku42.de>  Tue, 25 Mar 2008 17:09:47 +1000
 
 fll-live-initramfs (2.1.0) unstable; urgency=low
 
