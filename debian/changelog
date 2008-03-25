@@ -1,3 +1,9 @@
+fll-live-initramfs (2.1.2) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 25 Mar 2008 17:25:49 +0100
+
 fll-live-initramfs (2.1.1) unstable; urgency=low
 
   * Add shell functions to pedantically select the exact binary that will be
