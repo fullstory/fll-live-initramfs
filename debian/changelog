@@ -1,4 +1,4 @@
-fll-live-initramfs (2.1.1) UNRELEASED; urgency=low
+fll-live-initramfs (2.1.1) unstable; urgency=low
 
   * Add shell functions to pedantically select the exact binary that will be
     called as 'mount' and 'sleep'.
