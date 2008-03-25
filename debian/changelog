@@ -1,4 +1,4 @@
-fll-live-initramfs (2.1.0) UNRELEASED; urgency=low
+fll-live-initramfs (2.1.0) unstable; urgency=low
 
   * General shell flow cleanup of fll_finger_blockdevs().
   * Unconditionally modprobe loop before loop-mounting files/devices.
