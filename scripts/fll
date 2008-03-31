@@ -21,20 +21,6 @@ mount()
 	/bin/busybox mount "${@}"
 	return "${?}"
 }
-
-readlink()
-{
-	# klibc's readlink doesn't support -f
-	/bin/busybox readlink "${@}"
-	return "${?}"
-}
-
-sleep()
-{
-	# klibs'c sleep accepts < 1 second interval as argument
-	/bin/sleep "${@}"
-	return "${?}"
-}
 ###############################################################################
 #	utility function to help with identifying device strings within a list
 ###############################################################################
@@ -1069,7 +1055,7 @@ mountroot()
 						#
 						# /lib64 -> /lib symlink handling
 						#
-						ln -sf "$(readlink -f ${dir})" "${rootmnt}/${dir##*/}"
+						ln -sf "$(readlink ${dir})" "${rootmnt}/${dir##*/}"
 					else
 						#
 						# bind mount links to read write union

@@ -1,10 +1,12 @@
 fll-live-initramfs (2.1.2) UNRELEASED; urgency=low
 
-  * Override realink, force readlink to be done by the busybox applet due to
-    klibc's readlink not supporting -f option.
   * Remove startpar hack, lets not provide it as a real option here for now.
+  * Do not use -f (canonicalize) option to readlink, its not needed and klibc
+    realink doesn't support it.
+  * No need to override sleep, klibc's sleep will be used by default as of
+    busybox 1:1.9.2-2. Adjust versioned dependency on busybox.
 
- -- Kel Modderman <kel@otaku42.de>  Mon, 31 Mar 2008 14:03:49 +1000
+ -- Kel Modderman <kel@otaku42.de>  Mon, 31 Mar 2008 18:53:43 +1000
 
 fll-live-initramfs (2.1.1) unstable; urgency=low
 
