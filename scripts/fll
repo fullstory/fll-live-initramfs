@@ -579,7 +579,7 @@ mountroot()
 		#
 		if [ "${FLL_MOUNT_LOOP}" ]; then
 			if [ "${FLL_MOUNT_LOOP}" = 1 ]; then
-				printf "${G}Waiting up to ${Y}${FLL_ROOTDELAY}${G}s for devices to settle${N}...\n"
+				printf "${G}Waiting for up to ${Y}${FLL_ROOTDELAY}${G}s for devices to settle${N}...\n"
 			fi
 			sleep "${FLL_MOUNT_INTERVAL}"
 			FLL_ROOTDELAY=$(( ${FLL_ROOTDELAY} - ${FLL_MOUNT_INTERVAL} ))
