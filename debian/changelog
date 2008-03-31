@@ -1,4 +1,4 @@
-fll-live-initramfs (2.1.2) UNRELEASED; urgency=low
+fll-live-initramfs (2.1.2) unstable; urgency=low
 
   * Remove startpar hack, lets not provide it as a real option here for now.
   * Do not use -f (canonicalize) option to readlink, its not needed and klibc
