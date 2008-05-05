@@ -1,49 +1,20 @@
 #!/usr/bin/make -f
 
-# Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
-
-INITRAMFS := debian/fll-live-initramfs/usr/share/initramfs-tools
-
-build: build-stamp
-build-stamp:
-	dh_testdir
-	touch $@
+build:
+	dh build
 
 clean:
-	dh_testdir
-	dh_testroot
-	dh_clean build-stamp install-stamp
+	dh clean
 
-install: build install-stamp
-install-stamp:
-	dh_testdir
-	dh_testroot
-	dh_clean -k
-	
-	# hooks & scripts
-	for sh in hooks/* scripts/*; do \
-		install -m 0755 -D $$sh $(INITRAMFS)/$$sh; \
-	done
-	
-	touch $@
+install: build
+	dh install --until dh_fixperms
+	chmod 0755 debian/fll-live-initramfs/usr/share/initramfs-tools/*/fll
+	dh install --remaining
 
 binary-arch:
-# We have nothing to do by default.
+	# pkg is arch indep
 
-binary-indep: build install
-	dh_testdir
-	dh_testroot
-	dh_install
-	dh_installdocs
-	dh_installchangelogs
-	dh_link
-	dh_compress
-	dh_fixperms
-	dh_installdeb
-	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
+binary-indep: install
+	dh binary-indep
 
-binary: binary-indep binary-arch
-.PHONY: build clean install binary-indep binary-arch binary
+binary: binary-arch binary-indep

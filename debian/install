@@ -1,0 +1,2 @@
+hooks/fll   usr/share/initramfs-tools/hooks
+scripts/fll usr/share/initramfs-tools/scripts
