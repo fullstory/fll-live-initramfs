@@ -1,9 +1,13 @@
-fll-live-initramfs (2.1.3) UNRELEASED; urgency=low
+fll-live-initramfs (2.1.3) unstable; urgency=low
 
+  [ Kel Modderman ]
   * Use dh centric debian/rules, build depend on debhelper >= 7.
   * Add debian/install to replace what used to be done manually.
 
- -- Kel Modderman <kel@otaku42.de>  Mon, 05 May 2008 16:38:54 +1000
+  [ Stefan Lippers-Hollmann ]
+  * bump compat level to 7.
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 07 May 2008 01:08:24 +0200
 
 fll-live-initramfs (2.1.2) unstable; urgency=low
 
