@@ -1,4 +1,4 @@
-fll-live-initramfs (2.1.4) UNRELEASED; urgency=low
+fll-live-initramfs (2.1.4) unstable; urgency=low
 
   * Add debian/preinst to prohibit installation in non-chroot environments.
   * Add debian/postinst to trigger update-initramfs.
