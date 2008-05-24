@@ -1074,21 +1074,16 @@ mountroot()
 	maybe_break fll-bindmount
 
 	#
-	# prepare /proc /sys and /selinux
+	# prepare /dev /media /proc /sys and /selinux
 	#
-	for dir in media proc sys selinux; do
-		mkdir -p "${rootmnt}/${dir}"
+	for dir in dev media proc sys selinux; do
+		mkdir -m 0755 "${rootmnt}/${dir}"
 	done
 
 	#
 	# tmp with correct permissions for users
 	#
-	mkdir -p -m 1777 "${rootmnt}/tmp"
-
-	#
-	# prepare /dev
-	#
-	mkdir -p -m 0755 "${rootmnt}/dev"
+	mkdir -m 1777 "${rootmnt}/tmp"
 
 	printf "${G}Reconfiguring ${Y}sysvinit runlevels${G} for live boot${N}...\n"
 	#

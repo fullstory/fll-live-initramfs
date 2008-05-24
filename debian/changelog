@@ -3,8 +3,11 @@ fll-live-initramfs (2.1.5) UNRELEASED; urgency=low
   * Omit /media/* from potentially persistent aufs overlay by creating the dir
     on root tmpfs as we do for dev, proc, sys and tmp already. This ensures a
     clean /media/* in the persist use case.
+  * Create /dev /media /proc /sys and /selinux with mode 0755.
+  * Do not use -p "no error if existing" option when mkdir'ing /dev /media
+    /proc /sys /selinux and /tmp base level directories on the tmpfs.
 
- -- Kel Modderman <kel@otaku42.de>  Sat, 24 May 2008 12:53:54 +1000
+ -- Kel Modderman <kel@otaku42.de>  Sat, 24 May 2008 13:08:52 +1000
 
 fll-live-initramfs (2.1.4) unstable; urgency=low
 
