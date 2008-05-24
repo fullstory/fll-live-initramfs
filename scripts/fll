@@ -1040,7 +1040,7 @@ mountroot()
 	for dir in ${rootmnt}${FLL_UNION_MOUNTPOINT}/*; do
 		if [ -d "${dir}" ]; then
 			case "${dir##*/}" in
-				dev|proc|sys|tmp)
+				dev|media|proc|sys|tmp)
 					#
 					# these should stay out of the unioned filesystem mount point
 					# keep them directly on the ramdisk, they are handled below
@@ -1076,7 +1076,7 @@ mountroot()
 	#
 	# prepare /proc /sys and /selinux
 	#
-	for dir in proc sys selinux; do
+	for dir in media proc sys selinux; do
 		mkdir -p "${rootmnt}/${dir}"
 	done
 

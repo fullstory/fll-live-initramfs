@@ -1,8 +1,10 @@
 fll-live-initramfs (2.1.5) UNRELEASED; urgency=low
 
-  * NOT RELEASED YET
+  * Omit /media/* from potentially persistent aufs overlay by creating the dir
+    on root tmpfs as we do for dev, proc, sys and tmp already. This ensures a
+    clean /media/* in the persist use case.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 10 May 2008 11:31:33 +0200
+ -- Kel Modderman <kel@otaku42.de>  Sat, 24 May 2008 12:53:54 +1000
 
 fll-live-initramfs (2.1.4) unstable; urgency=low
 
