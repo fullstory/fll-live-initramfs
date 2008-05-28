@@ -1,8 +1,8 @@
 fll-live-initramfs (2.1.6) UNRELEASED; urgency=low
 
-  * NOT RELEASED YET
+  * Ensure FLL_MOUNT_OPTS is unset in fll_mount().
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 25 May 2008 00:23:51 +0200
+ -- Kel Modderman <kel@otaku42.de>  Wed, 28 May 2008 10:42:43 +1000
 
 fll-live-initramfs (2.1.5) unstable; urgency=low
 

@@ -168,6 +168,8 @@ fll_mount()
 	DST="${3}"
 	shift 3
 
+	unset FLL_MOUNT_OPTS
+
 	case "${FS}" in
 		iso9660|squashfs)
 			if [ -f "${SRC}" ] && [ ! -b "${SRC}" ]; then
