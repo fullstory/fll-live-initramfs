@@ -1,4 +1,4 @@
-fll-live-initramfs (2.1.6) UNRELEASED; urgency=low
+fll-live-initramfs (2.1.6) unstable; urgency=low
 
   * Ensure FLL_MOUNT_OPTS is unset in fll_mount().
   * Just clear the pretty coloured text from console before proceeding with
