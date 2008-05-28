@@ -1129,6 +1129,6 @@ mountroot()
 	#
 	export no_static_dev="1"
 
-	printf "\n${G}Starting ${Y}init${G} process${N}...\n\n"
+	clear
 }
 ###############################################################################
