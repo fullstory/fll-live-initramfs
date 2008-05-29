@@ -1,8 +1,9 @@
-fll-live-initramfs (2.1.8) UNRELEASED; urgency=low
+fll-live-initramfs (2.1.8) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * reintroduce vertical indentation through "Starting init
+    process..."
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 29 May 2008 13:51:31 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 29 May 2008 15:13:21 +0200
 
 fll-live-initramfs (2.1.7) unstable; urgency=low
 

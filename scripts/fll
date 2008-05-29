@@ -1135,6 +1135,8 @@ mountroot()
 	#
 	if [ -f /proc/fb ] && [ -z "$(cat /proc/fb)" ]; then
 		clear
+	else
+		printf "\n${G}Starting ${Y}init${G} process${N}...\n\n"
 	fi
 }
 ###############################################################################
