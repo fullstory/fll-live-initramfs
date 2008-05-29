@@ -1129,6 +1129,12 @@ mountroot()
 	#
 	export no_static_dev="1"
 
-	clear
+	#
+	# if there is no framebuffer, clear our output to avoid corruption
+	# later when preparing the console keymap
+	#
+	if [ -f /proc/fb ] && [ -z "$(cat /proc/fb)" ]; then
+		clear
+	fi
 }
 ###############################################################################
