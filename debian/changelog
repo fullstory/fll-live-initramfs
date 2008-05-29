@@ -1,6 +1,5 @@
-fll-live-initramfs (2.1.7) UNRELEASED; urgency=low
+fll-live-initramfs (2.1.7) unstable; urgency=low
 
-  [ Kel Modderman ]
   * Clear the console when no framebuffer is estimated to exist based on null
     content of /proc/fb.
 
