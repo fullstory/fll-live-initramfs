@@ -653,7 +653,7 @@ mountroot()
 					printf "${G}Probing devices\t${N}"
 				fi
 				FLL_BLOCKDEVS_PROBED=$(( ${FLL_BLOCKDEVS_PROBED} + 1 ))
-				printf "${W}[${Y} ${dev##*/}${W} ]${N} "
+				printf "${W}[${Y} ${dev#/dev/}${W} ]${N} "
 				#
 				# we have determined FSTYPE of the device, set FLL_BLOCKMNT
 				#
@@ -686,7 +686,7 @@ mountroot()
 							FLL_MEDIA_FOUND="${dev}"
 							printf "\n\n"
 							printf "${G}Detected ${Y}${FLL_MEDIA_NAME}${G} "
-							printf "on ${Y}${FLL_MEDIA_FOUND##*/}${G}.${N}\n"
+							printf "on ${Y}${FLL_MEDIA_FOUND#/dev/}${G}.${N}\n"
 							if fll_finger_fstype "${FLL_BLOCKMNT}/${FLL_MEDIA_NAME}" >/dev/null 2>&1; then
 								if [ "${FSTYPE}" != "iso9660" ]; then
 									panic "${Y}${FLL_MEDIA_NAME}${R} not an iso9660 filesystem${N}"
@@ -962,9 +962,9 @@ mountroot()
 				#
 				if grep -q "${FLL_UNION_COWMNTPNT}" /proc/mounts && mount -o remount,rw "${FLL_UNION_COWMNTPNT}" || \
 					fll_mount ${FLL_PERSIST_BLOCKFSTYPE} ${FLL_PERSIST_BLOCKDEV} ${FLL_UNION_COWMNTPNT} rw; then
-					printf "${G}Remounting persistent filesystem on ${Y}${FLL_PERSIST_BLOCKDEV##*/}${G}${N}...\n"
+					printf "${G}Remounting persistent filesystem on ${Y}${FLL_PERSIST_BLOCKDEV#/dev/}${G}${N}...\n"
 				else
-					panic "${R}Failed to remount persistent filesystem on ${Y}${FLL_PERSIST_DEV##*/}${N}"
+					panic "${R}Failed to remount persistent filesystem on ${Y}${FLL_PERSIST_DEV#/dev/}${N}"
 				fi
 				#
 				# mount a persistent filesystem-in-a-file on microsoft filesystems
