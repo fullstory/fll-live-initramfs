@@ -566,8 +566,13 @@ mountroot()
 		# sleep time, we skip FLL_ROOTDELAY interval for first pass for extra fast boot
 		#
 		if [ "${FLL_MOUNT_LOOP}" ]; then
-			if [ "${FLL_MOUNT_LOOP}" = 1 ]; then
+			if [ "${FLL_MOUNT_LOOP}" -eq 1 ]; then
 				printf "${G}Waiting for up to ${Y}${FLL_ROOTDELAY}${G}s for devices to settle${N}...\n"
+			elif [ "$((${FLL_MOUNT_LOOP} % 3))" -eq 0 ]; then
+				#
+				# Every 3rd loop, forget about previously probed block devices
+				#
+				unset FLL_BLOCKDEVS_OLD
 			fi
 			sleep "${FLL_MOUNT_INTERVAL}"
 			FLL_ROOTDELAY=$(( ${FLL_ROOTDELAY} - ${FLL_MOUNT_INTERVAL} ))
@@ -602,7 +607,7 @@ mountroot()
 			#
 			FLL_BLOCKDEVS_NOW=$(fll_finger_blockdevs)
 			#
-			# FLL_BLOCKDEVS_OLD accounts for all devices probed so, it appends a copy of
+			# FLL_BLOCKDEVS_OLD accounts for all devices probed so far, it appends a copy of
 			# FLL_BLOCKDEVS for every loop new devices are found
 			# FLL_BLOCKDEVS is always a list of new devices that have not been probed so far
 			#
