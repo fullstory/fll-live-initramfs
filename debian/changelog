@@ -1,4 +1,4 @@
-fll-live-initramfs (2.1.10) UNRELEASED; urgency=low
+fll-live-initramfs (2.1.10) unstable; urgency=low
 
   * Every 3rd loop of block device detection, forget about previously probed
     block devices and force them to be re-probed.
