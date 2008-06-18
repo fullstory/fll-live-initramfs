@@ -1,3 +1,9 @@
+fll-live-initramfs (2.1.11) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 18 Jun 2008 15:56:52 +0200
+
 fll-live-initramfs (2.1.10) unstable; urgency=low
 
   * Every 3rd loop of block device detection, forget about previously probed
