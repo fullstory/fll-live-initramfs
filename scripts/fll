@@ -1127,7 +1127,7 @@ mountroot()
 	# disable persistent udev rules. we have "persistency" logic for data but
 	# we should remain hardware agnostic
 	#
-	rm -f ${rootmnt}/etc/udev/rules.d/z25_persistent-*.rules
+	rm -f ${rootmnt}/etc/udev/rules.d/70-persistent-*.rules
 	
 	#
 	# disable movement of static $rootmnt/dev by scripts/init-bottom/udev
