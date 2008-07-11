@@ -1,3 +1,9 @@
+fll-live-initramfs (2.1.12) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 11 Jul 2008 11:43:58 +0200
+
 fll-live-initramfs (2.1.11) unstable; urgency=low
 
   * Adapt for new udev location for persistent cd and net rules files.
