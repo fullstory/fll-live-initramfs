@@ -1,6 +1,5 @@
-fll-live-initramfs (2.1.11) UNRELEASED; urgency=low
+fll-live-initramfs (2.1.11) unstable; urgency=low
 
-  * NOT RELEASED YET
   * Adapt for new udev location for persistent cd and net rules files.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 10 Jul 2008 14:50:35 +1000
