@@ -1132,9 +1132,9 @@ mountroot()
 	#
 	# create udev rule for persistent symlink to device live media was found on
 	#
-	printf "KERNEL==\"%s\", SYMLINK+=\"fll\"" \
+	printf "KERNEL==\"%s\", SYMLINK+=\"fll\"\n" \
 		"${FLL_MEDIA_FOUND#/dev/}" >  ${rootmnt}/etc/udev/rules.d/70-fll-live.rules
-	printf "KERNEL==\"%s\", ENV{ID_CDROM}==\"?*\", SYMLINK+=\"fll-cdrom\"" \
+	printf "KERNEL==\"%s\", ENV{ID_CDROM}==\"?*\", SYMLINK+=\"fll-cdrom\"\n" \
 		"${FLL_MEDIA_FOUND#/dev/}" >> ${rootmnt}/etc/udev/rules.d/70-fll-live.rules
 	
 	#
