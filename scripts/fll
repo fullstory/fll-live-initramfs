@@ -97,7 +97,7 @@ fll_finger_blockdevs()
 		#
 		# use shell wildcard to expand subdevices
 		#
-		for subdev in $(echo /dev/${dev}*); do
+		for subdev in /dev/${dev}*; do
 			if [ -b "${subdev}" ]; then
 				echo "${subdev}"
 			fi
@@ -1128,6 +1128,14 @@ mountroot()
 	# we should remain hardware agnostic
 	#
 	rm -f ${rootmnt}/etc/udev/rules.d/70-persistent-*.rules
+
+	#
+	# create udev rule for persistent symlink to device live media was found on
+	#
+	printf "KERNEL==\"%s\", SYMLINK+=\"fll\"" \
+		"${FLL_MEDIA_FOUND#/dev/}" >  ${rootmnt}/etc/udev/rules.d/70-fll-live.rules
+	printf "KERNEL==\"%s\", ENV{ID_CDROM}==\"?*\", SYMLINK+=\"fll-cdrom\"" \
+		"${FLL_MEDIA_FOUND#/dev/}" >> ${rootmnt}/etc/udev/rules.d/70-fll-live.rules
 	
 	#
 	# disable movement of static $rootmnt/dev by scripts/init-bottom/udev

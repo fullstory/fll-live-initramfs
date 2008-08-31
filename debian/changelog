@@ -1,8 +1,10 @@
 fll-live-initramfs (2.1.12) UNRELEASED; urgency=low
 
-  * NOT RELEASED YET
+  * Create udev rule for persistent symlink, /dev/fll, to device that live
+    media was found on. Create another symlink, /dev/fll-cdrom, if the device
+    was a dvd/cdrom.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 11 Jul 2008 11:43:58 +0200
+ -- Kel Modderman <kel@otaku42.de>  Mon, 01 Sep 2008 06:48:27 +1000
 
 fll-live-initramfs (2.1.11) unstable; urgency=low
 
