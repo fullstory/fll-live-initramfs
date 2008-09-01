@@ -1,4 +1,4 @@
-fll-live-initramfs (2.1.13~kelmo2) unstable; urgency=low
+fll-live-initramfs (2.1.13) UNRELEASED; urgency=low
 
   * Do not redefine dev variable in main mount loop, preserve it for use in
     the udev rule for /dev/fll symlink.
@@ -7,7 +7,7 @@ fll-live-initramfs (2.1.13~kelmo2) unstable; urgency=low
   * Canonicalize FLL_MEDIA_FOUND variable before using it in udev rul
     for /dev/fll symlinks.
 
- -- Kel Modderman <kel@otaku42.de>  Tue, 02 Sep 2008 04:06:01 +1000
+ -- Kel Modderman <kel@otaku42.de>  Tue, 02 Sep 2008 04:06:32 +1000
 
 fll-live-initramfs (2.1.12) unstable; urgency=low
 
