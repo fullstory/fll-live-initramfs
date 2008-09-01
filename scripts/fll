@@ -708,11 +708,10 @@ mountroot()
 										FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
 									fi
 									#
-									# update FLL_BLOCKMNT, FLL_DOMOVEMOUNT stack, and dev description
+									# update FLL_BLOCKMNT, FLL_DOMOVEMOUNT stack
 									#
 									FLL_BLOCKMNT="/fll/fromiso"
 									FLL_DOMOVEMOUNT="${FLL_BLOCKMNT} ${FLL_DOMOVEMOUNT}"
-									dev="iso"
 								else
 									fll_umount ${FLL_DOUMOUNT}
 									panic "${R}Failed to mount ${Y}${FSTYPE}${R} filesystem from iso image${N}"
@@ -721,6 +720,7 @@ mountroot()
 								fll_umount ${FLL_DOUMOUNT}
 								panic "${R}Failed to identify filesystem type of iso${N}"
 							fi
+							printf "\n"
 						fi
 					fi
 					#
@@ -731,12 +731,10 @@ mountroot()
 						# found FLL compressed filesystem
 						# set/update FLL_MEDIA_FOUND variable (possibly already set via fromiso)
 						#
-						if [ "${FLL_MEDIA_FOUND}" ]; then
-							printf "\n"
-						else
+						if [ -z "${FLL_MEDIA_FOUND}" ]; then
 							printf "\n\n"
+							FLL_MEDIA_FOUND="${dev}"
 						fi
-						FLL_MEDIA_FOUND="${dev}"
 						#
 						# debug checkpoint
 						#
@@ -758,7 +756,11 @@ mountroot()
 						#
 						if fll_finger_fstype "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" >/dev/null 2>&1; then
 							printf "${G}Detected live ${Y}${FSTYPE}${G} "
-							printf "filesystem on ${Y}${FLL_MEDIA_FOUND}${N}\n"
+							if [ "${FLL_FROMISO}" = "yes" ]; then
+								printf "filesystem on ${Y}${FLL_MEDIA_NAME}${N}\n"
+							else
+								printf "filesystem on ${Y}${FLL_MEDIA_FOUND}${N}\n"
+							fi
 							#
 							# copy to tmpfs
 							#
@@ -787,15 +789,14 @@ mountroot()
 									#
 									# copy compressed filesystem to tmpfs
 									#
-									printf "${G}Copying live filesystem from ${Y}${dev}${G} to ${Y}ram${G}${N}...\n"
+									printf "${G}Copying live filesystem from ${Y}${dev#/dev/}${G} to ${Y}ram${G}${N}...\n"
 									if fll_copy_with_perc "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "/fll/toram/${FLL_IMAGE_DIR}"; then
 										#
-										# add old mnt pnt to umount stack, update FLL_BLOCKMNT and dev
+										# add old mnt pnt to umount stack, update FLL_BLOCKMNT
 										#
 										FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
 										FLL_BLOCKMNT="/fll/toram"
 										FLL_DOMOVEMOUNT="${FLL_BLOCKMNT} ${FLL_DOMOVEMOUNT}"
-										dev="ram"
 									else
 										if [ "${FLL_FROMISO}" = "yes" ]; then
 											#

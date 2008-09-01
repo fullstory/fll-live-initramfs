@@ -1,8 +1,9 @@
 fll-live-initramfs (2.1.13) UNRELEASED; urgency=low
 
-  * NOT RELEASED YET
+  * Do not redefine dev variable in main mount loop, preserve it for use in
+    the udev rule for /dev/fll symlink.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 31 Aug 2008 23:56:53 +0200
+ -- Kel Modderman <kel@otaku42.de>  Mon, 01 Sep 2008 20:50:07 +1000
 
 fll-live-initramfs (2.1.12) unstable; urgency=low
 
