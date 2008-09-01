@@ -2,8 +2,10 @@ fll-live-initramfs (2.1.13) UNRELEASED; urgency=low
 
   * Do not redefine dev variable in main mount loop, preserve it for use in
     the udev rule for /dev/fll symlink.
+  * Hack fll_umount() to fallback to using umount's lazy option when a
+    standard umount call fails.
 
- -- Kel Modderman <kel@otaku42.de>  Mon, 01 Sep 2008 20:50:07 +1000
+ -- Kel Modderman <kel@otaku42.de>  Mon, 01 Sep 2008 22:31:53 +1000
 
 fll-live-initramfs (2.1.12) unstable; urgency=low
 

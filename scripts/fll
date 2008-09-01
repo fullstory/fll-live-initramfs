@@ -225,9 +225,17 @@ fll_umount()
 	[ "${#}" -ge 1 ] || return 0
 	
 	for m in ${@}; do
-		if grep -q "${m}" /proc/mounts; then
-			umount "${m}" && rmdir "${m}"
+		grep -q "${m}" /proc/mounts || continue
+
+		umount "${m}" 2>/dev/null
+
+		# if a plain umount fails, try the lazy option
+		# if the lazy option fails then panic with error
+		if [ "${?}" -ne 0 ]; then
+			umount -l "${m}" || panic "failed to umount ${m}"
 		fi
+
+		rmdir "${m}"
 	done
 }
 ###############################################################################
