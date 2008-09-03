@@ -1,4 +1,4 @@
-fll-live-initramfs (2.1.14) UNRELEASED; urgency=low
+fll-live-initramfs (2.1.14) unstable; urgency=low
 
   * Only canonicalize /dev/disk/by-* symlinks, otherwise we can get unexpected
     results from persistent /dev/fll udev rule for cdrom devices.
