@@ -1,3 +1,9 @@
+fll-live-initramfs (2.1.15) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 03 Sep 2008 19:35:37 +0200
+
 fll-live-initramfs (2.1.14) unstable; urgency=low
 
   * Only canonicalize /dev/disk/by-* symlinks, otherwise we can get unexpected
