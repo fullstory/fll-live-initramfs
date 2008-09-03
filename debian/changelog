@@ -4,8 +4,11 @@ fll-live-initramfs (2.1.14) UNRELEASED; urgency=low
     results from persistent /dev/fll udev rule for cdrom devices.
   * Don't bother with a comment filter when reading fll-init whitelist, the
     script test handles this anyway.
+  * Overhaul fll_finger_blockdevs() to use /sys/block/* detection algorithm
+    along with udevadm to identify cdrom/disk devices similarly to
+    fll_fstab_generator.
 
- -- Kel Modderman <kel@otaku42.de>  Wed, 03 Sep 2008 23:31:51 +1000
+ -- Kel Modderman <kel@otaku42.de>  Thu, 04 Sep 2008 00:09:25 +1000
 
 fll-live-initramfs (2.1.13) unstable; urgency=low
 

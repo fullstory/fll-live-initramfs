@@ -50,63 +50,60 @@ fll_finger_blockdevs()
 {
 	unset FLL_PROBED_CDROMS
 
+	#
+	# cdrom device detection
+	#
 	if [ "${FLL_FROMHD}" != "yes" ]; then
-		#
-		# cdrom detection via /proc/sys/dev/cdrom/info
-		#
-		if [ -f /proc/sys/dev/cdrom/info ]; then
-			FLL_PROBED_CDROMS="$(awk '
-				/^drive name:/ {
-					for (i = NF; i >= 3; i--) {
-						print($i)
-					}
-				}
-			' /proc/sys/dev/cdrom/info)"
-		fi
+		for path in /sys/block/*; do
+			[ -e "${path}" ] || continue
 
-		for cdrom in ${FLL_PROBED_CDROMS}; do
+			udevadm info -q env -p "${path}" | \
+				grep -q 'ID_CDROM=1' || continue
+			
+			cdrom=${path#/sys/block/}
+
 			if [ -b "/dev/${cdrom}" ]; then
 				echo "/dev/${cdrom}"
 			fi
 		done
+
+		# only detect non cdrom devices if fromhd/fromiso/persist
+		# cheatcode was used.
+		[ "${FLL_PERSIST}" = "yes" ] || return 0
 	fi
 
 	#
-	# fromhd/fromiso/persist cheatcode required for additional block device detection
+	# disk device detection
 	#
-	if [ "${FLL_FROMHD}" != "yes" ] && [ "${FLL_PERSIST}" != "yes" ]; then
-		return 0
-	fi
+	for path in /sys/block/*; do
+		[ -e "${path}" ] || continue
 
-	#
-	# generic block device detection
-	#
-	for dev in /sys/block/*; do
-		dev=${dev#/sys/block/}
-		
-		case "${dev}" in
-			ram[0-9]*|loop[0-9]*|fd[0-9]*)
-				#
-				# skip ram, loop and floppy devices
-				#
-				continue
+		udevadm info -q env -p "${path}" | \
+			grep -q 'ID_TYPE=disk' || continue
+
+		disk=${path#/sys/block/}
+
+		case "${disk}" in
+			[sh]d[a-z]*|dm-[0-9]*)
+				if [ -b "/dev/${disk}" ]; then
+					echo "/dev/${disk}"
+				fi
 				;;
 			*)
-				if ! fll_string_not_in_strings "${dev}" ${FLL_PROBED_CDROMS}; then
-					#
-					# already identified as cdrom device
-					#
-					continue
-				fi
+				continue
 				;;
 		esac
 
 		#
-		# use shell wildcard to expand subdevices
+		# use shell wildcard to expand partitions from sysfs heir
 		#
-		for subdev in /dev/${dev}*; do
-			if [ -b "${subdev}" ]; then
-				echo "${subdev}"
+		for sub_path in /sys/block/${disk}/${disk}*; do
+			[ -e "${sub_path}" ] || continue
+
+			part="${sub_path#/sys/block/${disk}/}"
+
+			if [ -b "/dev/${part}" ]; then
+				echo "/dev/${part}"
 			fi
 		done
 	done
@@ -1144,8 +1141,7 @@ mountroot()
 	# canonicalize device node if symlink to get correct kernel name for device
 	# currently, this is only done for /dev/disk/by-* symlinks, but it could
 	# be done for any symlink ([ -L "${FLL_MEDIA_FOUND}" ]), however this
-	# seem to cause problem for /dev/sr0|/dev/scd0 links. For these just use
-	# the device name we probed from /proc/sys/dev/cdrom/info
+	# seems to cause problem for /dev/sr0|/dev/scd0 links
 	#
 	case "${FLL_MEDIA_FOUND}" in
 		/dev/disk/by-*)
