@@ -1,8 +1,11 @@
 fll-live-initramfs (2.1.14) UNRELEASED; urgency=low
 
-  * NOT RELEASED YET
+  * Only canonicalize /dev/disk/by-* symlinks, otherwise we can get unexpected
+    results from persistent /dev/fll udev rule for cdrom devices.
+  * Don't bother with a comment filter when reading fll-init whitelist, the
+    script test handles this anyway.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 01 Sep 2008 22:53:13 +0200
+ -- Kel Modderman <kel@otaku42.de>  Wed, 03 Sep 2008 23:31:51 +1000
 
 fll-live-initramfs (2.1.13) unstable; urgency=low
 

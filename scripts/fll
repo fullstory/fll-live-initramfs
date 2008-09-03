@@ -1117,11 +1117,6 @@ mountroot()
 	fi
 
 	while read i; do
-		case "${i}" in
-			'#'*)
-				continue
-				;;
-		esac
 		if [ -x "${rootmnt}/etc/init.d/${i}" ]; then
 			rm -f ${rootmnt}/etc/rc[0-6S]\.d/[SK]??${i}
 		fi
@@ -1146,9 +1141,21 @@ mountroot()
 	rm -f ${rootmnt}/etc/udev/rules.d/70-persistent-*.rules
 
 	#
+	# canonicalize device node if symlink to get correct kernel name for device
+	# currently, this is only done for /dev/disk/by-* symlinks, but it could
+	# be done for any symlink ([ -L "${FLL_MEDIA_FOUND}" ]), however this
+	# seem to cause problem for /dev/sr0|/dev/scd0 links. For these just use
+	# the device name we probed from /proc/sys/dev/cdrom/info
+	#
+	case "${FLL_MEDIA_FOUND}" in
+		/dev/disk/by-*)
+			FLL_MEDIA_FOUND="$(freadlink ${FLL_MEDIA_FOUND})"
+			;;
+	esac
+
+	#
 	# create udev rule for persistent symlink to device live media was found on
 	#
-	FLL_MEDIA_FOUND="$(freadlink ${FLL_MEDIA_FOUND})"
 	printf "KERNEL==\"%s\", SYMLINK+=\"fll\"\n" \
 		"${FLL_MEDIA_FOUND#/dev/}" >  ${rootmnt}/etc/udev/rules.d/70-fll-live.rules
 	printf "KERNEL==\"%s\", ENV{ID_CDROM}==\"?*\", SYMLINK+=\"fll-cdrom\"\n" \
