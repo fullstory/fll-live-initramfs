@@ -1,9 +1,5 @@
-fll-live-initramfs (2.1.15) UNRELEASED; urgency=low
+fll-live-initramfs (2.1.15) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Use mkdir -p when creating base level directories, some package may
     ship these.
 
