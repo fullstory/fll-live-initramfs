@@ -1097,7 +1097,7 @@ mountroot()
 	# prepare /dev /media /proc /sys and /selinux
 	#
 	for dir in dev media proc sys selinux; do
-		mkdir -m 0755 "${rootmnt}/${dir}"
+		mkdir -p -m 0755 "${rootmnt}/${dir}"
 	done
 
 	#
