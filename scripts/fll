@@ -45,9 +45,8 @@ fll_finger_blockdevs()
 		FINGERED=$(awk -F: '
 			$1 == "drive name" && NF > 1 {
 				sub(/^[ \t]*/, "", $2)
-				if (system("test -b /dev/" $2))
-					continue
-				cdrom[i++] = "/dev/" $2
+				if (!system("test -b /dev/" $2))
+					cdrom[i++] = "/dev/" $2
 			}
 			END {
 				for (c in cdrom)
