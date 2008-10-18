@@ -1,8 +1,18 @@
 fll-live-initramfs (2.1.16) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 18 Sep 2008 23:16:10 +0200
+  [ Kel Modderman ]
+  * Don't be too smart and try to probe block devices only once. We recently
+    changed this behaviour to forget about failed probes after three loops so
+    it is probably better just to remove the complexity altogether.
+  * Revert to using /proc/sys/dev/cdrom/info for cdrom device detection,
+    udevadm was not reliable enough to detect some external devices.
+  * Avoid disk type checking ps3d* block devices, udev currently does
+    not know much about them.
+
+ -- Kel Modderman <kel@otaku42.de>  Sat, 18 Oct 2008 10:12:13 +1000
 
 fll-live-initramfs (2.1.15) unstable; urgency=low
 

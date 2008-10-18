@@ -29,47 +29,40 @@ freadlink()
 	return "${?}"
 }
 ###############################################################################
-#	utility function to help with identifying device strings within a list
-###############################################################################
-fll_string_not_in_strings()
-{
-	VAR="${1}"
-	shift
-
-	for var in ${@}; do
-		[ "${VAR}" = "${var}" ] && return 1
-	done
-
-	return 0
-}
-###############################################################################
 # 	use information exported via proc and sysfs to make block device list
 # 	bubble-sort cdrom devices to top of block device stack
 ###############################################################################
 fll_finger_blockdevs()
 {
-	unset FLL_PROBED_CDROMS
+	unset FINGERED
 
 	#
-	# cdrom device detection
+	# cdrom device detection. we could glob /sys/block/ and use udevadm
+	# info output to identify devices with ID_CDOM=1 in environment, but
+	# that method has proven to be unreliable ...
 	#
 	if [ "${FLL_FROMHD}" != "yes" ]; then
-		for path in /sys/block/*; do
-			[ -e "${path}" ] || continue
+		FINGERED=$(awk -F: '
+			$1 == "drive name" && NF > 1 {
+				sub(/^[ \t]*/, "", $2)
+				if (system("test -b /dev/" $2))
+					continue
+				cdrom[i++] = "/dev/" $2
+			}
+			END {
+				for (c in cdrom)
+					print cdrom[c]
+			}
+		' /proc/sys/dev/cdrom/info)
 
-			udevadm info -q env -p "${path}" | \
-				grep -q 'ID_CDROM=1' || continue
-			
-			cdrom=${path#/sys/block/}
-
-			if [ -b "/dev/${cdrom}" ]; then
-				echo "/dev/${cdrom}"
-			fi
-		done
-
+		#
 		# only detect non cdrom devices if fromhd/fromiso/persist
 		# cheatcode was used.
-		[ "${FLL_PERSIST}" = "yes" ] || return 0
+		#
+		if [ "${FLL_PERSIST}" != "yes" ]; then
+			echo "${FINGERED}"
+			return
+		fi
 	fi
 
 	#
@@ -78,35 +71,46 @@ fll_finger_blockdevs()
 	for path in /sys/block/*; do
 		[ -e "${path}" ] || continue
 
-		udevadm info -q env -p "${path}" | \
-			grep -q 'ID_TYPE=disk' || continue
-
 		disk=${path#/sys/block/}
 
+		if [ "${FINGERED}" ] && echo "${FINGERED}" | \
+			grep -q -w "${disk}"; then
+		   	continue
+		fi
+
 		case "${disk}" in
-			[sh]d[a-z]*|dm-[0-9]*)
-				if [ -b "/dev/${disk}" ]; then
-					echo "/dev/${disk}"
-				fi
+			ps3d*)
+				#
+				# udev seems to not know much about these
+				# special PS3 specific block devices, so
+				# avoid disk type checking
+				#
 				;;
 			*)
-				continue
+				udevadm info -q env -p "${path}" | \
+					grep -q 'ID_TYPE=disk' || continue
 				;;
 		esac
 
+		if [ -b "/dev/${disk}" ]; then
+			FINGERED="${FINGERED} /dev/${disk}"
+		fi
+
 		#
-		# use shell wildcard to expand partitions from sysfs heir
+		# use shell wildcard to expand partitions from sysfs hier
 		#
-		for sub_path in /sys/block/${disk}/${disk}*; do
+		for sub_path in ${path}/${disk}[1-9]*; do
 			[ -e "${sub_path}" ] || continue
 
-			part="${sub_path#/sys/block/${disk}/}"
+			part="${sub_path#${path}/}"
 
 			if [ -b "/dev/${part}" ]; then
-				echo "/dev/${part}"
+				FINGERED="${FINGERED} /dev/${part}"
 			fi
 		done
 	done
+
+	echo ${FINGERED}
 }
 ###############################################################################
 # 	identify filesystem type of block device
@@ -566,13 +570,13 @@ mountroot()
 	#
 	# these variables are created during $FLL_ROOTDELAY time loop
 	#
-	unset FLL_BLOCKDEVS_OLD FLL_MOUNT_LOOP
+	unset FLL_MOUNT_LOOP
 	
 	while [ "${FLL_ROOTDELAY}" -gt 0 ]; do
 		#
 		# refresh these for each loop
 		#
-		unset FLL_BLOCKDEVS FLL_BLOCKDEVS_NOW FLL_BLOCKDEVS_PROBED
+		unset FLL_BLOCKDEVS
 
 		#
 		# sleep time, we skip FLL_ROOTDELAY interval for first pass for extra fast boot
@@ -580,11 +584,6 @@ mountroot()
 		if [ "${FLL_MOUNT_LOOP}" ]; then
 			if [ "${FLL_MOUNT_LOOP}" -eq 1 ]; then
 				printf "${G}Waiting for up to ${Y}${FLL_ROOTDELAY}${G}s for devices to settle${N}...\n"
-			elif [ "$((${FLL_MOUNT_LOOP} % 3))" -eq 0 ]; then
-				#
-				# Every 3rd loop, forget about previously probed block devices
-				#
-				unset FLL_BLOCKDEVS_OLD
 			fi
 			sleep "${FLL_MOUNT_INTERVAL}"
 			FLL_ROOTDELAY=$(( ${FLL_ROOTDELAY} - ${FLL_MOUNT_INTERVAL} ))
@@ -617,35 +616,14 @@ mountroot()
 			#
 			# current list of block devices that may be probed for live media
 			#
-			FLL_BLOCKDEVS_NOW=$(fll_finger_blockdevs)
-			#
-			# FLL_BLOCKDEVS_OLD accounts for all devices probed so far, it appends a copy of
-			# FLL_BLOCKDEVS for every loop new devices are found
-			# FLL_BLOCKDEVS is always a list of new devices that have not been probed so far
-			#
-			if [ "${FLL_BLOCKDEVS_OLD}" ]; then
-				#
-				# compare all devices probed so far with list of devices discovered now
-				#
-				for dev in ${FLL_BLOCKDEVS_NOW}; do
-					if fll_string_not_in_strings ${dev} ${FLL_BLOCKDEVS_OLD}; then
-						#
-						# we have not yet probed these devices
-						#
-						FLL_BLOCKDEVS="${FLL_BLOCKDEVS} ${dev}"
-					fi
-				done
-			else
-				#
-				# no devices probed so far, probe all that are currently detectable at this time
-				#
-				FLL_BLOCKDEVS="${FLL_BLOCKDEVS_NOW}"
-			fi
+			FLL_BLOCKDEVS=$(fll_finger_blockdevs)
 		fi
 	
 		if [ -z "${FLL_BLOCKDEVS}" ]; then
 			continue
 		fi
+
+		FLL_BLOCKDEVS_PROBED=false
 
 		for dev in ${FLL_BLOCKDEVS}; do
 			#
@@ -666,10 +644,10 @@ mountroot()
 			# determine filesystem type of block device
 			#
 			if fll_finger_fstype "${dev}" >/dev/null 2>&1; then
-				if [ -z "${FLL_BLOCKDEVS_PROBED}" ]; then
+				if ! ${FLL_BLOCKDEVS_PROBED}; then
 					printf "${G}Probing devices\t${N}"
+					FLL_BLOCKDEVS_PROBED=true
 				fi
-				FLL_BLOCKDEVS_PROBED=$(( ${FLL_BLOCKDEVS_PROBED} + 1 ))
 				printf "${W}[${Y} ${dev#/dev/}${W} ]${N} "
 				#
 				# we have determined FSTYPE of the device, set FLL_BLOCKMNT
@@ -890,11 +868,6 @@ mountroot()
 		if [ "${FLL_FROMHD_DEV}" ]; then
 			continue
 		fi
-		
-		#
-		# keep account of what devices we have probed so far
-		#
-		FLL_BLOCKDEVS_OLD="${FLL_BLOCKDEVS_OLD} ${FLL_BLOCKDEVS}"
 		
 		#
 		# start new probe line
