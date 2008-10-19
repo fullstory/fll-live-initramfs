@@ -1,9 +1,5 @@
-fll-live-initramfs (2.1.16) UNRELEASED; urgency=low
+fll-live-initramfs (2.1.16) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Don't be too smart and try to probe block devices only once. We recently
     changed this behaviour to forget about failed probes after three loops so
     it is probably better just to remove the complexity altogether.
