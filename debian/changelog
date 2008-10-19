@@ -1,3 +1,9 @@
+fll-live-initramfs (2.1.17) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 20 Oct 2008 01:25:15 +0200
+
 fll-live-initramfs (2.1.16) unstable; urgency=low
 
   * Don't be too smart and try to probe block devices only once. We recently
