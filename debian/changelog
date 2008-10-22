@@ -1,9 +1,5 @@
-fll-live-initramfs (2.1.17) UNRELEASED; urgency=low
+fll-live-initramfs (2.1.17) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Niall Walsh ]
   * Recognise vmlinux as kernel image
 
  -- Niall Walsh <niallwalsh@users.berlios.de>  Mon, 20 Oct 2008 17:25:49 +0100
