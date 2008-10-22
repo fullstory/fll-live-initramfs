@@ -422,6 +422,17 @@ fll_md5sum_check()
 	return ${?}
 }
 ###############################################################################
+#       check matching kernel is present
+###############################################################################
+fll_check_kernel()
+{
+	kv=$(uname -r)
+	if [ -e $1/boot/vmlinuz-${kv} ] || [ -e $1/boot/vlinux-${kv} ]; then
+		return 0
+	fi
+	return 1
+}
+###############################################################################
 # 	define mountroot() for init
 ###############################################################################
 mountroot()
@@ -817,15 +828,15 @@ mountroot()
 							#
 							mkdir -p "${FLL_MOUNTPOINT}"
 							if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "${FLL_MOUNTPOINT}"; then
-								if [ ! -e "${FLL_MOUNTPOINT}/boot/vmlinuz-$(uname -r)" ]; then
-									printf "${R}Kernel mismatch: ${Y}vmlinuz-$(uname -r)${R} not found on live filesystem.\n${N}"
+								if fll_check_kernel "${FLL_MOUNTPOINT}" ; then
+									printf "${R}Kernel mismatch: ${Y}kernel $(uname -r)${R} not found on live filesystem.\n${N}"
 									printf "${R}Kernel(s) found on the live filesystem are:\n${N}"
-									for kernel in ${FLL_MOUNTPOINT}/boot/vmlinuz-*; do
+									for kernel in ${FLL_MOUNTPOINT}/boot/vmlinu[xz]-*; do
 										[ -e "${kernel}" ] && printf "${Y}\t${kernel#*/boot/}\n${N}"
 									done
 									fll_umount ${FLL_DOUMOUNT}
-									printf "${R}You must use the correct vmlinuz version (and matching initrd.img) to boot successfully.\n${N}"
-									printf "${R}The correct vmlinuz and initrd.img files can be found in the /boot folder of live media.\n${N}"
+									printf "${R}You must use the correct linux version (and matching initrd.img) to boot successfully.\n${N}"
+									printf "${R}The correct linux and initrd.img files can be found in the /boot folder of live media.\n${N}"
 									panic
 								fi
 								printf "${G}Mounted ${Y}${FSTYPE}${G} filesystem on ${Y}${FLL_MOUNTPOINT}${N}\n\n"
