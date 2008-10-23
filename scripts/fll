@@ -427,10 +427,10 @@ fll_md5sum_check()
 fll_check_kernel()
 {
 	kv=$(uname -r)
-	if [ -e $1/boot/vmlinuz-${kv} ] || [ -e $1/boot/vlinux-${kv} ]; then
-		return 0
+	if [ -e $1/boot/vmlinuz-${kv} ] || [ -e $1/boot/vmlinux-${kv} ]; then
+		return 1
 	fi
-	return 1
+	return 0
 }
 ###############################################################################
 # 	define mountroot() for init

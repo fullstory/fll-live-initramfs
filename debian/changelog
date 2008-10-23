@@ -1,8 +1,12 @@
 fll-live-initramfs (2.1.18) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 23 Oct 2008 00:42:22 +0200
+  [ Niall Walsh ]
+  * Fix fll_check_kernel test (was backwards and had a typo).
+
+ -- Niall Walsh <niallwalsh@users.berlios.de>  Thu, 23 Oct 2008 21:07:35 +0100
 
 fll-live-initramfs (2.1.17) unstable; urgency=low
 
