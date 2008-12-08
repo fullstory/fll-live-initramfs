@@ -1,3 +1,9 @@
+fll-live-initramfs (2.1.20) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 08 Dec 2008 21:33:25 +0100
+
 fll-live-initramfs (2.1.19) unstable; urgency=low
 
   * make lintian happy and depend on ${misc:Depends}.
