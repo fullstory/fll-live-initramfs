@@ -1,8 +1,10 @@
 fll-live-initramfs (2.1.20) UNRELEASED; urgency=low
 
-  * NOT RELEASED YET
+  * Fix awk usage in fll_finger_blockdevs() to not provide test command
+    with extra operands when > 1 optical device is present in system.
+  * Consider raw block devices after all of it's partitions.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 08 Dec 2008 21:33:25 +0100
+ -- Kel Modderman <kel@otaku42.de>  Tue, 16 Dec 2008 05:18:59 +1000
 
 fll-live-initramfs (2.1.19) unstable; urgency=low
 

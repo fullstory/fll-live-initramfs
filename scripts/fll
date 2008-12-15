@@ -44,9 +44,11 @@ fll_finger_blockdevs()
 	if [ "${FLL_FROMHD}" != "yes" ]; then
 		FINGERED=$(awk -F: '
 			$1 == "drive name" && NF > 1 {
-				sub(/^[ \t]*/, "", $2)
-				if (!system("test -b /dev/" $2))
-					cdrom[i++] = "/dev/" $2
+				split($2, node, /[ \t]/)
+				for (n in node) {
+					if (!system("test -b /dev/" node[n]))
+						cdrom[i++] = "/dev/" node[n]
+				}
 			}
 			END {
 				for (c in cdrom)
@@ -91,10 +93,6 @@ fll_finger_blockdevs()
 				;;
 		esac
 
-		if [ -b "/dev/${disk}" ]; then
-			FINGERED="${FINGERED} /dev/${disk}"
-		fi
-
 		#
 		# use shell wildcard to expand partitions from sysfs hier
 		#
@@ -107,6 +105,14 @@ fll_finger_blockdevs()
 				FINGERED="${FINGERED} /dev/${part}"
 			fi
 		done
+
+		#
+		# also attempt to probe the base device, in some cases this is
+		# the only partition
+		#
+		if [ -b "/dev/${disk}" ]; then
+			FINGERED="${FINGERED} /dev/${disk}"
+		fi
 	done
 
 	echo ${FINGERED}
