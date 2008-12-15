@@ -44,7 +44,7 @@ fll_finger_blockdevs()
 	if [ "${FLL_FROMHD}" != "yes" ]; then
 		FINGERED=$(awk -F: '
 			$1 == "drive name" && NF > 1 {
-				split($2, node, /[ \t]/)
+				split($2, node, " ")
 				for (n in node) {
 					if (!system("test -b /dev/" node[n]))
 						cdrom[i++] = "/dev/" node[n]
