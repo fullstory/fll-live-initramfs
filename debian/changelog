@@ -1,4 +1,4 @@
-fll-live-initramfs (2.1.20) UNRELEASED; urgency=low
+fll-live-initramfs (2.1.20) unstable; urgency=low
 
   * Fix awk usage in fll_finger_blockdevs() to not provide test command
     with extra operands when > 1 optical device is present in system.
