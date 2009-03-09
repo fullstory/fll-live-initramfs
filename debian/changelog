@@ -1,10 +1,9 @@
-fll-live-initramfs (2.1.21) UNRELEASED; urgency=low
+fll-live-initramfs (2.1.21) unstable; urgency=low
 
-  * NOT RELEASED YET
   * don't bail out if aufs/ unionfs modules cannot be loaded, current aufs2 can
     only be built statically.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 09 Mar 2009 14:53:01 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 09 Mar 2009 19:45:23 +0100
 
 fll-live-initramfs (2.1.20) unstable; urgency=low
 
