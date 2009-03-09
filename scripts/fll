@@ -939,11 +939,7 @@ mountroot()
 		FLL_UNION_MODULE="aufs"
 	fi
 
-	if modprobe "${MODPROBE_OPTIONS}" "${FLL_UNION_MODULE}"; then
-		: # union filesystem support
-	else
-		panic "${R}Failed to load union filesystem support: ${Y}${FLL_UNION_MODULE}${N}"
-	fi
+	modprobe "${MODPROBE_OPTIONS}" "${FLL_UNION_MODULE}" >/dev/null 2>&1
 
 	#
 	# unioned filesystem mount points
