@@ -1,8 +1,16 @@
 fll-live-initramfs (2.1.22) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 09 Mar 2009 19:46:27 +0100
+  [ Kel Modderman ]
+  * Activate update-initramfs trigger via debian/triggers instead of
+    calling update-initramfs in postinst.
+  * Use minimal dh-centric debian/rules. Build-Depend on debhelper >=
+    7.0.50.
+  * Bump Standards-Version to 3.8.1, no other changes needed.
+
+ -- Kel Modderman <kel@otaku42.de>  Mon, 18 May 2009 05:09:05 +1000
 
 fll-live-initramfs (2.1.21) unstable; urgency=low
 

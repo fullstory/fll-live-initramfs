@@ -1,20 +1,7 @@
 #!/usr/bin/make -f
+%:
+	dh $@
 
-build:
-	dh build
-
-clean:
-	dh clean
-
-install: build
-	dh install --until dh_fixperms
+override_dh_fixperms:
+	dh_fixperms
 	chmod 0755 debian/fll-live-initramfs/usr/share/initramfs-tools/*/fll
-	dh install --remaining
-
-binary-arch:
-	# pkg is arch indep
-
-binary-indep: install
-	dh binary-indep
-
-binary: binary-arch binary-indep
