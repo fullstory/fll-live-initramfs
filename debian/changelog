@@ -1,8 +1,11 @@
-fll-live-initramfs (2.1.23) UNRELEASED; urgency=low
+fll-live-initramfs (2.1.23) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * remove dpkg-trigger support again, we don't actually ship the
+    fll-live-initramfs package on the live media, resulting in the triggers
+    removing it from the actually used initrd again while purging
+    fll-live-initramfs.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 18 May 2009 00:24:33 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 18 May 2009 20:44:20 +0200
 
 fll-live-initramfs (2.1.22) unstable; urgency=low
 
