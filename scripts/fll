@@ -775,6 +775,7 @@ mountroot()
 								# required tmpfs size: compressed filesystem size + 10% buffer
 								#
 								eval $(fll_meminfo)
+								# ls -l returns units in Bytes, divide by (1024*1024) to convert to MB
 								FLL_TORAM_FSSIZE=$(ls -l "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" | \
 									awk '{ printf("%d\n", int($5 * 1.1 / 1048576)) }')
 								#
