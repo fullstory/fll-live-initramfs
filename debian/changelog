@@ -1,3 +1,9 @@
+fll-live-initramfs (2.1.26) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 03 Jul 2009 01:45:44 +0200
+
 fll-live-initramfs (2.1.25) unstable; urgency=low
 
   * comment the magic number - (1024*1024) for unit conversion
