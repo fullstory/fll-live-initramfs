@@ -1,13 +1,13 @@
-fll-live-initramfs (2.1.24) UNRELEASED; urgency=low
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (2.1.24) unstable; urgency=low
 
   [ Bernard Gray ]
   * replace `du -s` with `ls -l` for calculating filesizes (and adjust maths accordingly)
     - `ls` will handle busybox vers which don't implement `du` 
 
- -- Bernard Gray <bernard.gray@gmail.com>  Thu, 02 Jul 2009 14:26:08 +1000
+  [ Stefan Lippers-Hollmann ]
+  * bump standards version to 3.8.2, no changes necessary.
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 02 Jul 2009 23:11:32 +0200
 
 fll-live-initramfs (2.1.23) unstable; urgency=low
 
