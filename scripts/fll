@@ -474,6 +474,9 @@ mountroot()
 	#
 	for opt in $(cat /proc/cmdline); do
 		case "${opt}" in
+			firmware)
+				FLL_FIRMWARE="yes"
+				;;
 			fll=debug)
 				set -x
 				;;
@@ -1073,6 +1076,75 @@ mountroot()
 			esac
 		fi
 	done
+
+	# Scan for firmware if requested
+	if [ -n "$FLL_FIRMWARE" ]; then
+		# started by checking mounted fs
+		FLL_FIRMMNTS=$(ls -d ${rootmnt}/fll/*)
+		FLL_FIRMMNT=""
+		for dev in ${FLL_FIRMMNTS} ; do
+			if [ -d ${dev}/${FLL_IMAGE_DIR}/firmware ]; then
+				FLL_FIRMMNT="${dev}"
+				break
+			fi
+		done
+		# if we didn't find it on a mounted fs
+		if [ -z "${FLL_FIRMMNT}" ]; then
+			# set FROMHD so hd's will be fingered
+			FROMHD_REAL="${FROMHD}"
+			FROMHD="yes"
+			# build up list of unchecked devices
+			for dev in $(fll_finger_blockdevs); do
+				newdev="Y"
+				for check in FLL_FIRMMNTS; do
+					if [ ${check##*/} = ${dev##*/} ]; then
+						newdev=""
+						break
+					fi
+				done
+				if [ -n "${newdev}" ]; then
+					FLL_FIRMDEVS="${FLL_FIRMDEVS} ${dev}"
+				fi
+			done
+			# Restore real FROMHD value in case something else decides to use it
+			FROMHD="${FROMHD_REAL}"
+			# go through unchecked devices, mount and check
+			for dev in "${FLL_FIRMDEVS}" ; do
+				if fll_finger_fstype "${dev}" >/dev/null 2>&1; then
+					#
+					# we have determined FSTYPE of the device, set FLL_BLOCKMNT
+					#
+					FLL_FIRMMNT="/fll/${dev##*/}"
+					mkdir -p "${FLL_FIRMMNT}"
+					#
+					# mount block device on FLL_BLOCKMNT for probe
+					#
+					if fll_mount "${FSTYPE}" "${dev}" "${FLL_FIRMMNT}" ro; then
+						if [ -d ${FLL_FIRMMNT}/${FLL_IMAGE_DIR}/firmware ]; then
+							# record the mount to umount
+							FLL_FIRMUMNT="${FLL_FIRMMNT}"
+							break
+						fi
+						fll_umount ${FLL_FIRMMNT}
+					fi
+					rmdir "${FLL_FIRMMNT}"
+					FLL_FIRMMNT=""
+				fi
+			done
+		fi
+		# Copy firmware if you found it
+		if [ -n "${FLL_FIRMMNT}" ]; then
+			cp -r ${FLL_FIRMMNT}/${FLL_IMAGE_DIR}/firmware/* ${rootmnt}/lib/firmware/
+			# umount/rmdir if we mounted for firmware
+			if [ -n "${FLL_FIRMUMNT}" ] ; then
+				fll_umount ${FLL_FIRMUMNT}
+				rmdir "${FLL_FIRMUMNT}"
+			fi
+			printf "${G}Copied firmware from ${Y}${dev##*/}${N}\n"
+		else
+			printf "${R}No firmware found!${N}\n"
+		fi
+	fi
 
 	#
 	# debug checkpoint
