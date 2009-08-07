@@ -1,9 +1,5 @@
-fll-live-initramfs (2.1.26) UNRELEASED; urgency=low
+fll-live-initramfs (2.1.26) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Niall Walsh ]
   * Add firmware cheat to copy ${FLL_IMAGE_DIR}/firmware/* to /lib/firmware
 
  -- Niall Walsh <niallwalsh@users.berlios.de>  Thu, 06 Aug 2009 15:12:01 +0100
