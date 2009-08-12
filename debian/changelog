@@ -1,9 +1,5 @@
-fll-live-initramfs (2.1.27) UNRELEASED; urgency=low
+fll-live-initramfs (2.1.27) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Niall Walsh ]
   * Rework firmware cheat to make it clearer and loop to wait for devices
 
  -- Niall Walsh <niallwalsh@users.berlios.de>  Wed, 12 Aug 2009 17:43:07 +0100
