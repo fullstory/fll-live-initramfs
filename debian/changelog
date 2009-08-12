@@ -1,8 +1,12 @@
 fll-live-initramfs (2.1.27) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 07 Aug 2009 13:26:50 +0200
+  [ Niall Walsh ]
+  * Rework firmware cheat to make it clearer and loop to wait for devices
+
+ -- Niall Walsh <niallwalsh@users.berlios.de>  Wed, 12 Aug 2009 17:43:07 +0100
 
 fll-live-initramfs (2.1.26) unstable; urgency=low
 

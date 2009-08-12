@@ -439,6 +439,82 @@ fll_check_kernel()
 	return 0
 }
 ###############################################################################
+#       find and copy firmware
+###############################################################################
+fll_firmware() {
+	# FLL_MOUNT_LOOP skips sleeping the first loop round
+	unset FLL_MOUNT_LOOP
+	# set FROMHD so hd's will be fingered
+	FLL_FROMHD_REAL="${FLL_FROMHD}"
+	FLL_FROMHD="yes"
+	# don't wait longer for firmware then root
+	# FLL_ROOTDELAY may already have been decreased
+	while [ "${FLL_ROOTDELAY}" -gt 0 ]; do
+		# sleep time, we skip sleeping for first pass
+		if [ "${FLL_MOUNT_LOOP}" ]; then
+			if [ "${FLL_MOUNT_LOOP}" -eq 1 ]; then
+				printf "${G}Waiting for up to ${Y}${FLL_ROOTDELAY}${G}s for devices to settle${N}...\n"
+			fi
+			sleep "${FLL_MOUNT_INTERVAL}"
+			FLL_ROOTDELAY=$(( ${FLL_ROOTDELAY} - ${FLL_MOUNT_INTERVAL} ))
+		fi
+		FLL_MOUNT_LOOP=$(( ${FLL_MOUNT_LOOP} + 1 ))
+		# FLL_FIRMDEVS holds the list of new devices to scan
+		unset FLL_FIRMDEVS
+		for dev in $(fll_finger_blockdevs); do
+			unset firmdevdone
+			for check in ${FLL_FIRMMNTS} ; do
+				if [ ${check} = ${dev##*/} ]; then
+					firmdevdone="Y"
+					break
+				fi
+			done
+			if [ -z "${firmdevdone}" ]; then
+				FLL_FIRMDEVS="${FLL_FIRMDEVS} ${dev}"
+			fi
+		done
+		# end loop if there is nothing new to check
+		if [ -z "${FLL_FIRMDEVS}" ]; then
+			continue
+		fi
+		# try each new device
+		for dev in ${FLL_FIRMDEVS}; do
+			# FLL_BLOCKMNT		- tracks current mount point
+			unset FLL_BLOCKMNT
+			# determine filesystem type of block device
+			if fll_finger_fstype "${dev}" >/dev/null 2>&1; then
+				# setup mount point
+				FLL_BLOCKMNT="/fll/${dev##*/}"
+				mkdir -p "${FLL_BLOCKMNT}"
+				# mount block device on FLL_BLOCKMNT for probe
+				if fll_mount "${FSTYPE}" "${dev}" "${FLL_BLOCKMNT}" ro; then
+					# add dev name to FLL_FIRMMNTS to supress rechecking
+					FLL_FIRMMNTS="${FLL_FIRMMNTS} ${dev##*/}"
+					# check for firmware dir
+					if [ -d "${FLL_BLOCKMNT}/${FLL_IMAGE_DIR}/firmware" ]; then
+						FLL_FIRMWARE_FOUND="${dev}"
+						if cp -R ${FLL_BLOCKMNT}/${FLL_IMAGE_DIR}/firmware/* /${rootmnt}/lib/firmware ; then
+							printf "${G}Copied firmware from ${Y}${dev##*/}${N}\n"
+						fi
+					fi
+					fll_umount "${FLL_BLOCKMNT}"
+				fi
+			fi
+			#
+			# break dev and sleep loops if you have firmware
+			#
+			if [ "${FLL_FIRMWARE_FOUND}" ]; then
+				break 2
+			fi
+		done
+	done
+	# Restore real FROMHD value in case something else decides to use it
+	FLL_FROMHD="${FLL_FROMHD_REAL}"
+	if [ -z "${FLL_FIRMWARE_FOUND}" ]; then
+		echo "${R}Failed to find firmware directory${N}"
+	fi
+}
+###############################################################################
 # 	define mountroot() for init
 ###############################################################################
 mountroot()
@@ -1079,70 +1155,27 @@ mountroot()
 
 	# Scan for firmware if requested
 	if [ -n "$FLL_FIRMWARE" ]; then
-		# started by checking mounted fs
-		FLL_FIRMMNTS=$(ls -d ${rootmnt}/fll/*)
-		FLL_FIRMMNT=""
-		for dev in ${FLL_FIRMMNTS} ; do
-			if [ -d ${dev}/${FLL_IMAGE_DIR}/firmware ]; then
-				FLL_FIRMMNT="${dev}"
-				break
+		# FLL_FIRMWARE_FOUND is set once the firmware is found (and copied)
+		unset FLL_FIRMWARE_FOUND
+		# start by checking mounted fs
+		# they have been moved by now to ${rootmnt}/fll/
+		# FLL_FIRMMNTS holds "devices" which have been checked
+		unset FLL_FIRMMNTS
+		for dev in $(ls -d ${rootmnt}/fll/*) ; do
+			if [ -d ${dev} ]; then
+				FLL_FIRMMNTS="${FLL_FIRMMNTS} ${dev##*/}"
+				if [ -d ${dev}/${FLL_IMAGE_DIR}/firmware ]; then
+					FLL_FIRMWARE_FOUND="${dev}"
+					if cp -r ${dev}/${FLL_IMAGE_DIR}/firmware/* ${rootmnt}/lib/firmware/ ; then
+						printf "${G}Copied firmware from ${Y}${dev##*/}${N}\n"
+					fi
+					break
+				fi
 			fi
 		done
-		# if we didn't find it on a mounted fs
-		if [ -z "${FLL_FIRMMNT}" ]; then
-			# set FROMHD so hd's will be fingered
-			FROMHD_REAL="${FROMHD}"
-			FROMHD="yes"
-			# build up list of unchecked devices
-			for dev in $(fll_finger_blockdevs); do
-				newdev="Y"
-				for check in FLL_FIRMMNTS; do
-					if [ ${check##*/} = ${dev##*/} ]; then
-						newdev=""
-						break
-					fi
-				done
-				if [ -n "${newdev}" ]; then
-					FLL_FIRMDEVS="${FLL_FIRMDEVS} ${dev}"
-				fi
-			done
-			# Restore real FROMHD value in case something else decides to use it
-			FROMHD="${FROMHD_REAL}"
-			# go through unchecked devices, mount and check
-			for dev in "${FLL_FIRMDEVS}" ; do
-				if fll_finger_fstype "${dev}" >/dev/null 2>&1; then
-					#
-					# we have determined FSTYPE of the device, set FLL_BLOCKMNT
-					#
-					FLL_FIRMMNT="/fll/${dev##*/}"
-					mkdir -p "${FLL_FIRMMNT}"
-					#
-					# mount block device on FLL_BLOCKMNT for probe
-					#
-					if fll_mount "${FSTYPE}" "${dev}" "${FLL_FIRMMNT}" ro; then
-						if [ -d ${FLL_FIRMMNT}/${FLL_IMAGE_DIR}/firmware ]; then
-							# record the mount to umount
-							FLL_FIRMUMNT="${FLL_FIRMMNT}"
-							break
-						fi
-						fll_umount ${FLL_FIRMMNT}
-					fi
-					rmdir "${FLL_FIRMMNT}"
-					FLL_FIRMMNT=""
-				fi
-			done
-		fi
-		# Copy firmware if you found it
-		if [ -n "${FLL_FIRMMNT}" ]; then
-			cp -r ${FLL_FIRMMNT}/${FLL_IMAGE_DIR}/firmware/* ${rootmnt}/lib/firmware/
-			# umount/rmdir if we mounted for firmware
-			if [ -n "${FLL_FIRMUMNT}" ] ; then
-				fll_umount ${FLL_FIRMUMNT}
-				rmdir "${FLL_FIRMUMNT}"
-			fi
-			printf "${G}Copied firmware from ${Y}${dev##*/}${N}\n"
-		else
-			printf "${R}No firmware found!${N}\n"
+		# means firmware is not on a mounted fs
+		if [ -z "${FLL_FIRMWARE_FOUND}" ]; then
+			fll_firmware
 		fi
 	fi
 
