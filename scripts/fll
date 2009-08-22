@@ -129,14 +129,6 @@ fll_finger_fstype()
 	#
 	eval $(fstype < ${1} 2>/dev/null)
 
-	#
-	# try vol_id if fstype failed to detect FSTYPE
-	#
-	if ( [ -z "${FSTYPE}" ] || [ "${FSTYPE}" = "unknown" ] ) && \
-		[ -x /lib/udev/vol_id ]; then
-		FSTYPE=$(/lib/udev/vol_id -t ${1} 2>/dev/null)
-	fi
-
 	if [ "${FSTYPE}" ] && [ "${FSTYPE}" != "unknown" ]; then
 		export FSTYPE
 		return 0
