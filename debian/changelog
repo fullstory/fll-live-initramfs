@@ -1,8 +1,9 @@
-fll-live-initramfs (2.1.29) UNRELEASED; urgency=low
+fll-live-initramfs (2.1.29) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * with USB CD-ROMs, it might take a while until /proc/sys/dev/cdrom/info 
+    appears in procfs, only try to parse it if it's present/ readable.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 22 Aug 2009 16:10:22 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 03 Sep 2009 02:59:12 +0200
 
 fll-live-initramfs (2.1.28) unstable; urgency=low
 

@@ -41,7 +41,7 @@ fll_finger_blockdevs()
 	# info output to identify devices with ID_CDOM=1 in environment, but
 	# that method has proven to be unreliable ...
 	#
-	if [ "${FLL_FROMHD}" != "yes" ]; then
+	if [ "${FLL_FROMHD}" != "yes" ] && [ -r /proc/sys/dev/cdrom/info ]; then
 		FINGERED=$(awk -F: '
 			$1 == "drive name" && NF > 1 {
 				split($2, node, " ")
