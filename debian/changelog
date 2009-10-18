@@ -1,3 +1,9 @@
+fll-live-initramfs (2.1.31) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 18 Oct 2009 23:22:15 +0200
+
 fll-live-initramfs (2.1.30) unstable; urgency=low
 
   * add fallback to blkid, klibc fstype fails to detect fat/ntfs
