@@ -123,25 +123,14 @@ fll_finger_blockdevs()
 fll_finger_fstype()
 {
 	unset FSTYPE
-	
-	#
-	# fstype, displays FSTYPE and FSSIZE
-	#
-	eval $(fstype < ${1} 2>/dev/null)
+	unset ID_FS_TYPE
 
-	if [ "${FSTYPE}" ] ; then
-		if [ ! "${FSTYPE}" = "unknown" ]; then
-			export FSTYPE
-			return 0
-		else
-			unset ID_FS_TYPE
-			eval $(/sbin/blkid -o udev -u filesystem -p ${1} | grep ^ID_FS_TYPE)
-			if [ "${ID_FS_TYPE}" ] ; then
-				FSTYPE="${ID_FS_TYPE}"
-				export FSTYPE
-				return 0
-			fi
-		fi
+	eval $(/sbin/blkid -o udev -u filesystem -p ${1} | grep ^ID_FS_TYPE)
+
+	if [ "${ID_FS_TYPE}" ] ; then
+		FSTYPE="${ID_FS_TYPE}"
+		export FSTYPE
+		return 0
 	fi
 	
 	return 1
