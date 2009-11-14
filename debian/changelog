@@ -1,3 +1,9 @@
+fll-live-initramfs (2.1.32) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 14 Nov 2009 01:20:27 +0100
+
 fll-live-initramfs (2.1.31) unstable; urgency=low
 
   * Use blkid only for getting filesystem information and no longer
