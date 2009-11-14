@@ -1,9 +1,5 @@
-fll-live-initramfs (2.1.31) UNRELEASED; urgency=low
+fll-live-initramfs (2.1.31) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Use blkid only for getting filesystem information and no longer
     bother with fstype.
 
