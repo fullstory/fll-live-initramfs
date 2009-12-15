@@ -1,8 +1,9 @@
-fll-live-initramfs (2.2.1) UNRELEASED; urgency=low
+fll-live-initramfs (2.2.1) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * don't specify fromhd volume group, because the previously used filter fails
+    on volumegroups containing a dash (which gets escaped to --).
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 15 Dec 2009 09:07:36 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 15 Dec 2009 09:57:11 +0100
 
 fll-live-initramfs (2.2.0) unstable; urgency=low
 
