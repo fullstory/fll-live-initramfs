@@ -1,3 +1,9 @@
+fll-live-initramfs (2.2.2) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 15 Dec 2009 09:58:51 +0100
+
 fll-live-initramfs (2.2.1) unstable; urgency=low
 
   * don't specify fromhd volume group, because the previously used filter fails
