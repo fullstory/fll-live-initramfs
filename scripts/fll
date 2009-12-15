@@ -694,6 +694,11 @@ mountroot()
 				UUID=*)
 					FLL_BLOCKDEVS="/dev/disk/by-uuid/${FLL_FROMHD_DEV#UUID=}"
 					;;
+				/dev/mapper/*)
+					# no "-" in vg name
+					lvm vgchange -aly --ignorelockingfailure "${FLL_FROMHD_DEV%%-*}"
+					FLL_BLOCKDEVS="${FLL_FROMHD_DEV}"
+					;;
 				*)
 					FLL_BLOCKDEVS="${FLL_FROMHD_DEV}"
 					;;

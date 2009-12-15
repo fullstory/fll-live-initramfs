@@ -1,8 +1,9 @@
-fll-live-initramfs (2.1.32) UNRELEASED; urgency=low
+fll-live-initramfs (2.2.0) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * cherrypick nbd and lvm2 support from Niall Walsh's experimental dmsetup
+    snapshot branch.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 14 Nov 2009 01:20:27 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 15 Dec 2009 09:05:52 +0100
 
 fll-live-initramfs (2.1.31) unstable; urgency=low
 

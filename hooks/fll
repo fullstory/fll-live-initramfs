@@ -12,7 +12,7 @@
 ###############################################################################
 
 # initramfs-tools prerequisite handling
-PREREQS=""
+PREREQS="nbd lvm"
 
 prereqs()
 {

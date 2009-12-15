@@ -14,7 +14,8 @@ Depends: ${misc:Depends},
  initramfs-tools (>= 0.40),
  busybox (>= 1:1.9.1-2),
  distro-defaults
-Suggests: lvm2
+Suggests: lvm2,
+ nbd
 Description: fll live media initramfs glue
  This package provides the script glue that allows initramfs-tools to
  generate an early userspace filesystem suitable for booting the live
