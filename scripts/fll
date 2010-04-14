@@ -1191,22 +1191,6 @@ mountroot()
 	#
 	mkdir -m 1777 "${rootmnt}/tmp"
 
-	printf "${G}Reconfiguring ${Y}sysvinit runlevels${G} for live boot${N}...\n"
-	#
-	# sanitise live SysV runlevel configuration
-	#
-	if [ ! -f "${rootmnt}/etc/default/fll-init" ]; then
-		panic "${R}fll-init initscript blacklist not found${N}"
-	fi
-
-	while read i; do
-		if [ -x "${rootmnt}/etc/init.d/${i}" ]; then
-			rm -f ${rootmnt}/etc/rc[0-6S]\.d/[SK]??${i}
-		fi
-	done < "${rootmnt}/etc/default/fll-init"
-
-	rm -f ${rootmnt}/etc/rc[06].d/K??irqbalance
-
 	#
 	# debug checkpoint
 	#

@@ -1,8 +1,10 @@
-fll-live-initramfs (2.2.3) UNRELEASED; urgency=low
+fll-live-initramfs (2.3.0) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * nuke manual deletions from /etc/rc?.d/, it breaks with insserv.
+  * switch to dpkg-source 3.0 (native) format.
+  * bump standards version to 3.8.4, no changes necessary.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 18 Dec 2009 21:21:45 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 14 Apr 2010 14:01:49 +0200
 
 fll-live-initramfs (2.2.2) unstable; urgency=low
 
