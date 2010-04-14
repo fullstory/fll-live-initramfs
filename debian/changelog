@@ -1,3 +1,9 @@
+fll-live-initramfs (2.3.1) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 14 Apr 2010 14:03:15 +0200
+
 fll-live-initramfs (2.3.0) unstable; urgency=low
 
   * nuke manual deletions from /etc/rc?.d/, it breaks with insserv.
