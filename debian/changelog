@@ -1,9 +1,5 @@
-fll-live-initramfs (2.3.1) UNRELEASED; urgency=low
+fll-live-initramfs (2.4.0) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Remove all traces of colour and fancy output.
   * Remove kernel version check, it was weak.
 
