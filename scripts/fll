@@ -160,7 +160,7 @@ fll_setup_dev_loop()
 		LOOP_WAIT=$(( ${LOOP_WAIT} - 1 ))
 	done
 
-	panic "${R}Unable to setup loop mounted device, no loop device nodes exist${N}"
+	panic "Unable to setup loop mounted device, no loop device nodes exist"
 }
 ###############################################################################
 #	generic mount function usage: fll_mount fs src mnt options
@@ -243,40 +243,6 @@ fll_umount()
 	done
 }
 ###############################################################################
-#	display processor name and highlights
-###############################################################################
-fll_cpuinfo()
-{
-	printf "${G}"
-	awk -F: '
-		/^processor/ { printf("Processor'${Y}'"$2"'${G}' is\t") }
-		/^model name/ {
-			gsub(/(\([Tt][Mm]\)|\([Rr]\))/,"",$2)
-			gsub(/[ ]+/," ",$2)
-			printf("'${W}'['${Y}'"$2"'${W}' ] ")
-		}
-		/^cpu MHz/ { printf("[ '${Y}'%d MHz'${W}' ] ", int($2)) }
-		/^cache size/ { printf("['${Y}'"$2" Cache'${W}' ]") }
-		/^$/ { printf("\n'${G}'") }
-	' /proc/cpuinfo
-	printf "${N}"
-}
-###############################################################################
-#	calculate total, used and unused memory: MEMTOTAL MEMUSED MEMFREE
-###############################################################################
-fll_meminfo()
-{
-	awk '
-		/^MemTotal:/ { total=$2 }
-		/^(MemFree|Buffers|Cached):/ { free+=$2 }
-		END {
-			printf("MEMTOTAL=%d\n",	int(total) / 1024)
-			printf("MEMFREE=%d\n",	int(free) / 1024)
-			printf("MEMUSED=%d\n",	(int(total) - int(free)) / 1024)
-		}
-	' /proc/meminfo
-}
-###############################################################################
 #	utility function to display update when cp'ing live media into ram
 ###############################################################################
 fll_copy_with_perc()
@@ -325,15 +291,14 @@ fll_copy_with_perc()
 			do {
 				perc = int(100 * size_of(destfile) / size_orig)
 				if (perc < 100) {
-					printf("\r'${W}'['${G}'")
+					printf("\r[")
 					for (i = 0; i <= perc; i += 2)
 						printf("=")
-					printf("'${W}'>")
+					printf(">")
 					for (i = perc; i < 100; i += 2)
 						printf(" ")
 					printf("]  ")
 					printf("%02d%s", perc, "%")
-					printf("'${N}'")
 				}
 			} while (system("test -d /proc/" pid) == 0 &&
 				 system("sleep 2") == 0)
@@ -342,18 +307,15 @@ fll_copy_with_perc()
 			# destfile size is > origfile size on tmpfs
 			#
 			if (size_of(destfile) >= size_orig) {
-				printf("\r'${W}'['${G}'")
+				printf("\r[")
 				for (i = 0; i <= 100; i += 2)
 					printf("=")
-				printf("='${W}'] ")
+				printf("=] ")
 				printf("%s\n", "100%")
-				printf("'${N}'")
 				exit(0)
 			}
 			else {
-				printf("'${R}'")
 				printf("\nFailed to copy %s to ram\n", origfile)
-				printf("'${N}'")			
 				exit(1)
 			}
 		}'
@@ -377,27 +339,19 @@ fll_md5sum_check()
 			md5 = $1
 			file = $2
 
-			printf("'${W}'")
 			printf("* %s\n|--> %s\n`--> ", file, md5)
-			printf("'${N}'")
 			
 			if (("md5sum " dir "/" file | getline) > 0) {
 				if (md5 == $1) {
-					printf("'${G}'")
 					printf("%s  OK\n\n", $1)
-					printf("'${N}'")
 					next
 				}
 				else {
-					printf("'${R}'")
 					printf("%s  FAILED\n\n", $1)
-					printf("'${N}'")
 				}
 			}
 			else {
-				printf("'${R}'")
 				printf("Unable to calculate md5sum!\n\n")
-				printf("'${N}'")
 			}
 			
 			failed++
@@ -405,11 +359,9 @@ fll_md5sum_check()
 		
 		END{
 			if (failed) {
-				printf("'${R}'")
 				printf("*******************************\n")
 				printf("***** MD5SUM CHECK FAILED *****\n")
 				printf("*******************************\n")
-				printf("'${N}'")
 				exit(1)
 			}
 			
@@ -417,17 +369,6 @@ fll_md5sum_check()
 		}' "${1}/md5sums"
 	
 	return ${?}
-}
-###############################################################################
-#       check matching kernel is present
-###############################################################################
-fll_check_kernel()
-{
-	kv=$(uname -r)
-	if [ -e $1/boot/vmlinuz-${kv} ] || [ -e $1/boot/vmlinux-${kv} ]; then
-		return 1
-	fi
-	return 0
 }
 ###############################################################################
 #       find and copy firmware
@@ -444,7 +385,7 @@ fll_firmware() {
 		# sleep time, we skip sleeping for first pass
 		if [ "${FLL_MOUNT_LOOP}" ]; then
 			if [ "${FLL_MOUNT_LOOP}" -eq 1 ]; then
-				printf "${G}Waiting for up to ${Y}${FLL_ROOTDELAY}${G}s for devices to settle${N}...\n"
+				printf "Waiting for up to ${FLL_ROOTDELAY}s for devices to settle...\n"
 			fi
 			sleep "${FLL_MOUNT_INTERVAL}"
 			FLL_ROOTDELAY=$(( ${FLL_ROOTDELAY} - ${FLL_MOUNT_INTERVAL} ))
@@ -485,7 +426,7 @@ fll_firmware() {
 					if [ -d "${FLL_BLOCKMNT}/${FLL_IMAGE_DIR}/firmware" ]; then
 						FLL_FIRMWARE_FOUND="${dev}"
 						if cp -R ${FLL_BLOCKMNT}/${FLL_IMAGE_DIR}/firmware/* /${rootmnt}/lib/firmware ; then
-							printf "${G}Copied firmware from ${Y}${dev##*/}${N}\n"
+							printf "Copied firmware from ${dev##*/}\n"
 						fi
 					fi
 					fll_umount "${FLL_BLOCKMNT}"
@@ -502,7 +443,7 @@ fll_firmware() {
 	# Restore real FROMHD value in case something else decides to use it
 	FLL_FROMHD="${FLL_FROMHD_REAL}"
 	if [ -z "${FLL_FIRMWARE_FOUND}" ]; then
-		echo "${R}Failed to find firmware directory${N}"
+		echo "Failed to find firmware directory"
 	fi
 }
 ###############################################################################
@@ -510,27 +451,6 @@ fll_firmware() {
 ###############################################################################
 mountroot()
 {
-	#
-	# colourful escape sequences
-	#
-	N="[0;39m"	# Normal color
-	R="[1;31m"	# Failure message
-	G="[1;32m"	# Success message
-	Y="[1;33m"	# Variable Descriptions
-	W="[1;37m"	# Brackets
-	
-	#
-	# force our arch string for i386
-	#
-	case "${DPKG_ARCH}" in
-		i?86)
-			FLL_ARCH="i686"
-			;;
-		*)
-			FLL_ARCH="${DPKG_ARCH}"
-			;;
-	esac
-
 	#
 	# source distro-defaults
 	#
@@ -602,31 +522,6 @@ mountroot()
 	done
 
 	#
-	# print geeky informational messages
-	#
-	printf "\n${W}Welcome to ${FLL_DISTRO_NAME} (${FLL_ARCH}) live linux${N}\n\n"
-
-	#
-	# Print kernel info
-	#
-	printf "${G}Linux Kernel\t${W}[ ${Y}$(uname -r)${W} ]${N}\n"
-
-	#
-	# Print CPU info
-	#
-	fll_cpuinfo
-
-	#
-	# Print System Memory info
-	#
-	eval $(fll_meminfo)
-	printf "${G}System Memory\t${W}"
-	printf "[ ${Y}${MEMUSED}M used ${W}] "
-	printf "[ ${Y}${MEMFREE}M free${W} ] "
-	printf "[ ${Y}${MEMTOTAL}M total${W} ]"
-	printf "${N}\n"
-
-	#
 	# Run scripts in local-top, like lvm2
 	#
 	[ "$quiet" != "y" ] && log_begin_msg "Running /scripts/local-top"
@@ -669,7 +564,7 @@ mountroot()
 		#
 		if [ "${FLL_MOUNT_LOOP}" ]; then
 			if [ "${FLL_MOUNT_LOOP}" -eq 1 ]; then
-				printf "${G}Waiting for up to ${Y}${FLL_ROOTDELAY}${G}s for devices to settle${N}...\n"
+				printf "Waiting for up to ${FLL_ROOTDELAY}s for devices to settle...\n"
 			fi
 			sleep "${FLL_MOUNT_INTERVAL}"
 			FLL_ROOTDELAY=$(( ${FLL_ROOTDELAY} - ${FLL_MOUNT_INTERVAL} ))
@@ -735,10 +630,10 @@ mountroot()
 			#
 			if fll_finger_fstype "${dev}" >/dev/null 2>&1; then
 				if ! ${FLL_BLOCKDEVS_PROBED}; then
-					printf "${G}Probing devices\t${N}"
+					printf "Probing devices\t"
 					FLL_BLOCKDEVS_PROBED=true
 				fi
-				printf "${W}[${Y} ${dev#/dev/}${W} ]${N} "
+				printf "[ ${dev#/dev/} ] "
 				#
 				# we have determined FSTYPE of the device, set FLL_BLOCKMNT
 				#
@@ -770,11 +665,11 @@ mountroot()
 							#
 							FLL_MEDIA_FOUND="${dev}"
 							printf "\n\n"
-							printf "${G}Detected ${Y}${FLL_MEDIA_NAME}${G} "
-							printf "on ${Y}${FLL_MEDIA_FOUND#/dev/}${G}.${N}\n"
+							printf "Detected ${FLL_MEDIA_NAME} "
+							printf "on ${FLL_MEDIA_FOUND#/dev/}.\n"
 							if fll_finger_fstype "${FLL_BLOCKMNT}/${FLL_MEDIA_NAME}" >/dev/null 2>&1; then
 								if [ "${FSTYPE}" != "iso9660" ]; then
-									panic "${Y}${FLL_MEDIA_NAME}${R} not an iso9660 filesystem${N}"
+									panic "${FLL_MEDIA_NAME} not an iso9660 filesystem"
 								fi
 								mkdir -p /fll/fromiso
 								#
@@ -794,11 +689,11 @@ mountroot()
 									FLL_DOMOVEMOUNT="${FLL_BLOCKMNT} ${FLL_DOMOVEMOUNT}"
 								else
 									fll_umount ${FLL_DOUMOUNT}
-									panic "${R}Failed to mount ${Y}${FSTYPE}${R} filesystem from iso image${N}"
+									panic "Failed to mount ${FSTYPE} filesystem from iso image"
 								fi
 							else
 								fll_umount ${FLL_DOUMOUNT}
-								panic "${R}Failed to identify filesystem type of iso${N}"
+								panic "Failed to identify filesystem type of iso"
 							fi
 							printf "\n"
 						fi
@@ -823,23 +718,23 @@ mountroot()
 						# md5sum check
 						#
 						if [ "${FLL_MD5SUM_CHECK}" = "yes" ]; then
-							printf "${G}Performing ${Y}md5sum${G} integrity check of live media${N}...\n\n"
+							printf "Performing md5sum integrity check of live media...\n\n"
 							if fll_md5sum_check ${FLL_BLOCKMNT}; then
-								printf "${G}All md5sums verified successfully.${N}\n\n"
+								printf "All md5sums verified successfully.\n\n"
 							else
 								fll_umount ${FLL_DOUMOUNT}
-								panic "${R}Failed md5sum check!${N}"
+								panic "Failed md5sum check!"
 							fi
 						fi
 						#
 						# prepare live filesystem
 						#
 						if fll_finger_fstype "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" >/dev/null 2>&1; then
-							printf "${G}Detected live ${Y}${FSTYPE}${G} "
+							printf "Detected live ${FSTYPE} "
 							if [ "${FLL_FROMISO}" = "yes" ]; then
-								printf "filesystem on ${Y}${FLL_MEDIA_NAME}${N}\n"
+								printf "filesystem on ${FLL_MEDIA_NAME}\n"
 							else
-								printf "filesystem on ${Y}${FLL_MEDIA_FOUND}${N}\n"
+								printf "filesystem on ${FLL_MEDIA_FOUND}\n"
 							fi
 							#
 							# copy to tmpfs
@@ -870,7 +765,7 @@ mountroot()
 									#
 									# copy compressed filesystem to tmpfs
 									#
-									printf "${G}Copying live filesystem from ${Y}${dev#/dev/}${G} to ${Y}ram${G}${N}...\n"
+									printf "Copying live filesystem from ${dev#/dev/} to ram...\n"
 									if fll_copy_with_perc "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "/fll/toram/${FLL_IMAGE_DIR}"; then
 										#
 										# add old mnt pnt to umount stack, update FLL_BLOCKMNT
@@ -890,12 +785,12 @@ mountroot()
 										#
 										rm -rf "/fll/toram/${FLL_IMAGE_DIR}"
 										fll_umount /fll/toram
-										printf "\n${G}Continuing boot from live media${N}...\n"
+										printf "\nContinuing boot from live media...\n"
 									fi
 								else
-									printf "${R}Insufficient free memory to copy live media into memory${N}\n"
-									printf "${R}Required free memory: ${Y}${FLL_TORAM_MEMREQ}M${N}\n"
-									printf "\n${G}Continuing boot from live media${N}...\n"
+									printf "Insufficient free memory to copy live media into memory\n"
+									printf "Required free memory: ${FLL_TORAM_MEMREQ}M\n"
+									printf "\nContinuing boot from live media...\n"
 									if [ "${FLL_FROMISO}" = "yes" ]; then
 										#
 										# we failed to copy iso contents to ram: reset FLL_DOUMOUNT stack
@@ -909,26 +804,15 @@ mountroot()
 							#
 							mkdir -p "${FLL_MOUNTPOINT}"
 							if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "${FLL_MOUNTPOINT}"; then
-								if fll_check_kernel "${FLL_MOUNTPOINT}" ; then
-									printf "${R}Kernel mismatch: ${Y}kernel $(uname -r)${R} not found on live filesystem.\n${N}"
-									printf "${R}Kernel(s) found on the live filesystem are:\n${N}"
-									for kernel in ${FLL_MOUNTPOINT}/boot/vmlinu[xz]-*; do
-										[ -e "${kernel}" ] && printf "${Y}\t${kernel#*/boot/}\n${N}"
-									done
-									fll_umount ${FLL_DOUMOUNT}
-									printf "${R}You must use the correct linux version (and matching initrd.img) to boot successfully.\n${N}"
-									printf "${R}The correct linux and initrd.img files can be found in the /boot folder of live media.\n${N}"
-									panic
-								fi
-								printf "${G}Mounted ${Y}${FSTYPE}${G} filesystem on ${Y}${FLL_MOUNTPOINT}${N}\n\n"
+								printf "Mounted ${FSTYPE} filesystem on ${FLL_MOUNTPOINT}\n\n"
 								FLL_DOMOVEMOUNT="${FLL_MOUNTPOINT} ${FLL_DOMOVEMOUNT}"
 							else
 								fll_umount ${FLL_DOUMOUNT}
-								panic "${R}Failed to mount ${Y}${FSTYPE}${R} filesystem${N}"
+								panic "Failed to mount ${FSTYPE} filesystem"
 							fi
 						else
 							fll_umount ${FLL_DOUMOUNT}
-							panic "${R}Failed to identify filesystem type of live media image${N}"
+							panic "Failed to identify filesystem type of live media image"
 						fi
 					else
 						#
@@ -970,7 +854,7 @@ mountroot()
 	# panic on failure to detect live media
 	#
 	if [ -z "${FLL_MEDIA_FOUND}" ]; then
-		panic "${R}Failed to detect live media${N}"
+		panic "Failed to detect live media"
 	fi
 
 	#
@@ -982,18 +866,18 @@ mountroot()
 	# mount a tmpfs over $rootmnt, reserving 10% system memory
 	# Note: $rootmnt must be mounted with a fs != rootfs prior to run-init
 	#
-	printf "${G}Mounting virtual memory ${Y}tmpfs${G} filesystem on ${Y}${rootmnt}${G}${N}..."
+	printf "Mounting virtual memory tmpfs filesystem on ${rootmnt}..."
 	if mount -n -t tmpfs -o size=90%,mode=755 tmpfs "${rootmnt}"; then
 		printf "\n"
 	else
-		panic "${R}Failed to mount tmpfs over ${Y}${rootmnt}${N}"
+		panic "Failed to mount tmpfs over ${rootmnt}"
 	fi
 
 	#
 	# move all mounts in FLL_DOMOVEMOUNT stack to $rootmnt
 	#
 	if [ "${FLL_DOMOVEMOUNT}" ]; then
-		printf "${G}Moving all mounted filesystems to ${Y}${rootmnt}${G}${N}..."
+		printf "Moving all mounted filesystems to ${rootmnt}..."
 		for mnt in ${FLL_DOMOVEMOUNT}; do
 			if grep -q "${mnt}" /proc/mounts; then
 				mkdir -p "${rootmnt}${mnt}"
@@ -1007,7 +891,7 @@ mountroot()
 	# sanity check, ${rootmnt}${FLL_MOUNTPOINT} _must_ exist
 	#
 	if [ ! -d "${rootmnt}${FLL_MOUNTPOINT}" ]; then
-		panic "${R}Failed to find ${Y}${FLL_MOUNTPOINT}${G} on ${Y}${rootmnt}${N}"
+		panic "Failed to find ${FLL_MOUNTPOINT} on ${rootmnt}"
 	fi
 
 	if [ -z "${FLL_UNION_MODULE}" ]; then
@@ -1040,9 +924,9 @@ mountroot()
 				#
 				if grep -q "${FLL_UNION_COWMNTPNT}" /proc/mounts && mount -o remount,rw "${FLL_UNION_COWMNTPNT}" || \
 					fll_mount ${FLL_PERSIST_BLOCKFSTYPE} ${FLL_PERSIST_BLOCKDEV} ${FLL_UNION_COWMNTPNT} rw; then
-					printf "${G}Remounting persistent filesystem on ${Y}${FLL_PERSIST_BLOCKDEV#/dev/}${G}${N}...\n"
+					printf "Remounting persistent filesystem on ${FLL_PERSIST_BLOCKDEV#/dev/}...\n"
 				else
-					panic "${R}Failed to remount persistent filesystem on ${Y}${FLL_PERSIST_DEV#/dev/}${N}"
+					panic "Failed to remount persistent filesystem on ${FLL_PERSIST_DEV#/dev/}"
 				fi
 				#
 				# mount a persistent filesystem-in-a-file on microsoft filesystems
@@ -1050,7 +934,7 @@ mountroot()
 				if [ "${FLL_PERSIST_BLOCKFSTYPE}" = "msdos" ] || [ "${FLL_PERSIST_BLOCKFSTYPE}" = "vfat" ]; then
 					if [ -f "${FLL_UNION_COWMNTPNT}/${FLL_PERSIST_FILE}" ] && \
 						fll_finger_fstype "${FLL_UNION_COWMNTPNT}/${FLL_PERSIST_FILE}"; then
-						printf "${G}Mounting ${Y}${FLL_PERSIST_FILE}${G} filesystem-in-a-file${N}..."
+						printf "Mounting ${FLL_PERSIST_FILE} filesystem-in-a-file..."
 						#
 						# identify filesystem of loopback file, mount it and update FLL_UNION_COWMNTPNT
 						#
@@ -1065,10 +949,10 @@ mountroot()
 							#
 							FLL_UNION_COWDIR="/fll/cow"
 						else
-							panic "${R}Failed to mount ${Y}${FLL_PERSIST_FILE}${R} persistent filesystem-in-a-file${N}"
+							panic "Failed to mount ${FLL_PERSIST_FILE} persistent filesystem-in-a-file"
 						fi
 					else
-						panic "${R}Invalid/missing ${Y}${FLL_PERSIST_FILE}${R} persistent filesystem-in-a-file${N}"
+						panic "Invalid/missing ${FLL_PERSIST_FILE} persistent filesystem-in-a-file"
 					fi
 				fi
 				;;
@@ -1076,7 +960,7 @@ mountroot()
 				#
 				# we could support vfat|msdos with a loop mounted ext* filesystem-in-a-file
 				#
-				panic "${R}Cannot create persistent filesystem with type ${Y}${FLL_PERSIST_BLOCKFSTYPE}${N}"
+				panic "Cannot create persistent filesystem with type ${FLL_PERSIST_BLOCKFSTYPE}"
 				;;
 		esac
 	else
@@ -1100,11 +984,11 @@ mountroot()
 	#
 	# mount the union COW filesystem
 	#
-	printf "${G}Mounting ${Y}${FLL_UNION_MODULE}${G} union filesystem${N}..."
+	printf "Mounting ${FLL_UNION_MODULE} union filesystem..."
 	if mount -t "${FLL_UNION_MODULE}" -o "${FLL_UNION_OPTIONS}" "${FLL_UNION_MODULE}" "${rootmnt}${FLL_UNION_MOUNTPOINT}"; then
 		printf "\n"
 	else
-		panic "${R}Failed to prepare ${Y}${FLL_UNION_MODULE}${R} union filesystem${N}"
+		panic "Failed to prepare ${FLL_UNION_MODULE} union filesystem"
 	fi
 
 	#
@@ -1112,7 +996,7 @@ mountroot()
 	#
 	maybe_break fll-unionmount
 
-	printf "${G}Preparing live filesystem on ${Y}${rootmnt}${G}${N}...\n"
+	printf "Preparing live filesystem on ${rootmnt}...\n"
 	
 	#
 	# create links on $rootmnt to real filesystem
@@ -1162,7 +1046,7 @@ mountroot()
 				if [ -d ${dev}/${FLL_IMAGE_DIR}/firmware ]; then
 					FLL_FIRMWARE_FOUND="${dev}"
 					if cp -r ${dev}/${FLL_IMAGE_DIR}/firmware/* ${rootmnt}/lib/firmware/ ; then
-						printf "${G}Copied firmware from ${Y}${dev##*/}${N}\n"
+						printf "Copied firmware from ${dev##*/}\n"
 					fi
 					break
 				fi
@@ -1232,14 +1116,6 @@ mountroot()
 	#
 	export no_static_dev="1"
 
-	#
-	# if there is no framebuffer, clear our output to avoid corruption
-	# later when preparing the console keymap
-	#
-	if [ -f /proc/fb ] && [ -z "$(cat /proc/fb)" ]; then
-		clear
-	else
-		printf "\n${G}Starting ${Y}init${G} process${N}...\n\n"
-	fi
+	printf "\nStarting init process...\n\n"
 }
 ###############################################################################

@@ -1,8 +1,13 @@
 fll-live-initramfs (2.3.1) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 14 Apr 2010 14:03:15 +0200
+  [ Kel Modderman ]
+  * Remove all traces of colour and fancy output.
+  * Remove kernel version check, it was weak.
+
+ -- Kel Modderman <kel@otaku42.de>  Mon, 26 Apr 2010 00:46:49 +1000
 
 fll-live-initramfs (2.3.0) unstable; urgency=low
 
