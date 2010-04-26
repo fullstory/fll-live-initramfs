@@ -1,8 +1,17 @@
 fll-live-initramfs (2.4.1) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 25 Apr 2010 19:27:54 +0200
+  [ Niall Walsh ]
+  * nbdroot enables fromhd.
+  * Use nbd-client -c instead of udev to check nbd devices.
+  * Probe ${disk}p[1-9]* to allow probe of nbd partitions.
+  * Export (fixed, reversed) BOOTIF if it's not set.
+  * Bring up networking for nbdroot, export DEVICE.
+  * When FLL_FROMHD_DEV is nbd, check nbd-client running or rerun.
+
+ -- Niall Walsh <niallwalsh@users.berlios.de>  Mon, 26 Apr 2010 20:40:02 +0100
 
 fll-live-initramfs (2.4.0) unstable; urgency=low
 
