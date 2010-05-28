@@ -1,8 +1,12 @@
 fll-live-initramfs (2.4.2) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 26 Apr 2010 22:17:12 +0200
+  [ Kel Modderman ]
+  * Revert errant removal of fll_meminfo function.
+
+ -- Kel Modderman <kel@otaku42.de>  Fri, 28 May 2010 18:54:58 +1000
 
 fll-live-initramfs (2.4.1) unstable; urgency=low
 
