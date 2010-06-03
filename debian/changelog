@@ -1,9 +1,5 @@
-fll-live-initramfs (2.4.2) UNRELEASED; urgency=low
+fll-live-initramfs (2.4.2) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Revert errant removal of fll_meminfo function.
 
  -- Kel Modderman <kel@otaku42.de>  Fri, 28 May 2010 18:54:58 +1000
