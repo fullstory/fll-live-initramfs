@@ -1,9 +1,5 @@
-fll-live-initramfs (2.4.3) UNRELEASED; urgency=low
+fll-live-initramfs (2.4.3) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Niall Walsh ]
   * initramfs-tools updated, revert some nbd hackery
     - BOOTIF now fixed
     - DEVICE no longer hardcoded
