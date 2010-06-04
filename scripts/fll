@@ -484,24 +484,6 @@ mountroot()
 	#
 	for opt in $(cat /proc/cmdline); do
 		case "${opt}" in
-			BOOTIF=*)
-				# #577149
-				# initramfs init exports it blank
-				#   and reverses it
-				if [ -z "${BOOTIF}" ]; then
-					BOOTIF="${opt#BOOTIF=}"
-					# initramfs is parsing backwards 
-					temp_mac=${BOOTIF#*-}
-					BOOTIF=""
-					IFS='-'
-					for x in $temp_mac; do
-						BOOTIF="-${x}${BOOTIF}"
-					done
-					unset IFS
-					BOOTIF="01${BOOTIF}"
-					export BOOTIF
-				fi
-				;;
 			firmware)
 				FLL_FIRMWARE="yes"
 				;;
@@ -582,61 +564,9 @@ mountroot()
 		#   nbd will only run configure_networking (c_n) if nbdroot=dhcp,
 		#     running c_n here before local-top is therefore vital for now
 		#     I strongly suspect nbd will "fix" the requirement on this
-		#   DEVICE is hardcoded to eth0 if c_n is run here (not exported to nbd)
 		#   ROOTPATH won't be available to nbd if c_n succeeds here
 		#   nbd won't have a DEVICE unless set by ip= or BOOTIF
 		[ "$quiet" != "y" ] && log_begin_msg "Preparing for nbd"
-		# BOOTIF will supply the DEVICE if set
-		if [ -z "${BOOTIF}" ]; then
-			# #566295 means c_n demands a device unless IP is not one of
-			# ""|on|any|dhcp|both|off|none|bootp|rarp
-			# Need to concern ourselves with making sure we can both:
-			#   give good args to c_n when run here
-			#   export good args for scripts (e.g. nbd) to match afterwards
-
-			# blank DEVICE (was eth0 from initramfs.conf)
-			# this change is coming in initramfs-tools anyway
-			DEVICE=""
-
-			# convert ip into a full spec for shortcut cases
-			# full specs don't use DEVICE in c_n except to test file
-			case ${IP} in
-				""|on|any|dhcp|both|off|none)
-					# stops c_n having no device
-					# we want any device and can't guess
-					# we can't use all as that breaks parsing
-					# we will run ipconfig excessively, but it's ok
-					IP="::::::"
-					;;
-				bootp|rarp)
-					# stops c_n having no device
-					# we want any device and can't guess
-					IP="::::::${IP}"
-					;;
-				*:*)
-					# this is a full(ish) ipconfig spec
-					# ipconfig will fill remaining defaults itself
-					# if it can parse DEVICE it will exit first c_n nicely
-					# if it can't parse DEVICE we can only wait for c_n
-					;;
-				*)
-					# cosmetic fix but matches ipconfig, fits c_n
-					# makes explicit short device form
-					# DEVICE lets ROUNDTT loop exit
-					DEVICE="${IP}"
-					;;
-			esac
-		fi
-
-		# configure_networking might get run again (e.g. by nbdroot)
-		# c_n can be run multiple times safely on DEVICE/BOOTIF
-		# it won't reparse the /tmp/net-*.conf file though!
-		# exporting DEVICE now means future c_n from scripts won't rerun ipconfig
-
-		# while #566295 is open we really want nbd's c_n to have a DEVICE
-		# when it's closed this just saves some re-running of ipconfig and helps loop
-		# this is caused by nbd being a run-script unlike this script and nfs
-		# we want to export DEVICE (after c_n) so nbd only cares if BOOTIF appears
 
 		# a failed c_n should be slow so don't repeat too many times
 		# do repeat though with sleep, could fail quickly before any device appears
@@ -660,9 +590,14 @@ mountroot()
 			# or no devices came up
 			panic "${R}Failed to configure networking to prepare for nbdroot${N}"
 		fi
-		# we should have the actual DEVICE that's up now, so export it
+		# configure_networking might get run again (e.g. by nbdroot)
+		# c_n can be run multiple times safely on DEVICE/BOOTIF
+		# it won't reparse the /tmp/net-*.conf file though!
+		# nbd is a run-script unlike this script and nfs
+		# by exporting DEVICE nbd will only care if BOOTIF appears
 		# nbd will parse IP itself from cmdline
 		# c_n from nbd will have to recognise DEVICE (or BOOTIF or dev from ip)
+		# future c_n from scripts won't rerun ipconfig and helps loop
 		export DEVICE
 		# ROOTPATH will set nbdroot if nbdroot=dhcp
 		# I think c_n should (re)source /tmp/net-%{DEVICE}.conf even if it's already there

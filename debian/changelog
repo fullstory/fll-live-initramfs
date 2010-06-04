@@ -1,8 +1,15 @@
 fll-live-initramfs (2.4.3) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 03 Jun 2010 23:23:52 +0200
+  [ Niall Walsh ]
+  * initramfs-tools updated, revert some nbd hackery
+    - BOOTIF now fixed
+    - DEVICE no longer hardcoded
+    - no DEVICE works
+
+ -- Niall Walsh <niallwalsh@users.berlios.de>  Fri, 04 Jun 2010 12:37:15 +0100
 
 fll-live-initramfs (2.4.2) unstable; urgency=low
 
