@@ -87,7 +87,7 @@ fll-live-initramfs (2.1.30) unstable; urgency=low
 
 fll-live-initramfs (2.1.29) unstable; urgency=low
 
-  * with USB CD-ROMs, it might take a while until /proc/sys/dev/cdrom/info 
+  * with USB CD-ROMs, it might take a while until /proc/sys/dev/cdrom/info
     appears in procfs, only try to parse it if it's present/ readable.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 03 Sep 2009 02:59:12 +0200
@@ -121,7 +121,7 @@ fll-live-initramfs (2.1.24) unstable; urgency=low
   [ Bernard Gray ]
   * replace `du -s` with `ls -l` for calculating filesizes (and adjust maths
     accordingly)
-    - `ls` will handle busybox vers which don't implement `du` 
+    - `ls` will handle busybox vers which don't implement `du`
 
   [ Stefan Lippers-Hollmann ]
   * bump standards version to 3.8.2, no changes necessary.
