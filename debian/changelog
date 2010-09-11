@@ -1,8 +1,8 @@
-fll-live-initramfs (2.4.5) UNRELEASED; urgency=low
+fll-live-initramfs (2.4.5) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * switch to compat level 8.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 03 Aug 2010 18:26:32 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 08 Aug 2010 03:57:15 +0200
 
 fll-live-initramfs (2.4.4) unstable; urgency=low
 
