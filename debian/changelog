@@ -1,8 +1,8 @@
-fll-live-initramfs (2.4.6) UNRELEASED; urgency=low
+fll-live-initramfs (2.4.6) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * drop no longer required nbd overrides.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 08 Aug 2010 03:57:41 +0200
+ -- Niall Walsh <niallwalsh@users.berlios.de>  Sun, 14 Aug 2010 17:19:17 +0100
 
 fll-live-initramfs (2.4.5) unstable; urgency=low
 

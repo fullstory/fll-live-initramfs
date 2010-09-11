@@ -519,14 +519,8 @@ mountroot()
 				;;
 			nbdroot=*)
 				# triggers finger_blockdevs
-				# if fromhd device not set and not using dhcp then
-				#    static may not work in nbd-client and
-				#    no device to use to re-run nbd-client safely
 				FLL_FROMHD="yes"
-				# need to know to
-				#   tell finger_blockdevs to check nbd*
-				#   call configure_networking
-				#     nbdroot probably should always call it
+				# need to know to tell finger_blockdevs to check nbd*
 				FLL_NBD="${opt#nbdroot=}"
 				;;
 			persist*)
@@ -555,56 +549,6 @@ mountroot()
 				;;
 		esac
 	done
-
-	#
-	# Prepare for nbd
-	#
-	if [ -n "$FLL_NBD" ] ; then
-		# A range of issues need "fixing" for nbd
-		#   nbd will only run configure_networking (c_n) if nbdroot=dhcp,
-		#     running c_n here before local-top is therefore vital for now
-		#     I strongly suspect nbd will "fix" the requirement on this
-		#   ROOTPATH won't be available to nbd if c_n succeeds here
-		#   nbd won't have a DEVICE unless set by ip= or BOOTIF
-		[ "$quiet" != "y" ] && log_begin_msg "Preparing for nbd"
-
-		# a failed c_n should be slow so don't repeat too many times
-		# do repeat though with sleep, could fail quickly before any device appears
-		FLL_NET_OK=2
-		while [ "${FLL_NET_OK}" -gt 0 ] ; do
-			configure_networking
-			if [ -n "${DEVICE}" ] && [ -e /tmp/net-${DEVICE}.conf ] ; then
-				# DEVICE will be set by c_n unless it was blank
-				#   and no interfaces came up
-				echo "configured networking for ${DEVICE}"
-				FLL_NET_OK=-1
-			else
-				FLL_NET_OK=$((FLL_NET_OK - 1))
-				echo "waiting 5 seconds before retrying networking"
-				sleep 5
-			fi
-		done
-		if [ ${FLL_NET_OK} -eq 0 ] ; then
-			# we still haven't got a good network
-			# either the user specified a device which won't work
-			# or no devices came up
-			panic "${R}Failed to configure networking to prepare for nbdroot${N}"
-		fi
-		# configure_networking might get run again (e.g. by nbdroot)
-		# c_n can be run multiple times safely on DEVICE/BOOTIF
-		# it won't reparse the /tmp/net-*.conf file though!
-		# nbd is a run-script unlike this script and nfs
-		# by exporting DEVICE nbd will only care if BOOTIF appears
-		# nbd will parse IP itself from cmdline
-		# c_n from nbd will have to recognise DEVICE (or BOOTIF or dev from ip)
-		# future c_n from scripts won't rerun ipconfig and helps loop
-		export DEVICE
-		# ROOTPATH will set nbdroot if nbdroot=dhcp
-		# I think c_n should (re)source /tmp/net-%{DEVICE}.conf even if it's already there
-		# as it stands it bombs out before it gets to sourcing the .conf and setting ROOTPATH
-		export ROOTPATH
-		[ "$quiet" != "y" ] && log_end_msg
-	fi
 
 	#
 	# Run scripts in local-top, like lvm2
