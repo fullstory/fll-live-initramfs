@@ -159,11 +159,17 @@ fll_setup_dev_loop()
 	LOOP_WAIT="10"
 
 	while [ "${LOOP_WAIT}" -gt 0 ]; do
-		for l in /dev/loop*; do
-			if [ -e "${l}" ]; then
-				return 0
+		c=0
+		# TODO
+		# it did check /dev/loop* and return 0 if anything existed
+		for l in 0 1 2 3; do
+			if [ -e "/dev/loop${l}" ]; then
+				c=$((${c}+1))
 			fi
 		done
+		if [ "${c}" -eq "4" ]; then
+			return 0
+		fi
 		sleep 1
 		LOOP_WAIT=$(( ${LOOP_WAIT} - 1 ))
 	done
@@ -545,6 +551,8 @@ mountroot()
 				FLL_TORAM="yes"
 				;;
 			unionfs|aufs)
+				# set FLL_UNION_MODULE in default/distro if needed
+				# current default is dmsetup
 				FLL_UNION_MODULE="${opt}"
 				;;
 		esac
@@ -841,9 +849,18 @@ mountroot()
 							# mount compressed filesystem, source directory: FLL_BLOCKMNT
 							#
 							mkdir -p "${FLL_MOUNTPOINT}"
-							if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "${FLL_MOUNTPOINT}"; then
+							if [ -n "${FLL_UNION_MODULE}" ] && [ "${FLL_UNION_MODULE}" != "dmsetup" ] && fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "${FLL_MOUNTPOINT}"; then
 								printf "Mounted ${FSTYPE} filesystem on ${FLL_MOUNTPOINT}\n\n"
 								FLL_DOMOVEMOUNT="${FLL_MOUNTPOINT} ${FLL_DOMOVEMOUNT}"
+							elif [ -z "${FLL_UNION_MODULE}" ] || [ "${FLL_UNION_MODULE}" = "dmsetup" ]; then
+								mkdir -p "${FLL_MOUNTPOINT}.mnt"
+								if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "${FLL_MOUNTPOINT}.mnt" ; then
+									printf "Mounted ${FSTYPE} filesystem on ${FLL_MOUNTPOINT}.mnt\n\n"
+									FLL_DOMOVEMOUNT="${FLL_MOUNTPOINT}.mnt ${FLL_DOMOVEMOUNT}"
+								else
+									fll_umount ${FLL_DOUMOUNT}
+									panic "Failed to mount ${FSTYPE} filesystem"
+								fi
 							else
 								fll_umount ${FLL_DOUMOUNT}
 								panic "Failed to mount ${FSTYPE} filesystem"
@@ -924,26 +941,6 @@ mountroot()
 		done
 		printf "\n"
 	fi
-	
-	#
-	# sanity check, ${rootmnt}${FLL_MOUNTPOINT} _must_ exist
-	#
-	if [ ! -d "${rootmnt}${FLL_MOUNTPOINT}" ]; then
-		panic "Failed to find ${FLL_MOUNTPOINT} on ${rootmnt}"
-	fi
-
-	if [ -z "${FLL_UNION_MODULE}" ]; then
-		FLL_UNION_MODULE="aufs"
-	fi
-
-	modprobe "${MODPROBE_OPTIONS}" "${FLL_UNION_MODULE}" >/dev/null 2>&1
-
-	#
-	# unioned filesystem mount points
-	# persist may already have set FLL_UNION_COWDIR
-	#
-	FLL_UNION_MOUNTPOINT="/fll/${FLL_UNION_MODULE}"
-	[ -z "$FLL_UNION_COWDIR" ] && FLL_UNION_COWDIR="/fll/cow"
 
 	#
 	# prepare COW union filesystem, handle persistency
@@ -962,17 +959,24 @@ mountroot()
 				#
 				if grep -q "${FLL_UNION_COWMNTPNT}" /proc/mounts && mount -o remount,rw "${FLL_UNION_COWMNTPNT}" || \
 					fll_mount ${FLL_PERSIST_BLOCKFSTYPE} ${FLL_PERSIST_BLOCKDEV} ${FLL_UNION_COWMNTPNT} rw; then
-					printf "Remounting persistent filesystem on ${FLL_PERSIST_BLOCKDEV#/dev/}...\n"
+					printf "Reusing persistent data on ${FLL_PERSIST_BLOCKDEV#/dev/}...\n"
 				else
-					panic "Failed to remount persistent filesystem on ${FLL_PERSIST_DEV#/dev/}"
+					panic "Failed to remount persistent data on ${FLL_PERSIST_DEV#/dev/}"
 				fi
-				#
-				# mount a persistent filesystem-in-a-file on microsoft filesystems
-				#
-				if [ "${FLL_PERSIST_BLOCKFSTYPE}" = "msdos" ] || [ "${FLL_PERSIST_BLOCKFSTYPE}" = "vfat" ]; then
-					if [ -f "${FLL_UNION_COWMNTPNT}/${FLL_PERSIST_FILE}" ] && \
-						fll_finger_fstype "${FLL_UNION_COWMNTPNT}/${FLL_PERSIST_FILE}"; then
-						printf "Mounting ${FLL_PERSIST_FILE} filesystem-in-a-file..."
+
+				if [ -f "${FLL_UNION_COWMNTPNT}/${FLL_PERSIST_FILE}" ] ; then
+					printf "Using ${FLL_PERSIST_FILE} filesystem-in-a-file..."
+					if [ -z "${FLL_UNION_MODULE}" ] || [ "${FLL_UNION_MODULE}" = "dmsetup" ]; then
+						#
+						# setup loop device from persist file for snapshot
+						#
+						FLL_SNAP_DEV=$(losetup -f)
+						if losetup ${FLL_SNAP_DEV} ${FLL_UNION_COWMNTPNT}/${FLL_PERSIST_FILE} ; then
+							printf "\n"
+						else
+							panic "Failed to setup loop device for snapshot ${FLL_SNAP_DEV} from ${FLL_UNION_COWMNTPNT}/${FLL_PERSIST_FILE}"
+						fi
+					else
 						#
 						# identify filesystem of loopback file, mount it and update FLL_UNION_COWMNTPNT
 						#
@@ -989,21 +993,62 @@ mountroot()
 						else
 							panic "Failed to mount ${FLL_PERSIST_FILE} persistent filesystem-in-a-file"
 						fi
-					else
-						panic "Invalid/missing ${FLL_PERSIST_FILE} persistent filesystem-in-a-file"
 					fi
+				elif [ -n "${FLL_UNION_MODULE}" ] && [ "${FLL_UNION_MODULE}" != "dmsetup" ] && [ "${FLL_PERSIST_BLOCKFSTYPE}" != "msdos" ] && [ "${FLL_PERSIST_BLOCKFSTYPE}" != "vfat" ]; then
+					# we're using aufs/unionfs and not on fat so it should be ok
+					:
+				else
+					panic "Invalid/missing ${FLL_PERSIST_FILE} persistent filesystem-in-a-file"
 				fi
 				;;
 			*)
-				#
-				# we could support vfat|msdos with a loop mounted ext* filesystem-in-a-file
-				#
 				panic "Cannot create persistent filesystem with type ${FLL_PERSIST_BLOCKFSTYPE}"
 				;;
 		esac
 	else
 		FLL_UNION_COWMNTPNT="${rootmnt}"
+		FLL_SNAP_DEV="/dev/mapper/${FLL_DISTRO_NAME}-snapshot"
 	fi
+
+	if [ -z "${FLL_UNION_MODULE}" ] || [ "${FLL_UNION_MODULE}" = "dmsetup" ]; then
+		#
+		# use losetup and dmsetup to create root snapshot
+		if ! [ -b ${FLL_SNAP_DEV} ]; then
+			# TODO size
+			dd if=/dev/zero of=${rootmnt}/fll/snapshot bs=1M count=1 seek=511 2>/dev/null
+			FLL_SNAP_DEV=$(losetup -f)
+			losetup ${FLL_SNAP_DEV} ${rootmnt}/fll/snapshot
+		fi
+		FLL_ROOT_SIZE=$(ls -l "${rootmnt}/${FLL_MOUNTPOINT}.mnt/${FLL_IMAGE_FILE}" | awk '{print $5}')
+		FLL_ROOT_DMSIZE=$((${FLL_ROOT_SIZE}/512))
+		FLL_IMAGE_DEV=$(losetup -f)
+		losetup ${FLL_IMAGE_DEV} "${rootmnt}/${FLL_MOUNTPOINT}.mnt/${FLL_IMAGE_FILE}"
+		FLL_DM_MAP="0 ${FLL_ROOT_DMSIZE} snapshot ${FLL_IMAGE_DEV} ${FLL_SNAP_DEV} P 8"
+		dmsetup create ${FLL_DISTRO_NAME}-live --table "${FLL_DM_MAP}"
+		mkdir -p "${rootmnt}/${FLL_MOUNTPOINT}"
+		# TODO FS ??? DONE
+		if fll_finger_fstype /dev/mapper/${FLL_DISTRO_NAME}-live >/dev/null 2>&1 ; then
+			if ! mount -t ${FSTYPE} /dev/mapper/${FLL_DISTRO_NAME}-live "${rootmnt}/${FLL_MOUNTPOINT}" ; then
+				panic "Failed to mount live filesystem"
+			fi
+		else
+			panic "Failed to recognise type of live filesystem"
+		fi
+		FLL_UNION_MOUNTPOINT="${FLL_MOUNTPOINT}"
+	else
+		#aufs || unionfs
+		modprobe "${MODPROBE_OPTIONS}" "${FLL_UNION_MODULE}" >/dev/null 2>&1
+
+		#
+		# unioned filesystem mount points
+		# persist may already have set FLL_UNION_COWDIR
+		#
+		FLL_UNION_MOUNTPOINT="/fll/${FLL_UNION_MODULE}"
+		[ -z "$FLL_UNION_COWDIR" ] && FLL_UNION_COWDIR="/fll/cow"
+		#
+		# prepare COW union filesystem
+		#
+# START NASTY WRAPPING FOR PATCH CLEANLINESS
 		
 	mkdir -p "${rootmnt}${FLL_UNION_MOUNTPOINT}" "${FLL_UNION_COWMNTPNT}${FLL_UNION_COWDIR}"
 	
@@ -1027,6 +1072,15 @@ mountroot()
 		printf "\n"
 	else
 		panic "Failed to prepare ${FLL_UNION_MODULE} union filesystem"
+	fi
+# END NASTY WRAPPING FOR PATCH CLEANLINESS
+	fi
+
+	#
+	# sanity check, ${rootmnt}${FLL_MOUNTPOINT} _must_ exist
+	#
+	if [ ! -d "${rootmnt}${FLL_MOUNTPOINT}" ]; then
+		panic "Failed to find ${FLL_MOUNTPOINT} on ${rootmnt}"
 	fi
 
 	#
