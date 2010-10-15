@@ -1,8 +1,16 @@
-fll-live-initramfs (2.4.7) UNRELEASED; urgency=low
+fll-live-initramfs (2.5.1) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * indent-only as separate commit.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 14 Aug 2010 21:02:44 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 15 Oct 2010 03:54:21 +0200
+
+fll-live-initramfs (2.5.0) unstable; urgency=low
+
+  * add devmapper based unioning method, thanks to bfree:
+    - fix ${FLL_MOUNTPOINT}.mnt creation
+    - hide dd invocation.
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 15 Oct 2010 03:38:44 +0200
 
 fll-live-initramfs (2.4.6) unstable; urgency=low
 
