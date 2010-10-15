@@ -1048,32 +1048,29 @@ mountroot()
 		#
 		# prepare COW union filesystem
 		#
-# START NASTY WRAPPING FOR PATCH CLEANLINESS
+		mkdir -p "${rootmnt}${FLL_UNION_MOUNTPOINT}" "${FLL_UNION_COWMNTPNT}${FLL_UNION_COWDIR}"
 		
-	mkdir -p "${rootmnt}${FLL_UNION_MOUNTPOINT}" "${FLL_UNION_COWMNTPNT}${FLL_UNION_COWDIR}"
-	
-	#
-	# union module specific options
-	#
-	case "${FLL_UNION_MODULE}" in
-		aufs)
-			FLL_UNION_OPTIONS="br:${FLL_UNION_COWMNTPNT}${FLL_UNION_COWDIR}:${rootmnt}${FLL_MOUNTPOINT}"
-			;;
-		unionfs)
-			FLL_UNION_OPTIONS="dirs=${FLL_UNION_COWMNTPNT}${FLL_UNION_COWDIR}=rw:${rootmnt}${FLL_MOUNTPOINT}=ro"
-			;;
-	esac
-	
-	#
-	# mount the union COW filesystem
-	#
-	printf "Mounting ${FLL_UNION_MODULE} union filesystem..."
-	if mount -t "${FLL_UNION_MODULE}" -o "${FLL_UNION_OPTIONS}" "${FLL_UNION_MODULE}" "${rootmnt}${FLL_UNION_MOUNTPOINT}"; then
-		printf "\n"
-	else
-		panic "Failed to prepare ${FLL_UNION_MODULE} union filesystem"
-	fi
-# END NASTY WRAPPING FOR PATCH CLEANLINESS
+		#
+		# union module specific options
+		#
+		case "${FLL_UNION_MODULE}" in
+			aufs)
+				FLL_UNION_OPTIONS="br:${FLL_UNION_COWMNTPNT}${FLL_UNION_COWDIR}:${rootmnt}${FLL_MOUNTPOINT}"
+				;;
+			unionfs)
+				FLL_UNION_OPTIONS="dirs=${FLL_UNION_COWMNTPNT}${FLL_UNION_COWDIR}=rw:${rootmnt}${FLL_MOUNTPOINT}=ro"
+				;;
+		esac
+		
+		#
+		# mount the union COW filesystem
+		#
+		printf "Mounting ${FLL_UNION_MODULE} union filesystem..."
+		if mount -t "${FLL_UNION_MODULE}" -o "${FLL_UNION_OPTIONS}" "${FLL_UNION_MODULE}" "${rootmnt}${FLL_UNION_MOUNTPOINT}"; then
+			printf "\n"
+		else
+			panic "Failed to prepare ${FLL_UNION_MODULE} union filesystem"
+		fi
 	fi
 
 	#

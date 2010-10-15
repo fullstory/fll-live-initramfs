@@ -1,8 +1,8 @@
-fll-live-initramfs (2.5.1) UNRELEASED; urgency=low
+fll-live-initramfs (2.5.1) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * indent-only as separate commit.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 15 Oct 2010 03:39:01 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 15 Oct 2010 03:54:21 +0200
 
 fll-live-initramfs (2.5.0) unstable; urgency=low
 
