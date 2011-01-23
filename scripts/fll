@@ -981,8 +981,9 @@ mountroot()
 						# identify filesystem of loopback file, mount it and update FLL_UNION_COWMNTPNT
 						#
 						mkdir -p "${rootmnt}/fll/persist"
-						if fll_mount "${FSTYPE}" "${FLL_UNION_COWMNTPNT}/${FLL_PERSIST_FILE}" \
-							"${rootmnt}/fll/persist" loop; then
+						if fll_finger_fstype "${FLL_UNION_COWMNTPNT}/${FLL_PERSIST_FILE}" && \
+						  fll_mount "${FSTYPE}" "${FLL_UNION_COWMNTPNT}/${FLL_PERSIST_FILE}" \
+						  "${rootmnt}/fll/persist" loop; then
 							printf "\n"
 							FLL_UNION_COWMNTPNT="${rootmnt}/fll/persist"
 							#

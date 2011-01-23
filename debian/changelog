@@ -1,8 +1,12 @@
 fll-live-initramfs (2.5.2) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 15 Oct 2010 03:55:23 +0200
+  [ Niall Walsh ]
+  * Mount persist in a file for aufs with right fstype (I broke it, sorry)
+
+ -- Niall Walsh <niallwalsh@users.berlios.de>  Sun, 23 Jan 2011 23:40:45 +0000
 
 fll-live-initramfs (2.5.1) unstable; urgency=low
 
