@@ -3,31 +3,17 @@
 ###############################################################################
 #	F.U.L.L.S.T.O.R.Y initramfs live media init functions
 #
-#	Copyright:	(C) 2007 Kel Modderman <kel@otaku42.de>
-#			(C) 2007 Stefan Lippers-Hollmann <s.l-h@gmx.de>
+#	Copyright:	© 2007-2010 Kel Modderman <kel@otaku42.de>
+#			© 2006-2011 Stefan Lippers-Hollmann <s.l-h@gmx.de>
+#			© 2007-2011 Niall Walsh <niallwalsh@users.berlios.de>
 #	License:	GPLv2
 #
 #	F.U.L.L.S.T.O.R.Y Project Homepage:
 #	http://developer.berlios.de/projects/fullstory
-###############################################################################
-#	safety overrides - we want to esnure we know exactly what tool
-#	is being used, it could be provided by klibc or busybox, but both
-#	have functional differences
-###############################################################################
-mount()
-{
-	# can loop mount files, klibc's mount cannot without first binding
-	# file to loop (block) device node with losetup
-	/bin/busybox mount "${@}"
-	return "${?}"
-}
+#
+#	This script snippet needs to get executed under busybox sh, due to
+#	using awk, klibc sh doesn't provide an awk implementation
 
-freadlink()
-{
-	# support canonicaliziation of path
-	/bin/busybox readlink -f "${@}"
-	return "${?}"
-}
 ###############################################################################
 # 	use information exported via proc and sysfs to make block device list
 # 	bubble-sort cdrom devices to top of block device stack
@@ -151,7 +137,7 @@ fll_setup_dev_loop()
 	#
 	# load loop device support
 	#
-	modprobe "${MODPROBE_OPTIONS}" loop
+	modprobe "${MODPROBE_OPTIONS}" loop >/dev/null 2>&1
 	
 	#
 	# loop around for max of 5 seconds and wait for /dev/loop* device nodes
@@ -189,12 +175,16 @@ fll_mount()
 	unset FLL_MOUNT_OPTS
 
 	case "${FS}" in
-		iso9660|squashfs)
+		iso9660|squashfs|udf)
+			FLL_MOUNT_OPTS="ro"
+
 			if [ -f "${SRC}" ] && [ ! -b "${SRC}" ]; then
 				fll_setup_dev_loop
-				FLL_MOUNT_OPTS="ro,loop"
-			else
-				FLL_MOUNT_OPTS="ro"
+				LOOP_SRC_DEV="$(losetup -f)"
+				if ! losetup "${LOOP_SRC_DEV}" "${SRC}"; then
+					panic "Failed to setup loop device for ${SRC} on ${LOOP_SRC_DEV}"
+				fi
+				SRC=${LOOP_SRC_DEV}
 			fi
 			;;
 		ntfs)
@@ -714,8 +704,8 @@ mountroot()
 							printf "Detected ${FLL_MEDIA_NAME} "
 							printf "on ${FLL_MEDIA_FOUND#/dev/}.\n"
 							if fll_finger_fstype "${FLL_BLOCKMNT}/${FLL_MEDIA_NAME}" >/dev/null 2>&1; then
-								if [ "${FSTYPE}" != "iso9660" ]; then
-									panic "${FLL_MEDIA_NAME} not an iso9660 filesystem"
+								if [ "${FSTYPE}" != "iso9660" ] && [ "${FSTYPE}" != "udf" ]; then
+									panic "${FLL_MEDIA_NAME} not an iso9660/ udf filesystem"
 								fi
 								mkdir -p /fll/fromiso
 								#
@@ -1094,7 +1084,7 @@ mountroot()
 	for dir in ${rootmnt}${FLL_UNION_MOUNTPOINT}/*; do
 		if [ -d "${dir}" ]; then
 			case "${dir##*/}" in
-				dev|media|proc|sys|tmp)
+				dev|media|proc|run|sys|tmp)
 					#
 					# these should stay out of the unioned filesystem mount point
 					# keep them directly on the ramdisk, they are handled below
@@ -1156,7 +1146,7 @@ mountroot()
 	#
 	# prepare /dev /media /proc /sys and /selinux
 	#
-	for dir in dev media proc sys selinux; do
+	for dir in dev media proc run sys selinux; do
 		mkdir -p -m 0755 "${rootmnt}/${dir}"
 	done
 
@@ -1180,18 +1170,6 @@ mountroot()
 	# we should remain hardware agnostic
 	#
 	rm -f ${rootmnt}/etc/udev/rules.d/70-persistent-*.rules
-
-	#
-	# canonicalize device node if symlink to get correct kernel name for device
-	# currently, this is only done for /dev/disk/by-* symlinks, but it could
-	# be done for any symlink ([ -L "${FLL_MEDIA_FOUND}" ]), however this
-	# seems to cause problem for /dev/sr0|/dev/scd0 links
-	#
-	case "${FLL_MEDIA_FOUND}" in
-		/dev/disk/by-*)
-			FLL_MEDIA_FOUND="$(freadlink ${FLL_MEDIA_FOUND})"
-			;;
-	esac
 
 	#
 	# create udev rule for persistent symlink to device live media was found on

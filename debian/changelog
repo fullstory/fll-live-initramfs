@@ -1,8 +1,17 @@
-fll-live-initramfs (2.5.3) UNRELEASED; urgency=low
+fll-live-initramfs (2.6.0) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * avoid depending on /bin/busybox for initramfs scripts, /bin/busybox is no
+    longer present in initramfs images created with initramfs-tools >>0.98.8.
+  * don't mount aufs over /run/.
+  * only recommend busybox, it's technically no longer required, but very 
+    convenient for debugging.
+  * bump standards version to 3.9.2, no changes necessary.
+  * hide eventual modprobe failures for loop.ko, it might be complied in
+    statically and we already bail out if no loop devices exist.
+  * also allow udf as filesystem on optical media.
+  * update copyrights.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 24 Jan 2011 00:48:54 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 28 Apr 2011 16:38:13 +0200
 
 fll-live-initramfs (2.5.2) unstable; urgency=low
 
