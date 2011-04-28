@@ -4,16 +4,16 @@ Priority: extra
 Maintainer: Kel Modderman <kel@otaku42.de>
 Uploaders: Stefan Lippers-Hollmann <s.l-h@gmx.de>
 Build-Depends: debhelper (>= 7.9.3)
-Standards-Version: 3.9.1
+Standards-Version: 3.9.2
 Vcs-Svn: svn://svn.berlios.de/fullstory/fll-live-initramfs/trunk
 Vcs-Browser: http://svn.berlios.de/wsvn/fullstory/fll-live-initramfs/trunk/
 
 Package: fll-live-initramfs
 Architecture: all
 Depends: ${misc:Depends},
- initramfs-tools (>= 0.40),
  busybox (>= 1:1.9.1-2),
- distro-defaults
+ distro-defaults,
+ initramfs-tools (>= 0.40)
 Suggests: lvm2,
  nbd-client
 Description: fll live media initramfs glue
