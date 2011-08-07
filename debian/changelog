@@ -1,8 +1,9 @@
-fll-live-initramfs (2.6.1) UNRELEASED; urgency=low
+fll-live-initramfs (2.6.1) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * switch to simplified dh7, --before --after --until and --remaining options
+    are deprecated since debhelper 8.9.4.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 28 Apr 2011 16:38:31 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 07 Aug 2011 03:12:30 +0200
 
 fll-live-initramfs (2.6.0) unstable; urgency=low
 
