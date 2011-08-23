@@ -1,3 +1,9 @@
+fll-live-initramfs (2.6.3) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 23 Aug 2011 13:54:31 +0200
+
 fll-live-initramfs (2.6.2) unstable; urgency=low
 
   * simplify md5 check to work without awk and reduce vertical footprint.
