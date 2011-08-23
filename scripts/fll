@@ -351,43 +351,14 @@ fll_md5sum_check()
 		return 1
 	fi
 
-	awk -v dir=${1} '
-		{
-			sub(/^\*/, "", $2)
-			
-			md5 = $1
-			file = $2
-
-			printf("* %s\n|--> %s\n`--> ", file, md5)
-			
-			if (("md5sum " dir "/" file | getline) > 0) {
-				if (md5 == $1) {
-					printf("%s  OK\n\n", $1)
-					next
-				}
-				else {
-					printf("%s  FAILED\n\n", $1)
-				}
-			}
-			else {
-				printf("Unable to calculate md5sum!\n\n")
-			}
-			
-			failed++
-		}
-		
-		END{
-			if (failed) {
-				printf("*******************************\n")
-				printf("***** MD5SUM CHECK FAILED *****\n")
-				printf("*******************************\n")
-				exit(1)
-			}
-			
-			exit(0)
-		}' "${1}/md5sums"
-	
-	return ${?}
+	if ( cd "${1}" && md5sum -c "md5sums" ); then
+		return 0
+	else
+		printf "*******************************\n"
+		printf "***** MD5SUM CHECK FAILED *****\n"
+		printf "*******************************\n"
+		return 1
+	fi
 }
 ###############################################################################
 #       find and copy firmware
