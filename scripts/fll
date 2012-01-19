@@ -116,17 +116,14 @@ fll_finger_blockdevs()
 ###############################################################################
 fll_finger_fstype()
 {
-	unset FSTYPE
-	unset ID_FS_TYPE
+	FSTYPE="$(/sbin/blkid -s TYPE -o value ${1})"
 
-	eval $(/sbin/blkid -o udev -u filesystem -p ${1} | grep ^ID_FS_TYPE)
-
-	if [ "${ID_FS_TYPE}" ] ; then
-		FSTYPE="${ID_FS_TYPE}"
+	if [ -n "${FSTYPE}" ] ; then
 		export FSTYPE
 		return 0
 	fi
-	
+
+	unset FSTYPE
 	return 1
 }
 ###############################################################################

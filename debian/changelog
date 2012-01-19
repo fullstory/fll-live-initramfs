@@ -1,8 +1,9 @@
-fll-live-initramfs (2.6.4) UNRELEASED; urgency=low
+fll-live-initramfs (2.7.0) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * switch from vol_id/ udev compatibility mode to native blkid invocations,
+    as these are deprecated in util-linux >= 2.21.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 16 Jan 2012 01:11:36 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 19 Jan 2012 14:11:24 +0100
 
 fll-live-initramfs (2.6.3) unstable; urgency=low
 
