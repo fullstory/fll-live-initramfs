@@ -1,8 +1,8 @@
-fll-live-initramfs (2.7.1) UNRELEASED; urgency=low
+fll-live-initramfs (2.7.1) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * bump standards version to 3.9.3, no changes necessary.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 19 Jan 2012 14:12:14 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 23 Feb 2012 16:19:22 +0100
 
 fll-live-initramfs (2.7.0) unstable; urgency=low
 
