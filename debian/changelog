@@ -1,13 +1,14 @@
-fll-live-initramfs (2.7.4) UNRELEASED; urgency=low
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (2.7.4) unstable; urgency=low
 
   [ Niall Walsh ]
   * make serial work on runlevels 4,5 so you can "debug" X a bit
   * use FLL_PERSIST_BLOCKMNT in aufs/unionfs setup
 
- -- Niall Walsh <niallwalsh@users.berlios.de>  Sun, 25 Mar 2012 21:05:11 +0100
+  [ Stefan Lippers-Hollmann ]
+  * use safer variable checking.
+  * add live-only option to not clear ttys (cheatcode "getty=noclear").
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 25 Mar 2012 22:20:45 +0200
 
 fll-live-initramfs (2.7.3) unstable; urgency=low
 
