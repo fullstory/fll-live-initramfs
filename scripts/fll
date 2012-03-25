@@ -981,7 +981,7 @@ mountroot()
 		#
 		# prepare COW union filesystem
 		#
-		mkdir -p "${FLL_UNION_COWDIR}"
+		mkdir -p "${FLL_PERSIST_BLOCKMNT}${FLL_UNION_COWDIR}"
 		if [ -z "${FLL_PERSIST_BLOCKMNT}" ]; then
 			#
 			# mount a tmpfs over FLL_UNION_COWDIR, reserving 10% system memory
@@ -1001,10 +1001,10 @@ mountroot()
 		#
 		case "${FLL_UNION_MODULE}" in
 			aufs)
-				FLL_UNION_OPTIONS="br:${FLL_UNION_COWDIR}:${FLL_MOUNTPOINT}"
+				FLL_UNION_OPTIONS="br:${FLL_PERSIST_BLOCKMNT}${FLL_UNION_COWDIR}:${FLL_MOUNTPOINT}"
 				;;
 			unionfs)
-				FLL_UNION_OPTIONS="dirs=${FLL_UNION_COWDIR}=rw:${FLL_MOUNTPOINT}=ro"
+				FLL_UNION_OPTIONS="dirs=${FLL_PERSIST_BLOCKMNT}${FLL_UNION_COWDIR}=rw:${FLL_MOUNTPOINT}=ro"
 				;;
 		esac
 		
@@ -1120,7 +1120,7 @@ mountroot()
 	export no_static_dev="1"
 
 	if [ "${FLL_SERIAL_PORT}" ]; then
-		echo "T0:23:respawn:/sbin/getty -n -i -l /usr/bin/fll_login -L ${FLL_SERIAL_PORT} ${FLL_SERIAL_SPEED} vt100" >> ${rootmnt}/etc/inittab
+		echo "T0:2345:respawn:/sbin/getty -n -i -l /usr/bin/fll_login -L ${FLL_SERIAL_PORT} ${FLL_SERIAL_SPEED} vt100" >> ${rootmnt}/etc/inittab
 	fi
 
 	printf "\nStarting init process...\n\n"
