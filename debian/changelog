@@ -1,8 +1,12 @@
 fll-live-initramfs (2.7.2) UNRELEASED; urgency=low
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 23 Feb 2012 16:19:37 +0100
+  [ Niall Walsh ]
+  * Mount union on / instead of FLL_BLOCKMNT
+
+ -- Niall Walsh <niallwalsh@users.berlios.de>  Sun, 25 Mar 2012 17:26:02 +0100
 
 fll-live-initramfs (2.7.1) unstable; urgency=low
 
