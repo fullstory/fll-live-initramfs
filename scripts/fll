@@ -513,6 +513,13 @@ mountroot()
 				# current default is dmsetup
 				FLL_UNION_MODULE="${opt}"
 				;;
+			console=ttyS*,*)
+				# parse out port and speed
+				FLL_SERIAL="${opt#console=}"
+				FLL_SERIAL_PORT="${FLL_SERIAL%,*}"
+				FLL_SERIAL_OPTS="${FLL_SERIAL#*,}"
+				FLL_SERIAL_SPEED="${FLL_SERIAL_OPTS%[a-z]*}"
+				;;
 		esac
 	done
 
@@ -1111,6 +1118,10 @@ mountroot()
 	# disable movement of static $rootmnt/dev by scripts/init-bottom/udev
 	#
 	export no_static_dev="1"
+
+	if [ "${FLL_SERIAL_PORT}" ]; then
+		echo "T0:23:respawn:/sbin/getty -n -i -l /usr/bin/fll_login -L ${FLL_SERIAL_PORT} ${FLL_SERIAL_SPEED} vt100" >> ${rootmnt}/etc/inittab
+	fi
 
 	printf "\nStarting init process...\n\n"
 }
