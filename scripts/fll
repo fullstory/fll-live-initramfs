@@ -923,9 +923,11 @@ mountroot()
 							printf "\n"
 							#
 							# We have now found a persistent file setup
-							# We can revert any custom cowdir set by persist
+							# We can revert any custom cowdir set by persist and clear FLL_PERSIST_BLOCKMNT
+							# FLL_PERSIST_BLOCKMNT should only be used later when we are persisting to a dir on it
 							#
-							FLL_UNION_COWDIR="/fll/cow"
+							FLL_PERSIST_BLOCKMNT=""
+							FLL_UNION_COWDIR="/fll/persist"
                                                         FLL_DOMOVEMOUNT="${FLL_DOMOVEMOUNT} /fll/persist"
 						else
 							panic "Failed to mount ${FLL_PERSIST_FILE} persistent filesystem-in-a-file"
@@ -985,7 +987,7 @@ mountroot()
 		# prepare COW union filesystem
 		#
 		mkdir -p "${FLL_PERSIST_BLOCKMNT}${FLL_UNION_COWDIR}"
-		if [ -z "${FLL_PERSIST_BLOCKMNT}" ]; then
+		if [ -z "${FLL_PERSIST}" ]; then
 			#
 			# mount a tmpfs over FLL_UNION_COWDIR, reserving 10% system memory
 			# Note: $rootmnt must be mounted with a fs != rootfs prior to run-init
