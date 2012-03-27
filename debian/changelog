@@ -1,9 +1,5 @@
-fll-live-initramfs (2.7.5) UNRELEASED; urgency=low
+fll-live-initramfs (2.7.5) unstable; urgency=low
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Niall Walsh ]
   * Clear FLL_PERSIST_BLOCKMNT when persisting to a file (i.e. on fat)
   * FLL_COWDIR is /fll/persist when persisting to a file
   * Change test for persist to just use FLL_PERSIST (now _BLOCKMNT is cleared)
