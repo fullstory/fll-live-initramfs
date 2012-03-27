@@ -1,3 +1,9 @@
+fll-live-initramfs (2.7.6) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 27 Mar 2012 02:29:18 +0200
+
 fll-live-initramfs (2.7.5) unstable; urgency=low
 
   * Clear FLL_PERSIST_BLOCKMNT when persisting to a file (i.e. on fat)
