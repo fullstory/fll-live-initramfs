@@ -1,3 +1,9 @@
+fll-live-initramfs (2.7.7) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 05 Jun 2012 23:22:09 +0200
+
 fll-live-initramfs (2.7.6) unstable; urgency=low
 
   * default to --no-clear for the live-system, this is reverted for the
