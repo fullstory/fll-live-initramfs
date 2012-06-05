@@ -520,9 +520,6 @@ mountroot()
 				FLL_SERIAL_OPTS="${FLL_SERIAL#*,}"
 				FLL_SERIAL_SPEED="${FLL_SERIAL_OPTS%[a-z]*}"
 				;;
-			getty=noclear)
-				FLL_TTY_NOCLEAR=" --noclear"
-				;;
 		esac
 	done
 
@@ -1125,9 +1122,9 @@ mountroot()
 	export no_static_dev="1"
 
 	# live-only (reverted by fll-installer): don't clear ttys
-	if [ -n "${FLL_TTY_NOCLEAR}" ]; then
-		sed -i "s/^[0-6]\:[0-6]*\:respawn\:\\/sbin\\/getty.*$/&${FLL_TTY_NOCLEAR}/" ${rootmnt}/etc/inittab
-	fi
+	sed -i	-e "s/^\([0-6]\:[0-6]*\:respawn\:\\/sbin\\/getty.*\) --noclear\(.*$\)/\1\2/" \
+		-e "s/^[0-6]\:[0-6]*\:respawn\:\\/sbin\\/getty.*$/& --noclear/" \
+			"${rootmnt}/etc/inittab"
 
 	# live-only (reverted by fll-installer): enable serial console access
 	if [ -n "${FLL_SERIAL_PORT}" ]; then

@@ -1,8 +1,10 @@
-fll-live-initramfs (2.7.6) UNRELEASED; urgency=low
+fll-live-initramfs (2.7.6) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * default to --no-clear for the live-system, this is reverted for the
+    installed system by fll-installer.
+  * avoid multiple --no-clear lines on persistent live systems.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 27 Mar 2012 02:29:18 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 05 Jun 2012 23:20:41 +0200
 
 fll-live-initramfs (2.7.5) unstable; urgency=low
 
