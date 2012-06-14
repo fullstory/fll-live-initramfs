@@ -1,3 +1,9 @@
+fll-live-initramfs (2.7.8) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 15 Jun 2012 00:32:07 +0200
+
 fll-live-initramfs (2.7.7) unstable; urgency=low
 
   * move --noclear hacking into the builder.
