@@ -1121,11 +1121,6 @@ mountroot()
 	#
 	export no_static_dev="1"
 
-	# live-only (reverted by fll-installer): don't clear ttys
-	sed -i	-e "s/^\([0-6]\:[0-6]*\:respawn\:\\/sbin\\/getty.*\) --noclear\(.*$\)/\1\2/" \
-		-e "s/^[0-6]\:[0-6]*\:respawn\:\\/sbin\\/getty.*$/& --noclear/" \
-			"${rootmnt}/etc/inittab"
-
 	# live-only (reverted by fll-installer): enable serial console access
 	if [ -n "${FLL_SERIAL_PORT}" ]; then
 		echo "T0:2345:respawn:/sbin/getty -n -i -l /usr/bin/fll_login -L ${FLL_SERIAL_PORT} ${FLL_SERIAL_SPEED} vt100" >> ${rootmnt}/etc/inittab
