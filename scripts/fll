@@ -12,7 +12,7 @@
 #	http://developer.berlios.de/projects/fullstory
 #
 #	This script snippet needs to get executed under busybox sh, due to
-#	using awk, klibc sh doesn't provide an awk implementation
+#	using awk; klibc sh doesn't provide an awk implementation
 
 ###############################################################################
 # 	use information exported via proc and sysfs to make block device list
@@ -28,7 +28,7 @@ fll_finger_blockdevs()
 	# that method has proven to be unreliable ...
 	#
 	if [ "${FLL_FROMHD}" != "yes" ] && [ -r /proc/sys/dev/cdrom/info ]; then
-		FINGERED=$(awk -F: '
+		FINGERED=$(busybox awk -F: '
 			$1 == "drive name" && NF > 1 {
 				split($2, node, " ")
 				for (n in node) {
@@ -248,7 +248,7 @@ fll_umount()
 ###############################################################################
 fll_meminfo()
 {
-	awk '
+	busybox awk '
 		/^MemTotal:/ { total=$2 }
 		/^(MemFree|Buffers|Cached):/ { free+=$2 }
 		END {
@@ -272,7 +272,7 @@ fll_copy_with_perc()
 	#
 	cp "${1}" "${2}/${1##*/}" &
 	
-	awk -v pid="${!}" -v origfile="${1}" -v destfile="${2}/${1##*/}" '
+	busybox awk -v pid="${!}" -v origfile="${1}" -v destfile="${2}/${1##*/}" '
 		function size_of(file,    cmd, size)
 		{
 			cmd = "ls -l " file
@@ -757,7 +757,7 @@ mountroot()
 								eval $(fll_meminfo)
 								# ls -l returns units in Bytes, divide by (1024*1024) to convert to MB
 								FLL_TORAM_FSSIZE=$(ls -l "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" | \
-									awk '{ printf("%d\n", int($5 * 1.1 / 1048576)) }')
+									busybox awk '{ printf("%d\n", int($5 * 1.1 / 1048576)) }')
 								#
 								# memory required to operate normally after iso has consumed memory
 								# at least 32M is required
@@ -955,7 +955,7 @@ mountroot()
 			FLL_SNAP_DEV=$(losetup -f)
 			losetup ${FLL_SNAP_DEV} /run/fll/snapshot
 		fi
-		FLL_ROOT_SIZE=$(ls -l "${FLL_MOUNTPOINT}.mnt/${FLL_IMAGE_FILE}" | awk '{print $5}')
+		FLL_ROOT_SIZE=$(ls -l "${FLL_MOUNTPOINT}.mnt/${FLL_IMAGE_FILE}" | busybox awk '{print $5}')
 		FLL_ROOT_DMSIZE=$((${FLL_ROOT_SIZE}/512))
 		FLL_IMAGE_DEV=$(losetup -f)
 		losetup ${FLL_IMAGE_DEV} "${FLL_MOUNTPOINT}.mnt/${FLL_IMAGE_FILE}"
