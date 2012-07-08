@@ -1,8 +1,19 @@
-fll-live-initramfs (2.7.8) UNRELEASED; urgency=low
+fll-live-initramfs (2.7.9) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * busybox 1:1.20.0-5 fixes the previous problems (#679377) with awk and PATH
+    unset, bump dependency accordingly and revert the no longer required
+    workaround.
+  * don't complain if /tmp/ already exists.
+  * rework coding style (whitespace/ comment cleanup).
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 15 Jun 2012 00:32:07 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 08 Jul 2012 16:25:45 +0200
+
+fll-live-initramfs (2.7.8) unstable; urgency=low
+
+  * work around #679377 by prepending busybox to all awk instances, thanks to
+    Michael Tokarev <mjt@tls.msk.ru>.
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 06 Jul 2012 04:02:44 +0200
 
 fll-live-initramfs (2.7.7) unstable; urgency=low
 
