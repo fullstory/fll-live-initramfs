@@ -1,3 +1,9 @@
+fll-live-initramfs (2.7.10) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 08 Jul 2012 16:25:57 +0200
+
 fll-live-initramfs (2.7.9) unstable; urgency=low
 
   * busybox 1:1.20.0-5 fixes the previous problems (#679377) with awk and PATH
