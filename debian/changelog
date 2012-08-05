@@ -1,8 +1,8 @@
-fll-live-initramfs (2.7.10) UNRELEASED; urgency=low
+fll-live-initramfs (2.7.10) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * drop versioned dependency on busybox.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 08 Jul 2012 16:25:57 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 06 Aug 2012 00:25:46 +0200
 
 fll-live-initramfs (2.7.9) unstable; urgency=low
 
