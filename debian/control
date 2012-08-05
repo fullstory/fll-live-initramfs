@@ -12,7 +12,7 @@ Vcs-Browser: http://svn.berlios.de/wsvn/fullstory/fll-live-initramfs/trunk/
 Package: fll-live-initramfs
 Architecture: all
 Depends: ${misc:Depends},
- busybox (>= 1:1.20.0-5),
+ busybox,
  distro-defaults,
  initramfs-tools (>= 0.40)
 Suggests: lvm2,
