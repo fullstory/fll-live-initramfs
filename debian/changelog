@@ -1,8 +1,9 @@
-fll-live-initramfs (2.7.11) UNRELEASED; urgency=low
+fll-live-initramfs (2.7.11) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * update FSF postal address to be URLs.
+  * bump standards version to 3.9.4, no changes necessary.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 06 Aug 2012 00:26:08 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 12 Jan 2013 02:34:06 +0100
 
 fll-live-initramfs (2.7.10) unstable; urgency=low
 
