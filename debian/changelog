@@ -1,3 +1,9 @@
+fll-live-initramfs (2.7.12) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 12 Jan 2013 02:34:20 +0100
+
 fll-live-initramfs (2.7.11) unstable; urgency=low
 
   * update FSF postal address to be URLs.
