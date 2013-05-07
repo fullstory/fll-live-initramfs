@@ -1016,8 +1016,8 @@ mountroot()
 	# debug checkpoint
 	maybe_break fll-bindmount
 
-	# prepare /dev /media /proc /sys and /selinux
-	for dir in dev media proc run sys selinux; do
+	# prepare /dev /media /proc and /sys
+	for dir in dev media proc run sys; do
 		mkdir -p -m 0755 "${rootmnt}/${dir}"
 	done
 

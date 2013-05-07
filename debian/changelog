@@ -1,8 +1,9 @@
-fll-live-initramfs (2.7.12) UNRELEASED; urgency=low
+fll-live-initramfs (2.7.12) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * selinuxfs is now mounted at /sys/fs/selinux/, don't create /selinux/
+    anymore.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 12 Jan 2013 02:34:20 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 07 May 2013 18:26:53 +0200
 
 fll-live-initramfs (2.7.11) unstable; urgency=low
 
