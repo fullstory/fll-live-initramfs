@@ -4,7 +4,7 @@
 #	F.U.L.L.S.T.O.R.Y initramfs live media init functions
 #
 #	Copyright:	© 2007-2010 Kel Modderman <kel@otaku42.de>
-#			© 2006-2013 Stefan Lippers-Hollmann <s.l-h@gmx.de>
+#			© 2006-2014 Stefan Lippers-Hollmann <s.l-h@gmx.de>
 #			© 2007-2012 Niall Walsh <niallwalsh@users.berlios.de>
 #	License:	GPLv2
 #
@@ -1039,6 +1039,12 @@ mountroot()
 		"${FLL_MEDIA_FOUND#/dev/}" >  ${rootmnt}/etc/udev/rules.d/70-fll-live.rules
 	printf "KERNEL==\"%s\", ENV{ID_CDROM}==\"?*\", SYMLINK+=\"fll-cdrom\"\n" \
 		"${FLL_MEDIA_FOUND#/dev/}" >> ${rootmnt}/etc/udev/rules.d/70-fll-live.rules
+
+	# generate unique machine id for systemd
+	if [ -x "${rootmnt}/bin/systemd" ] || [ -f  "${rootmnt}/etc/machine_id" ]; then
+		awk '{gsub(/\-/, "")}; 1' /proc/sys/kernel/random/uuid > "${rootmnt}/etc/machine_id"
+		chmod 0444 /etc/machine_id
+	fi
 
 	# disable movement of static $rootmnt/dev by scripts/init-bottom/udev
 	export no_static_dev="1"
