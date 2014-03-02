@@ -1,3 +1,9 @@
+fll-live-initramfs (2.7.14) UNRELEASED; urgency=medium
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 02 Mar 2014 18:00:42 +0100
+
 fll-live-initramfs (2.7.13) unstable; urgency=low
 
   * generate a unique machine id for systemd.
