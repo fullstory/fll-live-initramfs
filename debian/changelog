@@ -1,3 +1,9 @@
+fll-live-initramfs (2.7.15) UNRELEASED; urgency=medium
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 13 Apr 2014 22:19:42 +0200
+
 fll-live-initramfs (2.7.14) unstable; urgency=medium
 
   * debian/control: switch Vcs tags to github.
