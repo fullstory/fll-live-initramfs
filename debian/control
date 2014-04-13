@@ -6,8 +6,8 @@ Uploaders: Stefan Lippers-Hollmann <s.l-h@gmx.de>,
  Niall Walsh <niallwalsh@users.berlios.de>
 Build-Depends: debhelper (>= 9.20120115)
 Standards-Version: 3.9.5
-Vcs-Svn: svn://svn.berlios.de/fullstory/fll-live-initramfs/trunk
-Vcs-Browser: http://svn.berlios.de/wsvn/fullstory/fll-live-initramfs/trunk/
+Vcs-git: git://github.com/fullstory/fll-live-initramfs.git
+Vcs-Browser: https://github.com/fullstory/fll-live-initramfs
 
 Package: fll-live-initramfs
 Architecture: all
