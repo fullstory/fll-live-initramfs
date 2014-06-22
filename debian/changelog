@@ -1,8 +1,9 @@
-fll-live-initramfs (2.7.15) UNRELEASED; urgency=medium
+fll-live-initramfs (2.7.15) unstable; urgency=medium
 
-  * NOT RELEASED YET
+  * drop special handling for /etc/machine-id, it's now handled via pyfll
+    itself.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 13 Apr 2014 22:19:42 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 22 Jun 2014 23:08:49 +0200
 
 fll-live-initramfs (2.7.14) unstable; urgency=medium
 

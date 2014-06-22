@@ -1040,12 +1040,6 @@ mountroot()
 	printf "KERNEL==\"%s\", ENV{ID_CDROM}==\"?*\", SYMLINK+=\"fll-cdrom\"\n" \
 		"${FLL_MEDIA_FOUND#/dev/}" >> ${rootmnt}/etc/udev/rules.d/70-fll-live.rules
 
-	# generate unique machine id for systemd
-	if [ -x "${rootmnt}/bin/systemd" ] || [ -f  "${rootmnt}/etc/machine_id" ]; then
-		awk '{gsub(/\-/, "")}; 1' /proc/sys/kernel/random/uuid > "${rootmnt}/etc/machine_id"
-		chmod 0444 /etc/machine_id
-	fi
-
 	# disable movement of static $rootmnt/dev by scripts/init-bottom/udev
 	export no_static_dev="1"
 
