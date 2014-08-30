@@ -445,6 +445,9 @@ mountroot()
 	# parse fll options given on cmdline
 	for opt in $(cat /proc/cmdline); do
 		case "${opt}" in
+			blacklist=*)
+				BLACKLIST="${BLACKLIST} ${opt#blacklist=}"
+				;;
 			firmware)
 				FLL_FIRMWARE="yes"
 				;;
@@ -471,6 +474,9 @@ mountroot()
 						FLL_MEDIA_NAME="${opt#fromiso=}"
 						;;
 				esac
+				;;
+			hostname=*)
+				CUSTOM_HOSTNAME="${opt#hostname=}"
 				;;
 			image_dir=*)
 				FLL_IMAGE_DIR="${opt#image_dir=}"
@@ -967,9 +973,29 @@ mountroot()
 
 	# live-only (reverted by fll-installer): enable serial console access
 	if [ -n "${FLL_SERIAL_PORT}" ]; then
-		echo "T0:2345:respawn:/sbin/getty -n -i -l /usr/bin/fll_login -L ${FLL_SERIAL_PORT} ${FLL_SERIAL_SPEED} vt100" >> ${rootmnt}/etc/inittab
+		echo "T0:2345:respawn:/sbin/getty -n -i -l /usr/bin/fll_login -L ${FLL_SERIAL_PORT} ${FLL_SERIAL_SPEED} vt100" >> "${rootmnt}/etc/inittab"
 	fi
 
+	# disable checkroot/checkfs
+	touch ${rootmnt}/fastboot
+
+	# custom hostname given on cmdline
+	if [ "${CUSTOM_HOSTNAME}" ]; then
+		echo "${CUSTOM_HOSTNAME}" > "${rootmnt}/etc/hostname"
+		echo "${CUSTOM_HOSTNAME}" > "${rootmnt}/etc/mailname"
+		# update /etc/hosts
+		sed -i '/localhost/!s/^\(127.0.0.1[ \t]\+\)\(.\+\)$/\1'"${CUSTOM_HOSTNAME}"'/' \
+			"${rootmnt}/etc/hosts"
+	fi
+
+	# honour blacklist= cheatcode to disable naughty modules before udev
+	if [ "${BLACKLIST}" ]; then
+		for module in ${BLACKLIST}; do
+			if ! grep -s -q "^blacklist ${module}" "${rootmnt}/etc/modprobe.d/*"; then
+				echo "blacklist ${module}" >> "${rootmnt}/etc/modprobe.d/fll-blacklist.conf"
+			fi
+		done
+	fi
 	printf "\nStarting init process...\n\n"
 }
 

@@ -1,9 +1,10 @@
-fll-live-initramfs (2.7.16) UNRELEASED; urgency=medium
+fll-live-initramfs (2.7.16) unstable; urgency=medium
 
-  * NOT RELEASED YET
   * drop support for classic persistence.
+  * add udev override handling and setting the hostname into the initramfs
+    hook.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 22 Jun 2014 23:10:02 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 30 Aug 2014 23:04:26 +0200
 
 fll-live-initramfs (2.7.15) unstable; urgency=medium
 
