@@ -42,12 +42,8 @@ fll_finger_blockdevs()
 			}
 		' /proc/sys/dev/cdrom/info)
 
-		# only detect non cdrom devices if fromhd/fromiso/persist
-		# cheatcode was used.
-		if [ "${FLL_PERSIST}" != "yes" ]; then
-			echo "${FINGERED}"
-			return
-		fi
+		echo "${FINGERED}"
+		return
 	fi
 
 	#
@@ -491,17 +487,6 @@ mountroot()
 				# need to know to tell finger_blockdevs to check nbd*
 				FLL_NBD="${opt#nbdroot=}"
 				;;
-			persist*)
-				FLL_PERSIST="yes"
-				FLL_PERSIST_FILE="${FLL_DISTRO_NAME}-rw"
-
-				case "${opt}" in
-					persist=*)
-						FLL_PERSIST_FILE="${opt#persist=}"
-						FLL_UNION_COWDIR="${opt#persist=}"
-						;;
-				esac
-				;;
 			quiet)
 				if [ -f /proc/sys/kernel/printk ]; then
 					echo "0" > /proc/sys/kernel/printk
@@ -632,13 +617,6 @@ mountroot()
 				# we have determined FSTYPE of the device, set FLL_BLOCKMNT
 				FLL_BLOCKMNT="/fll/${dev##*/}"
 				mkdir -p "${FLL_BLOCKMNT}"
-
-				# save origin of media in variable for persitency
-				if [ "${FLL_PERSIST}" = "yes" ]; then
-					FLL_PERSIST_BLOCKDEV="${dev}"
-					FLL_PERSIST_BLOCKFSTYPE="${FSTYPE}"
-					FLL_PERSIST_BLOCKMNT="${FLL_BLOCKMNT}"
-				fi
 
 				# mount block device on FLL_BLOCKMNT for probe
 				if fll_mount "${FSTYPE}" "${dev}" "${FLL_BLOCKMNT}" ro; then
@@ -829,61 +807,9 @@ mountroot()
 	maybe_break fll-postmount
 
 	#
-	# prepare COW union filesystem, handle persistency
+	# prepare COW union filesystem
 	#
-	if [ "${FLL_PERSIST}" = "yes" ] && [ "${FLL_PERSIST_BLOCKMNT}" ]; then
-		case "${FLL_PERSIST_BLOCKFSTYPE}" in
-			ext*|reiser*|xfs|jfs|msdos|vfat)
-				# remount original fs containing live media rw (toram would umount it)
-				if grep -q "${FLL_PERSIST_BLOCKMNT}" /proc/mounts && mount -o remount,rw "${FLL_PERSIST_BLOCKMNT}" || \
-					fll_mount ${FLL_PERSIST_BLOCKFSTYPE} ${FLL_PERSIST_BLOCKDEV} ${FLL_PERSIST_BLOCKMNT} rw; then
-					printf "Reusing persistent data on ${FLL_PERSIST_BLOCKDEV#/dev/}...\n"
-				else
-					panic "Failed to remount persistent data on ${FLL_PERSIST_DEV#/dev/}"
-				fi
-
-				if [ -f "${FLL_PERSIST_BLOCKMNT}/${FLL_PERSIST_FILE}" ] ; then
-					printf "Using ${FLL_PERSIST_FILE} filesystem-in-a-file..."
-					if [ -z "${FLL_UNION_MODULE}" ] || [ "${FLL_UNION_MODULE}" = "dmsetup" ]; then
-						# setup loop device from persist file for snapshot
-						FLL_SNAP_DEV=$(losetup -f)
-						if losetup ${FLL_SNAP_DEV} ${FLL_PERSIST_BLOCKMNT}/${FLL_PERSIST_FILE} ; then
-							printf "\n"
-						else
-							panic "Failed to setup loop device for snapshot ${FLL_SNAP_DEV} from ${FLL_PERSIST_BLOCKMNT}/${FLL_PERSIST_FILE}"
-						fi
-					else
-						# identify filesystem of loopback file, mount it and update FLL_PERSIST_BLOCKMNT
-						mkdir -p "/fll/persist"
-
-						if fll_finger_fstype "${FLL_PERSIST_BLOCKMNT}/${FLL_PERSIST_FILE}" && \
-						  fll_mount "${FSTYPE}" "${FLL_PERSIST_BLOCKMNT}/${FLL_PERSIST_FILE}" "/fll/persist" loop; then
-							printf "\n"
-							# We have now found a persistent file setup
-							# We can revert any custom cowdir set by persist and clear FLL_PERSIST_BLOCKMNT
-							# FLL_PERSIST_BLOCKMNT should only be used later when we are persisting to a dir on it
-							FLL_PERSIST_BLOCKMNT=""
-							FLL_UNION_COWDIR="/fll/persist"
-                                                        FLL_DOMOVEMOUNT="${FLL_DOMOVEMOUNT} /fll/persist"
-						else
-							panic "Failed to mount ${FLL_PERSIST_FILE} persistent filesystem-in-a-file"
-						fi
-					fi
-				elif [ -n "${FLL_UNION_MODULE}" ] && [ "${FLL_UNION_MODULE}" != "dmsetup" ] && [ "${FLL_PERSIST_BLOCKFSTYPE}" != "msdos" ] && [ "${FLL_PERSIST_BLOCKFSTYPE}" != "vfat" ]; then
-					# we're using aufs/unionfs and not on fat so it should be ok
-					:
-				else
-					panic "Invalid/missing ${FLL_PERSIST_FILE} persistent filesystem-in-a-file"
-				fi
-				;;
-			*)
-				panic "Cannot create persistent filesystem with type ${FLL_PERSIST_BLOCKFSTYPE}"
-				;;
-		esac
-	else
-		FLL_PERSIST_BLOCKMNT=""
-		FLL_SNAP_DEV="/dev/mapper/${FLL_DISTRO_NAME}-snapshot"
-	fi
+	FLL_SNAP_DEV="/dev/mapper/${FLL_DISTRO_NAME}-snapshot"
 
 	if [ -z "${FLL_UNION_MODULE}" ] || [ "${FLL_UNION_MODULE}" = "dmsetup" ]; then
 		# use losetup and dmsetup to create root snapshot
@@ -920,32 +846,29 @@ mountroot()
 		modprobe "${MODPROBE_OPTIONS}" "${FLL_UNION_MODULE}" >/dev/null 2>&1
 
 		# unioned filesystem mount points
-		# persist may already have set FLL_UNION_COWDIR
-		[ -z "$FLL_UNION_COWDIR" ] && FLL_UNION_COWDIR="/fll/cow"
+		FLL_UNION_COWDIR="/fll/cow"
 
 		# prepare COW union filesystem
-		mkdir -p "${FLL_PERSIST_BLOCKMNT}${FLL_UNION_COWDIR}"
-		if [ -z "${FLL_PERSIST}" ]; then
-			#
-			# mount a tmpfs over FLL_UNION_COWDIR, reserving 10% system memory
-			# Note: $rootmnt must be mounted with a fs != rootfs prior to run-init
-			#
-			printf "Mounting virtual memory tmpfs filesystem on ${FLL_UNION_COWDIR}..."
-			if mount -n -t tmpfs -o size=90%,mode=755 tmpfs "${FLL_UNION_COWDIR}"; then
-				printf "\n"
-			else
-				panic "Failed to mount tmpfs over ${rootmnt}"
-			fi
-			FLL_DOMOVEMOUNT="${FLL_DOMOVEMOUNT} ${FLL_UNION_COWDIR}"
+		mkdir -p "${FLL_UNION_COWDIR}"
+		#
+		# mount a tmpfs over FLL_UNION_COWDIR, reserving 10% system memory
+		# Note: $rootmnt must be mounted with a fs != rootfs prior to run-init
+		#
+		printf "Mounting virtual memory tmpfs filesystem on ${FLL_UNION_COWDIR}..."
+		if mount -n -t tmpfs -o size=90%,mode=755 tmpfs "${FLL_UNION_COWDIR}"; then
+			printf "\n"
+		else
+			panic "Failed to mount tmpfs over ${rootmnt}"
 		fi
+		FLL_DOMOVEMOUNT="${FLL_DOMOVEMOUNT} ${FLL_UNION_COWDIR}"
 
 		# union module specific options
 		case "${FLL_UNION_MODULE}" in
 			aufs)
-				FLL_UNION_OPTIONS="br:${FLL_PERSIST_BLOCKMNT}${FLL_UNION_COWDIR}:${FLL_MOUNTPOINT}"
+				FLL_UNION_OPTIONS="br:${FLL_UNION_COWDIR}:${FLL_MOUNTPOINT}"
 				;;
 			unionfs)
-				FLL_UNION_OPTIONS="dirs=${FLL_PERSIST_BLOCKMNT}${FLL_UNION_COWDIR}=rw:${FLL_MOUNTPOINT}=ro"
+				FLL_UNION_OPTIONS="dirs=${FLL_UNION_COWDIR}=rw:${FLL_MOUNTPOINT}=ro"
 				;;
 		esac
 
@@ -1027,11 +950,10 @@ mountroot()
 	# debug checkpoint
 	maybe_break fll-bottom
 
-	# alsa should not be persistent
+	# reset alsa state
 	rm -f ${rootmnt}/var/lib/alsa/asound.state
 
-	# disable persistent udev rules. we have "persistency" logic for data but
-	# we should remain hardware agnostic
+	# remove persistent udev rules
 	rm -f ${rootmnt}/etc/udev/rules.d/70-persistent-*.rules
 
 	# create udev rule for persistent symlink to device live media was found on

@@ -1,6 +1,7 @@
 fll-live-initramfs (2.7.16) UNRELEASED; urgency=medium
 
   * NOT RELEASED YET
+  * drop support for classic persistence.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 22 Jun 2014 23:10:02 +0200
 
