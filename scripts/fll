@@ -115,6 +115,26 @@ fll_finger_fstype()
 }
 
 ###############################################################################
+# 	identify label of block device, fallback to gpt partlabel
+###############################################################################
+fll_finger_label()
+{
+	LABEL="$(/sbin/blkid -s LABEL -o value ${1})"
+
+	if [ -n "${LABEL}" ] ; then
+		export LABEL
+		return 0
+	fi
+	LABEL="$(/sbin/blkid -s PARTLABEL -o value ${1})"
+	if [ -n "${LABEL}" ] ; then
+		export LABEL
+		return 0
+	fi
+	unset LABEL
+	return 1
+}
+
+###############################################################################
 #	modprobe loop and wait for device node creation
 ###############################################################################
 fll_setup_dev_loop()
@@ -608,7 +628,7 @@ mountroot()
 			#			  loop is broken
 			# FLL_MEDIA_FOUND	- set only when we have the live media compressed
 			#			  filesystem located and mounted
-			unset FLL_BLOCKMNT FLL_DOUMOUNT FLL_DOMOVEMOUNT FLL_MEDIA_FOUND
+			unset FLL_BLOCKMNT FLL_PROBE FLL_DOUMOUNT FLL_DOMOVEMOUNT FLL_MEDIA_FOUND
 
 			#
 			# determine filesystem type of block device
@@ -620,19 +640,26 @@ mountroot()
 				fi
 				printf "[ ${dev#/dev/} ] "
 
-				# we have determined FSTYPE of the device, set FLL_BLOCKMNT
+				# we have determined FSTYPE of the wrapper device, set FLL_BLOCKMNT
 				FLL_BLOCKMNT="/fll/${dev##*/}"
+				FLL_PROBE="${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}"
+				if [ "${FSTYPE}" = "squashfs" ]; then
+					fll_finger_label "${dev}" >/dev/null 2>&1
+					if [ "${LABEL}" = "${FLL_UUID}.${FLL_IMAGE_LOCATION#*\.}" ]; then
+						FLL_BLOCKMNT="${FLL_MOUNTPOINT}"
+						FLL_PROBE="${dev}"
+					fi
+				fi
 				mkdir -p "${FLL_BLOCKMNT}"
-
 				# mount block device on FLL_BLOCKMNT for probe
 				if fll_mount "${FSTYPE}" "${dev}" "${FLL_BLOCKMNT}" ro; then
 					# add current FLL_BLOCKMNT to FLL_DOMOVEMOUNT stack
 					FLL_DOMOVEMOUNT="${FLL_BLOCKMNT} ${FLL_DOMOVEMOUNT}"
 
 					#
-					# probe for iso image
+					# probe for iso image unless already have media
 					#
-					if [ "${FLL_FROMISO}" = "yes" ]; then
+					if [ ! -e "${FLL_PROBE}" ] && [ "${FLL_FROMISO}" = "yes" ]; then
 						if [ -f "${FLL_BLOCKMNT}/${FLL_MEDIA_NAME#/}" ]; then
 							# located iso, update dev description
 							FLL_MEDIA_FOUND="${dev}"
@@ -657,6 +684,8 @@ mountroot()
 									# update FLL_BLOCKMNT, FLL_DOMOVEMOUNT stack
 									FLL_BLOCKMNT="/fll/fromiso"
 									FLL_DOMOVEMOUNT="${FLL_BLOCKMNT} ${FLL_DOMOVEMOUNT}"
+									# update FLL_PROBE as FLL_BLOCKMNT changed
+									FLL_PROBE="${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}"
 								else
 									fll_umount ${FLL_DOUMOUNT}
 									panic "Failed to mount ${FSTYPE} filesystem from iso image"
@@ -668,11 +697,10 @@ mountroot()
 							printf "\n"
 						fi
 					fi
-
 					#
 					# probe for compressed filesystem
 					#
-					if [ -f "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" ]; then
+					if [ -e "${FLL_PROBE}" ] ; then
 						# found FLL compressed filesystem
 						# set/update FLL_MEDIA_FOUND variable (possibly already set via fromiso)
 						if [ -z "${FLL_MEDIA_FOUND}" ]; then
@@ -684,9 +712,8 @@ mountroot()
 						maybe_break fll-found
 
 						# md5sum check
-						if [ "${FLL_MD5SUM_CHECK}" = "yes" ]; then
+						if [ ! -d "${FLL_MOUNTPOINT}" ] && [ "${FLL_MD5SUM_CHECK}" = "yes" ]; then
 							printf "Performing md5sum integrity check of live media...\n\n"
-
 							if fll_md5sum_check ${FLL_BLOCKMNT}; then
 								printf "All md5sums verified successfully.\n\n"
 							else
@@ -698,7 +725,7 @@ mountroot()
 						#
 						# prepare live filesystem
 						#
-						if fll_finger_fstype "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" >/dev/null 2>&1; then
+						if fll_finger_fstype "${FLL_PROBE}" >/dev/null 2>&1; then
 							printf "Detected live ${FSTYPE} "
 							if [ "${FLL_FROMISO}" = "yes" ]; then
 								printf "filesystem on ${FLL_MEDIA_NAME}\n"
@@ -711,9 +738,14 @@ mountroot()
 								# required tmpfs size: compressed filesystem size + 10% buffer
 								eval $(fll_meminfo)
 
+								if [ -f "${FLL_PROBE}" ]; then
 								# ls -l returns units in Bytes, divide by (1024*1024) to convert to MB
-								FLL_TORAM_FSSIZE=$(ls -l "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" | \
-									awk '{ printf("%d\n", int($5 * 1.1 / 1048576)) }')
+									FLL_TORAM_FSSIZE=$(ls -l "${FLL_PROBE}" | \
+										awk '{ printf("%d\n", int($5 * 1.1 / 1048576)) }')
+								else
+									FLL_TORAM_FSSIZE=$(fstype "${FLL_PROBE}" | \
+										awk -F= '/^FSSIZE=/{printf("%d\n", int($2 * 1.1 / 1048576)) }')
+								fi
 
 								# memory required to operate normally after iso has consumed memory
 								# at least 32M is required
@@ -728,10 +760,11 @@ mountroot()
 
 									# copy compressed filesystem to tmpfs
 									printf "Copying live filesystem from ${dev#/dev/} to ram...\n"
-									if fll_copy_with_perc "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "/fll/toram/${FLL_IMAGE_DIR}"; then
+									if fll_copy_with_perc "${FLL_PROBE}" "/fll/toram/${FLL_IMAGE_LOCATION}"; then
 										# add old mount point to umount stack, update FLL_BLOCKMNT
 										FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
 										FLL_BLOCKMNT="/fll/toram"
+										FLL_PROBE="${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}"
 										FLL_DOMOVEMOUNT="${FLL_BLOCKMNT} ${FLL_DOMOVEMOUNT}"
 									else
 										if [ "${FLL_FROMISO}" = "yes" ]; then
@@ -757,14 +790,16 @@ mountroot()
 							fi
 
 							# mount compressed filesystem, source directory: FLL_BLOCKMNT
+							if [ ! -d "${FLL_MOUNTPOINT}" ]; then
+# START INDENT mountpoint
 							mkdir -p "${FLL_MOUNTPOINT}"
-							if [ -n "${FLL_UNION_MODULE}" ] && [ "${FLL_UNION_MODULE}" != "dmsetup" ] && fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "${FLL_MOUNTPOINT}"; then
+							if [ -n "${FLL_UNION_MODULE}" ] && [ "${FLL_UNION_MODULE}" != "dmsetup" ] && fll_mount "${FSTYPE}" "${FLL_PROBE}" "${FLL_MOUNTPOINT}"; then
 								printf "Mounted ${FSTYPE} filesystem on ${FLL_MOUNTPOINT}\n\n"
 								FLL_DOMOVEMOUNT="${FLL_MOUNTPOINT} ${FLL_DOMOVEMOUNT}"
 							elif [ -z "${FLL_UNION_MODULE}" ] || [ "${FLL_UNION_MODULE}" = "dmsetup" ]; then
 								mkdir -p "${FLL_MOUNTPOINT}.mnt"
 
-								if fll_mount "${FSTYPE}" "${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}" "${FLL_MOUNTPOINT}.mnt" ; then
+								if fll_mount "${FSTYPE}" "${FLL_PROBE}" "${FLL_MOUNTPOINT}.mnt" ; then
 									printf "Mounted ${FSTYPE} filesystem on ${FLL_MOUNTPOINT}.mnt\n\n"
 									FLL_DOMOVEMOUNT="${FLL_MOUNTPOINT}.mnt ${FLL_DOMOVEMOUNT}"
 								else
@@ -774,6 +809,19 @@ mountroot()
 							else
 								fll_umount ${FLL_DOUMOUNT}
 								panic "Failed to mount ${FSTYPE} filesystem"
+# END INDENT mountpoint
+								fi
+							elif [ -z "${FLL_UNION_MODULE}" ] || [ "${FLL_UNION_MODULE}" = "dmsetup" ]; then
+								# remount directly mounted FLL_MOUNTPOINT
+								mkdir -p "${FLL_MOUNTPOINT}.mnt"
+								fll_umount ${FLL_MOUNTPOINT}
+								if fll_mount "${FSTYPE}" "${FLL_PROBE}" "${FLL_MOUNTPOINT}.mnt" ; then
+									printf "Remounted ${FSTYPE} filesystem on ${FLL_MOUNTPOINT}.mnt\n\n"
+									FLL_DOMOVEMOUNT="${FLL_MOUNTPOINT}.mnt"
+								else
+									fll_umount ${FLL_DOUMOUNT}
+									panic "Failed to remount ${FSTYPE} filesystem for dmsetup"
+								fi
 							fi
 						else
 							fll_umount ${FLL_DOUMOUNT}
@@ -785,7 +833,6 @@ mountroot()
 					fi
 				fi
 			fi
-
 			# umount mount points in FLL_DOUMOUNT stack
 			fll_umount ${FLL_DOUMOUNT}
 
