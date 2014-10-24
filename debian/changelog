@@ -1,3 +1,9 @@
+fll-live-initramfs (2.7.18) UNRELEASED; urgency=medium
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 24 Oct 2014 04:12:18 +0200
+
 fll-live-initramfs (2.7.17) unstable; urgency=medium
 
   * allow squashfs under gpt partlabel matching uuid as discovered device.
