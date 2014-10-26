@@ -37,6 +37,7 @@ install -m 0644 -D /etc/default/distro \
 # filesystem unioning modules
 manual_add_modules unionfs
 manual_add_modules aufs
+manual_add_modules overlayfs
 
 # squashfs and loop
 manual_add_modules squashfs

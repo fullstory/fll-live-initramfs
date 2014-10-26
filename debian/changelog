@@ -1,8 +1,12 @@
 fll-live-initramfs (2.7.18) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 24 Oct 2014 04:12:18 +0200
+  [ Niall Walsh ]
+  * add overlayfs support
+
+ -- Niall Walsh <niallwalsh@celtux.org>  Sun, 26 Oct 2014 23:05:17 +0000
 
 fll-live-initramfs (2.7.17) unstable; urgency=medium
 

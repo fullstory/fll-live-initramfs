@@ -923,6 +923,10 @@ mountroot()
 			unionfs)
 				FLL_UNION_OPTIONS="dirs=${FLL_UNION_COWDIR}=rw:${FLL_MOUNTPOINT}=ro"
 				;;
+			overlayfs)
+				FLL_UNION_OPTIONS="lowerdir=${FLL_MOUNTPOINT},upperdir=${FLL_UNION_COWDIR}/upper,workdir=${FLL_UNION_COWDIR}/work"
+				mkdir ${FLL_UNION_COWDIR}/upper ${FLL_UNION_COWDIR}/work
+				;;
 		esac
 
 		# mount the union COW filesystem
