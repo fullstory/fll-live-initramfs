@@ -743,8 +743,8 @@ mountroot()
 									FLL_TORAM_FSSIZE=$(ls -l "${FLL_PROBE}" | \
 										awk '{ printf("%d\n", int($5 * 1.1 / 1048576)) }')
 								else
-									FLL_TORAM_FSSIZE=$(fstype "${FLL_PROBE}" | \
-										awk -F= '/^FSSIZE=/{printf("%d\n", int($2 * 1.1 / 1048576)) }')
+									FLL_PROBE_PATT=$(echo $FLL_PROBE | awk '{gsub(/\//,"\\\/");print}')
+									FLL_TORAM_FSSIZE=$(df -m | awk '/^'${FLL_PROBE_PATT}'/{print $2}')
 								fi
 
 								# memory required to operate normally after iso has consumed memory
@@ -760,9 +760,21 @@ mountroot()
 
 									# copy compressed filesystem to tmpfs
 									printf "Copying live filesystem from ${dev#/dev/} to ram...\n"
-									if fll_copy_with_perc "${FLL_PROBE}" "/fll/toram/${FLL_IMAGE_LOCATION}"; then
-										# add old mount point to umount stack, update FLL_BLOCKMNT
-										FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
+									if [ -f "${FLL_PROBE}" ]; then
+										toramcmd="fll_copy_with_perc ${FLL_PROBE} /fll/toram/${FLL_IMAGE_DIR}"
+									else
+										toramcmd="cp ${FLL_PROBE} /fll/toram/${FLL_IMAGE_LOCATION}"
+										printf "... copy about to start without progress, please wait.\n"
+									fi
+									if $toramcmd; then
+										if [ "${FLL_BLOCKMNT}" = "${FLL_MOUNTPOINT}" ]; then
+											# umount the direct squashfs partition
+											fll_umount "${FLL_BLOCKMNT}"
+										else
+											# add old mount point to umount stack
+											FLL_DOUMOUNT="${FLL_BLOCKMNT} ${FLL_DOUMOUNT}"
+										fi
+										# update FLL_BLOCKMNT
 										FLL_BLOCKMNT="/fll/toram"
 										FLL_PROBE="${FLL_BLOCKMNT}/${FLL_IMAGE_LOCATION}"
 										FLL_DOMOVEMOUNT="${FLL_BLOCKMNT} ${FLL_DOMOVEMOUNT}"
