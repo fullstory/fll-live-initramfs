@@ -1,10 +1,6 @@
-fll-live-initramfs (2.7.19) UNRELEASED; urgency=medium
+fll-live-initramfs (2.7.19) unstable; urgency=medium
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Niall Walsh ]
-  * fixup toram fssize and handling of mount juggling
+  * fixup toram fssize and handling of mount juggling.
 
  -- Niall Walsh <niallwalsh@celtux.org>  Mon, 27 Oct 2014 22:58:07 +0000
 
