@@ -461,6 +461,7 @@ mountroot()
 {
 	# source distro-defaults
 	. /etc/default/distro
+	FLL_UNION_MODULE="${FLL_UNION_MODULE:-overlayfs}"
 
 	# parse fll options given on cmdline
 	for opt in $(cat /proc/cmdline); do
@@ -804,33 +805,12 @@ mountroot()
 							# mount compressed filesystem, source directory: FLL_BLOCKMNT
 							if [ ! -d "${FLL_MOUNTPOINT}" ]; then
 								mkdir -p "${FLL_MOUNTPOINT}"
-								if [ -n "${FLL_UNION_MODULE}" ] && [ "${FLL_UNION_MODULE}" != "dmsetup" ] && fll_mount "${FSTYPE}" "${FLL_PROBE}" "${FLL_MOUNTPOINT}"; then
+								if [ -n "${FLL_UNION_MODULE}" ] && fll_mount "${FSTYPE}" "${FLL_PROBE}" "${FLL_MOUNTPOINT}"; then
 									printf "Mounted ${FSTYPE} filesystem on ${FLL_MOUNTPOINT}\n\n"
 									FLL_DOMOVEMOUNT="${FLL_MOUNTPOINT} ${FLL_DOMOVEMOUNT}"
-								elif [ -z "${FLL_UNION_MODULE}" ] || [ "${FLL_UNION_MODULE}" = "dmsetup" ]; then
-									mkdir -p "${FLL_MOUNTPOINT}.mnt"
-
-									if fll_mount "${FSTYPE}" "${FLL_PROBE}" "${FLL_MOUNTPOINT}.mnt" ; then
-										printf "Mounted ${FSTYPE} filesystem on ${FLL_MOUNTPOINT}.mnt\n\n"
-										FLL_DOMOVEMOUNT="${FLL_MOUNTPOINT}.mnt ${FLL_DOMOVEMOUNT}"
-									else
-										fll_umount ${FLL_DOUMOUNT}
-										panic "Failed to mount ${FSTYPE} filesystem"
-									fi
 								else
 									fll_umount ${FLL_DOUMOUNT}
 									panic "Failed to mount ${FSTYPE} filesystem"
-								fi
-							elif [ -z "${FLL_UNION_MODULE}" ] || [ "${FLL_UNION_MODULE}" = "dmsetup" ]; then
-								# remount directly mounted FLL_MOUNTPOINT
-								mkdir -p "${FLL_MOUNTPOINT}.mnt"
-								fll_umount ${FLL_MOUNTPOINT}
-								if fll_mount "${FSTYPE}" "${FLL_PROBE}" "${FLL_MOUNTPOINT}.mnt" ; then
-									printf "Remounted ${FSTYPE} filesystem on ${FLL_MOUNTPOINT}.mnt\n\n"
-									FLL_DOMOVEMOUNT="${FLL_MOUNTPOINT}.mnt"
-								else
-									fll_umount ${FLL_DOUMOUNT}
-									panic "Failed to remount ${FSTYPE} filesystem for dmsetup"
 								fi
 							fi
 						else
@@ -872,80 +852,47 @@ mountroot()
 	#
 	# prepare COW union filesystem
 	#
-	FLL_SNAP_DEV="/dev/mapper/${FLL_DISTRO_NAME}-snapshot"
 
-	if [ -z "${FLL_UNION_MODULE}" ] || [ "${FLL_UNION_MODULE}" = "dmsetup" ]; then
-		# use losetup and dmsetup to create root snapshot
-		if ! [ -b ${FLL_SNAP_DEV} ]; then
-			# TODO size
-			mkdir -p /run/fll
-			dd if=/dev/zero of=/run/fll/snapshot bs=1M count=1 seek=511 2>/dev/null
-			FLL_SNAP_DEV=$(losetup -f)
-			losetup ${FLL_SNAP_DEV} /run/fll/snapshot
-		fi
+	# aufs || overlayfs || unionfs
+	modprobe "${MODPROBE_OPTIONS}" "${FLL_UNION_MODULE}" >/dev/null 2>&1
 
-		FLL_ROOT_SIZE=$(ls -l "${FLL_MOUNTPOINT}.mnt/${FLL_IMAGE_FILE}" | awk '{print $5}')
-		FLL_ROOT_DMSIZE=$((${FLL_ROOT_SIZE}/512))
-		FLL_IMAGE_DEV=$(losetup -f)
+	# unioned filesystem mount points
+	FLL_UNION_COWDIR="/fll/cow"
 
-		losetup ${FLL_IMAGE_DEV} "${FLL_MOUNTPOINT}.mnt/${FLL_IMAGE_FILE}"
-
-		FLL_DM_MAP="0 ${FLL_ROOT_DMSIZE} snapshot ${FLL_IMAGE_DEV} ${FLL_SNAP_DEV} P 8"
-
-		dmsetup create ${FLL_DISTRO_NAME}-live --table "${FLL_DM_MAP}"
-
-		# TODO FS ??? DONE
-		if fll_finger_fstype /dev/mapper/${FLL_DISTRO_NAME}-live >/dev/null 2>&1 ; then
-			if ! mount -t ${FSTYPE} /dev/mapper/${FLL_DISTRO_NAME}-live ${rootmnt} ; then
-				panic "Failed to mount live filesystem"
-			fi
-		else
-			panic "Failed to recognise type of live filesystem"
-		fi
-
-		mkdir -p "${rootmnt}/${FLL_MOUNTPOINT}"
+	# prepare COW union filesystem
+	mkdir -p "${FLL_UNION_COWDIR}"
+	#
+	# mount a tmpfs over FLL_UNION_COWDIR, reserving 10% system memory
+	# Note: $rootmnt must be mounted with a fs != rootfs prior to run-init
+	#
+	printf "Mounting virtual memory tmpfs filesystem on ${FLL_UNION_COWDIR}..."
+	if mount -n -t tmpfs -o size=90%,mode=755 tmpfs "${FLL_UNION_COWDIR}"; then
+		printf "\n"
 	else
-		#aufs || unionfs
-		modprobe "${MODPROBE_OPTIONS}" "${FLL_UNION_MODULE}" >/dev/null 2>&1
+		panic "Failed to mount tmpfs over ${rootmnt}"
+	fi
+	FLL_DOMOVEMOUNT="${FLL_DOMOVEMOUNT} ${FLL_UNION_COWDIR}"
 
-		# unioned filesystem mount points
-		FLL_UNION_COWDIR="/fll/cow"
+	# union module specific options
+	case "${FLL_UNION_MODULE}" in
+		aufs)
+			FLL_UNION_OPTIONS="br:${FLL_UNION_COWDIR}:${FLL_MOUNTPOINT}"
+			;;
+		unionfs)
+			FLL_UNION_OPTIONS="dirs=${FLL_UNION_COWDIR}=rw:${FLL_MOUNTPOINT}=ro"
+			;;
+		overlayfs)
+			FLL_UNION_OPTIONS="lowerdir=${FLL_MOUNTPOINT},upperdir=${FLL_UNION_COWDIR}/upper,workdir=${FLL_UNION_COWDIR}/work"
+			mkdir ${FLL_UNION_COWDIR}/upper ${FLL_UNION_COWDIR}/work
+			;;
+	esac
 
-		# prepare COW union filesystem
-		mkdir -p "${FLL_UNION_COWDIR}"
-		#
-		# mount a tmpfs over FLL_UNION_COWDIR, reserving 10% system memory
-		# Note: $rootmnt must be mounted with a fs != rootfs prior to run-init
-		#
-		printf "Mounting virtual memory tmpfs filesystem on ${FLL_UNION_COWDIR}..."
-		if mount -n -t tmpfs -o size=90%,mode=755 tmpfs "${FLL_UNION_COWDIR}"; then
-			printf "\n"
-		else
-			panic "Failed to mount tmpfs over ${rootmnt}"
-		fi
-		FLL_DOMOVEMOUNT="${FLL_DOMOVEMOUNT} ${FLL_UNION_COWDIR}"
-
-		# union module specific options
-		case "${FLL_UNION_MODULE}" in
-			aufs)
-				FLL_UNION_OPTIONS="br:${FLL_UNION_COWDIR}:${FLL_MOUNTPOINT}"
-				;;
-			unionfs)
-				FLL_UNION_OPTIONS="dirs=${FLL_UNION_COWDIR}=rw:${FLL_MOUNTPOINT}=ro"
-				;;
-			overlayfs)
-				FLL_UNION_OPTIONS="lowerdir=${FLL_MOUNTPOINT},upperdir=${FLL_UNION_COWDIR}/upper,workdir=${FLL_UNION_COWDIR}/work"
-				mkdir ${FLL_UNION_COWDIR}/upper ${FLL_UNION_COWDIR}/work
-				;;
-		esac
-
-		# mount the union COW filesystem
-		printf "Mounting ${FLL_UNION_MODULE} union filesystem..."
-		if mount -t "${FLL_UNION_MODULE}" -o "${FLL_UNION_OPTIONS}" "${FLL_UNION_MODULE}" "${rootmnt}"; then
-			printf "\n"
-		else
-			panic "Failed to prepare ${FLL_UNION_MODULE} union filesystem"
-		fi
+	# mount the union COW filesystem
+	printf "Mounting ${FLL_UNION_MODULE} union filesystem..."
+	if mount -t "${FLL_UNION_MODULE}" -o "${FLL_UNION_OPTIONS}" "${FLL_UNION_MODULE}" "${rootmnt}"; then
+		printf "\n"
+	else
+		panic "Failed to prepare ${FLL_UNION_MODULE} union filesystem"
 	fi
 
 	# move all mounts in FLL_DOMOVEMOUNT stack to $rootmnt
