@@ -524,9 +524,9 @@ mountroot()
 			toram)
 				FLL_TORAM="yes"
 				;;
-			unionfs|aufs)
+			aufs|overlayfs|unionfs)
 				# set FLL_UNION_MODULE in default/distro if needed
-				# current default is dmsetup
+				# current default is overlayfs
 				FLL_UNION_MODULE="${opt}"
 				;;
 			console=ttyS*,*)
@@ -803,25 +803,23 @@ mountroot()
 
 							# mount compressed filesystem, source directory: FLL_BLOCKMNT
 							if [ ! -d "${FLL_MOUNTPOINT}" ]; then
-# START INDENT mountpoint
-							mkdir -p "${FLL_MOUNTPOINT}"
-							if [ -n "${FLL_UNION_MODULE}" ] && [ "${FLL_UNION_MODULE}" != "dmsetup" ] && fll_mount "${FSTYPE}" "${FLL_PROBE}" "${FLL_MOUNTPOINT}"; then
-								printf "Mounted ${FSTYPE} filesystem on ${FLL_MOUNTPOINT}\n\n"
-								FLL_DOMOVEMOUNT="${FLL_MOUNTPOINT} ${FLL_DOMOVEMOUNT}"
-							elif [ -z "${FLL_UNION_MODULE}" ] || [ "${FLL_UNION_MODULE}" = "dmsetup" ]; then
-								mkdir -p "${FLL_MOUNTPOINT}.mnt"
+								mkdir -p "${FLL_MOUNTPOINT}"
+								if [ -n "${FLL_UNION_MODULE}" ] && [ "${FLL_UNION_MODULE}" != "dmsetup" ] && fll_mount "${FSTYPE}" "${FLL_PROBE}" "${FLL_MOUNTPOINT}"; then
+									printf "Mounted ${FSTYPE} filesystem on ${FLL_MOUNTPOINT}\n\n"
+									FLL_DOMOVEMOUNT="${FLL_MOUNTPOINT} ${FLL_DOMOVEMOUNT}"
+								elif [ -z "${FLL_UNION_MODULE}" ] || [ "${FLL_UNION_MODULE}" = "dmsetup" ]; then
+									mkdir -p "${FLL_MOUNTPOINT}.mnt"
 
-								if fll_mount "${FSTYPE}" "${FLL_PROBE}" "${FLL_MOUNTPOINT}.mnt" ; then
-									printf "Mounted ${FSTYPE} filesystem on ${FLL_MOUNTPOINT}.mnt\n\n"
-									FLL_DOMOVEMOUNT="${FLL_MOUNTPOINT}.mnt ${FLL_DOMOVEMOUNT}"
+									if fll_mount "${FSTYPE}" "${FLL_PROBE}" "${FLL_MOUNTPOINT}.mnt" ; then
+										printf "Mounted ${FSTYPE} filesystem on ${FLL_MOUNTPOINT}.mnt\n\n"
+										FLL_DOMOVEMOUNT="${FLL_MOUNTPOINT}.mnt ${FLL_DOMOVEMOUNT}"
+									else
+										fll_umount ${FLL_DOUMOUNT}
+										panic "Failed to mount ${FSTYPE} filesystem"
+									fi
 								else
 									fll_umount ${FLL_DOUMOUNT}
 									panic "Failed to mount ${FSTYPE} filesystem"
-								fi
-							else
-								fll_umount ${FLL_DOUMOUNT}
-								panic "Failed to mount ${FSTYPE} filesystem"
-# END INDENT mountpoint
 								fi
 							elif [ -z "${FLL_UNION_MODULE}" ] || [ "${FLL_UNION_MODULE}" = "dmsetup" ]; then
 								# remount directly mounted FLL_MOUNTPOINT
