@@ -1,3 +1,9 @@
+fll-live-initramfs (2.8.3) UNRELEASED; urgency=medium
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 28 Oct 2014 13:11:33 +0100
+
 fll-live-initramfs (2.8.2) unstable; urgency=medium
 
   * fix logic error when detecting the unioning method.
