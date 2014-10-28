@@ -525,7 +525,7 @@ mountroot()
 			toram)
 				FLL_TORAM="yes"
 				;;
-			aufs|overlayfs|unionfs)
+			aufs|overlayfs)
 				# set FLL_UNION_MODULE in default/distro if needed
 				# current default is overlayfs
 				FLL_UNION_MODULE="${opt}"
@@ -853,7 +853,7 @@ mountroot()
 	# prepare COW union filesystem
 	#
 
-	# aufs || overlayfs || unionfs
+	# aufs || overlayfs
 	modprobe "${MODPROBE_OPTIONS}" "${FLL_UNION_MODULE}" >/dev/null 2>&1
 
 	# unioned filesystem mount points
@@ -877,9 +877,6 @@ mountroot()
 	case "${FLL_UNION_MODULE}" in
 		aufs)
 			FLL_UNION_OPTIONS="br:${FLL_UNION_COWDIR}:${FLL_MOUNTPOINT}"
-			;;
-		unionfs)
-			FLL_UNION_OPTIONS="dirs=${FLL_UNION_COWDIR}=rw:${FLL_MOUNTPOINT}=ro"
 			;;
 		overlayfs)
 			FLL_UNION_OPTIONS="lowerdir=${FLL_MOUNTPOINT},upperdir=${FLL_UNION_COWDIR}/upper,workdir=${FLL_UNION_COWDIR}/work"
