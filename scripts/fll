@@ -849,9 +849,8 @@ mountroot()
 
 	# aufs || overlayfs
 	if [ ! -d /sys/module/overlayfs ] && [ ! -d /sys/module/aufs ]; then
-		modprobe "${MODPROBE_OPTIONS}" overlayfs >/dev/null 2>&1
-	else
-		modprobe "${MODPROBE_OPTIONS}" aufs >/dev/null 2>&1
+		modprobe "${MODPROBE_OPTIONS}" overlayfs >/dev/null 2>&1 || \
+			modprobe "${MODPROBE_OPTIONS}" aufs >/dev/null 2>&1
 	fi
 
 	if [ -d /sys/module/overlayfs ]; then
