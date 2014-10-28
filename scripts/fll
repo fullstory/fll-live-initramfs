@@ -461,7 +461,6 @@ mountroot()
 {
 	# source distro-defaults
 	. /etc/default/distro
-	FLL_UNION_MODULE="${FLL_UNION_MODULE:-overlayfs}"
 
 	# parse fll options given on cmdline
 	for opt in $(cat /proc/cmdline); do
@@ -524,11 +523,6 @@ mountroot()
 				;;
 			toram)
 				FLL_TORAM="yes"
-				;;
-			aufs|overlayfs)
-				# set FLL_UNION_MODULE in default/distro if needed
-				# current default is overlayfs
-				FLL_UNION_MODULE="${opt}"
 				;;
 			console=ttyS*,*)
 				# parse out port and speed
@@ -805,7 +799,7 @@ mountroot()
 							# mount compressed filesystem, source directory: FLL_BLOCKMNT
 							if [ ! -d "${FLL_MOUNTPOINT}" ]; then
 								mkdir -p "${FLL_MOUNTPOINT}"
-								if [ -n "${FLL_UNION_MODULE}" ] && fll_mount "${FSTYPE}" "${FLL_PROBE}" "${FLL_MOUNTPOINT}"; then
+								if fll_mount "${FSTYPE}" "${FLL_PROBE}" "${FLL_MOUNTPOINT}"; then
 									printf "Mounted ${FSTYPE} filesystem on ${FLL_MOUNTPOINT}\n\n"
 									FLL_DOMOVEMOUNT="${FLL_MOUNTPOINT} ${FLL_DOMOVEMOUNT}"
 								else
@@ -854,7 +848,17 @@ mountroot()
 	#
 
 	# aufs || overlayfs
-	modprobe "${MODPROBE_OPTIONS}" "${FLL_UNION_MODULE}" >/dev/null 2>&1
+	if [ ! -d /sys/module/overlayfs ] || [ ! -d /sys/module/aufs ]; then
+		modprobe "${MODPROBE_OPTIONS}" overlayfs >/dev/null 2>&1
+	else
+		modprobe "${MODPROBE_OPTIONS}" aufs >/dev/null 2>&1
+	fi
+
+	if [ -d /sys/module/overlayfs ]; then
+		FLL_UNION_MODULE="overlayfs"
+	elif [ -d /sys/module/aufs ]; then
+		FLL_UNION_MODULE="aufs"
+	fi
 
 	# unioned filesystem mount points
 	FLL_UNION_COWDIR="/fll/cow"
