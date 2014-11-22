@@ -847,14 +847,14 @@ mountroot()
 	# prepare COW union filesystem
 	#
 
-	# aufs || overlayfs
-	if [ ! -d /sys/module/overlayfs ] && [ ! -d /sys/module/aufs ]; then
-		modprobe "${MODPROBE_OPTIONS}" overlayfs >/dev/null 2>&1 || \
+	# aufs || overlay
+	if [ ! -d /sys/module/overlay ] && [ ! -d /sys/module/aufs ]; then
+		modprobe "${MODPROBE_OPTIONS}" overlay >/dev/null 2>&1 || \
 			modprobe "${MODPROBE_OPTIONS}" aufs >/dev/null 2>&1
 	fi
 
-	if [ -d /sys/module/overlayfs ]; then
-		FLL_UNION_MODULE="overlayfs"
+	if [ -d /sys/module/overlay ]; then
+		FLL_UNION_MODULE="overlay"
 	elif [ -d /sys/module/aufs ]; then
 		FLL_UNION_MODULE="aufs"
 	fi
@@ -881,7 +881,7 @@ mountroot()
 		aufs)
 			FLL_UNION_OPTIONS="br:${FLL_UNION_COWDIR}:${FLL_MOUNTPOINT}"
 			;;
-		overlayfs)
+		overlay)
 			FLL_UNION_OPTIONS="lowerdir=${FLL_MOUNTPOINT},upperdir=${FLL_UNION_COWDIR}/upper,workdir=${FLL_UNION_COWDIR}/work"
 			mkdir ${FLL_UNION_COWDIR}/upper ${FLL_UNION_COWDIR}/work
 			;;

@@ -1,8 +1,8 @@
-fll-live-initramfs (2.8.4) UNRELEASED; urgency=medium
+fll-live-initramfs (2.9.0) unstable; urgency=medium
 
-  * NOT RELEASED YET
+  * s/overlayfs/overlay/.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 28 Oct 2014 13:29:47 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 22 Nov 2014 18:32:03 +0100
 
 fll-live-initramfs (2.8.3) unstable; urgency=medium
 
