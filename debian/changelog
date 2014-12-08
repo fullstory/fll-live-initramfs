@@ -1,8 +1,12 @@
 fll-live-initramfs (2.9.1) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 22 Nov 2014 18:32:44 +0100
+  [ Niall Walsh ]
+  * mount up secondary squashfs and fixup toram
+
+ -- Niall Walsh <niallwalsh@celtux.org>  Mon, 08 Dec 2014 02:05:44 +0000
 
 fll-live-initramfs (2.9.0) unstable; urgency=medium
 
