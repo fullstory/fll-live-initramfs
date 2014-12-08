@@ -1,7 +1,6 @@
-fll-live-initramfs (2.9.2) UNRELEASED; urgency=medium
+fll-live-initramfs (2.9.2) unstable; urgency=medium
 
-  [ Niall Walsh ]
-  * fixup md5sum for fromhd squashfs partition case
+  * fixup md5sum for fromhd squashfs partition case.
 
  -- Niall Walsh <niallwalsh@celtux.org>  Mon, 08 Dec 2014 19:49:01 +0000
 
