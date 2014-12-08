@@ -1,3 +1,9 @@
+fll-live-initramfs (2.9.3) UNRELEASED; urgency=medium
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 08 Dec 2014 21:29:57 +0100
+
 fll-live-initramfs (2.9.2) unstable; urgency=medium
 
   * fixup md5sum for fromhd squashfs partition case.
