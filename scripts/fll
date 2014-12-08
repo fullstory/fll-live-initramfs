@@ -5,7 +5,7 @@
 #
 #	Copyright:	© 2007-2010 Kel Modderman <kel@otaku42.de>
 #			© 2006-2014 Stefan Lippers-Hollmann <s.l-h@gmx.de>
-#			© 2007-2012 Niall Walsh <niallwalsh@users.berlios.de>
+#			© 2007-2014 Niall Walsh <niallwalsh@celtux.org>
 #	License:	GPLv2
 #
 #	F.U.L.L.S.T.O.R.Y Project Homepage:
@@ -709,13 +709,26 @@ mountroot()
 						maybe_break fll-found
 
 						# md5sum check
-						if [ ! -d "${FLL_MOUNTPOINT}" ] && [ "${FLL_MD5SUM_CHECK}" = "yes" ]; then
+						if [ "${FLL_MD5SUM_CHECK}" = "yes" ]; then
+							MAINFS="${FSTYPE}"
+							if [ -b "${FLL_PROBE}" ]; then
+								umount "${FLL_BLOCKMNT}"
+								if fll_finger_fstype "${FLL_PROBE%%[1234567890]*}" >dev/null 2>&1; then
+									fll_mount "${FSTYPE}" "${FLL_PROBE%%[1234567890]*}" "${FLL_BLOCKMNT}" ro
+									FSTYPE="${MAINFS}"
+									MAINFS=""
+								fi
+							fi
 							printf "Performing md5sum integrity check of live media...\n\n"
 							if fll_md5sum_check ${FLL_BLOCKMNT}; then
 								printf "All md5sums verified successfully.\n\n"
 							else
 								fll_umount ${FLL_DOUMOUNT}
 								panic "Failed md5sum check!"
+							fi
+							if [ -z "${MAINFS}" ]; then
+								umount "${FLL_BLOCKMNT}"
+								fll_mount "${FSTYPE}" "${FLL_PROBE}" "${FLL_BLOCKMNT}" ro
 							fi
 						fi
 
