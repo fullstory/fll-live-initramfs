@@ -1,10 +1,6 @@
-fll-live-initramfs (2.9.4) UNRELEASED; urgency=medium
+fll-live-initramfs (2.9.4) unstable; urgency=medium
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Niall Walsh ]
-  * fix toram typo and tweak figures to be more caustiously realistic
+  * fix toram typo and tweak figures to be more caustiously realistic.
 
  -- Niall Walsh <niallwalsh@celtux.org>  Sun, 21 Dec 2014 22:49:40 +0000
 
