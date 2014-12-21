@@ -1,10 +1,6 @@
-fll-live-initramfs (2.9.3) UNRELEASED; urgency=medium
+fll-live-initramfs (2.9.3) unstable; urgency=medium
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Niall Walsh ]
-  * fix broken awk in detection of toram size and count both squashfs sizes
+  * fix broken awk in detection of toram size and count both squashfs sizes.
 
  -- Niall Walsh <niallwalsh@celtux.org>  Sun, 21 Dec 2014 14:34:34 +0000
 
