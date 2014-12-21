@@ -775,7 +775,11 @@ mountroot()
 								# required tmpfs size: compressed filesystem size + 10% buffer
 								eval $(fll_meminfo)
 
-								FLL_TORAM_FSSIZE=$(df -m "${FLL_PROBE}" | awk '/^'${FLL_PROBE}'/{print int($2 * 1.1) }')
+								if [ -f "${FLL_PROBE}" ]; then
+									FLL_TORAM_FSSIZE=$(du -m "${FLL_PROBE}" "${FLL_2FS}" | awk -v c=0 '{c+=$1}END{print int(c * 1.1) }')
+								else
+									FLL_TORAM_FSSIZE=$(df -m "${FLL_PROBE}" "${FLL_2FS}" | awk -v c=0 '/^\//{c+=$2}END{print int(c * 1.1) }}')
+								fi
 
 								# memory required to operate normally after iso has consumed memory
 								# at least 32M is required
