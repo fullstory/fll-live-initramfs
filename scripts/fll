@@ -778,12 +778,12 @@ mountroot()
 								if [ -f "${FLL_PROBE}" ]; then
 									FLL_TORAM_FSSIZE=$(du -m "${FLL_PROBE}" "${FLL_2FS}" | awk -v c=0 '{c+=$1}END{print int(c * 1.1) }')
 								else
-									FLL_TORAM_FSSIZE=$(df -m "${FLL_PROBE}" "${FLL_2FS}" | awk -v c=0 '/^\//{c+=$2}END{print int(c * 1.1) }}')
+									FLL_TORAM_FSSIZE=$(df -m "${FLL_PROBE}" | awk -v '/^\//{print int($2 * 1.2) }')
 								fi
 
 								# memory required to operate normally after iso has consumed memory
-								# at least 32M is required
-								FLL_TORAM_MEMREQ=$(( ${FLL_TORAM_FSSIZE} + 32 ))
+								# at least 256M is required for sanity
+								FLL_TORAM_MEMREQ=$(( ${FLL_TORAM_FSSIZE} + 256 ))
 
 								# do we have enough free memory for toram?
 								if [ "${MEMFREE}" -gt "${FLL_TORAM_MEMREQ}" ]; then
