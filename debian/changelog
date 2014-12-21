@@ -1,8 +1,12 @@
 fll-live-initramfs (2.9.5) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 21 Dec 2014 23:58:20 +0100
+  [ Niall Walsh ]
+  * get rid of the extraneous -v for awk left behind in the last change
+
+ -- Niall Walsh <niallwalsh@celtux.org>  Sun, 21 Dec 2014 23:43:19 +0000
 
 fll-live-initramfs (2.9.4) unstable; urgency=medium
 

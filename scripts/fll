@@ -778,7 +778,7 @@ mountroot()
 								if [ -f "${FLL_PROBE}" ]; then
 									FLL_TORAM_FSSIZE=$(du -m "${FLL_PROBE}" "${FLL_2FS}" | awk -v c=0 '{c+=$1}END{print int(c * 1.1) }')
 								else
-									FLL_TORAM_FSSIZE=$(df -m "${FLL_PROBE}" | awk -v '/^\//{print int($2 * 1.2) }')
+									FLL_TORAM_FSSIZE=$(df -m "${FLL_PROBE}" | awk '/^\//{print int($2 * 1.2) }')
 								fi
 
 								# memory required to operate normally after iso has consumed memory
