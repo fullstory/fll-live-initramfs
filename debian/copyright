@@ -1,41 +1,39 @@
-This is fll-live-initramfs, written and maintained by Kel Modderman
-<kel@otaku42.de> on Fri, 16 Feb 2007 20:44:49 +1000.
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: fll-live-initramfs
+Upstream-Contact: Stefan Lippers-Hollmann <s.l-h@gmx.de>
+Source: git://github.com/fullstory/fll-live-initramfs.git
 
-The original source can always be found at:
-    http://developer.berlios.de/projects/fullstory/fll-live-initramfs/
-
-Copyright:
-    Copyright © 2007-2010 Kel Modderman <kel@otaku42.de>
-    Copyright © 2007-2014 Stefan Lippers-Hollmann <s.l-h@gmx.de>
-    Copyright © 2007-2012 Niall Walsh <niallwalsh@users.berlios.de>
-
-Some parts of initramfs scripts are derived from the KNOPPIX/KANOTIX linuxrc
-contained in live-initrd-sidux.
-Copyright:
-    Copyright © Klaus Knopper <knoppix@knopper.net>
-    Copyright © 2003-2006 Joerg Schirottke <master@kanotix.com>
-    Copyright © 2006 Stefan Lippers-Hollmann <s.l-h@gmx.de>
-License: GPL V2.
-
-Some code and ideas taken from the debian-live and ubuntu project; casper.
-Copyright:
-   Copyright © 2006 Marco Amadori <marco.amadori@gmail.com>
-   Copyright © 2005-2006 Canonical Ltd. <http://www.canonical.com/>
-License: GPL
+Files: *
+Copyright: 2007-2010, Kel Modderman <kel@otaku42.de>
+           2007-2015, Stefan Lippers-Hollmann <s.l-h@gmx.de>
+           2007-2014, Niall Walsh <niallwalsh@users.berlios.de>
+License: GPL-2.0
+Comment:
+ Some parts of initramfs scripts are derived from the KNOPPIX/KANOTIX linuxrc
+ contained in live-initrd-sidux.
+  Copyright: Klaus Knopper <knoppix@knopper.net>
+             2003-2006, Joerg Schirottke <master@kanotix.com>
+             2006, Stefan Lippers-Hollmann <s.l-h@gmx.de>
+  License: GPL-2.0
+ .
+ Some code and ideas taken from the debian-live and ubuntu project; casper.
+   Copyright: 2006, Marco Amadori <marco.amadori@gmail.com>
+              2005-2006, Canonical Ltd. <http://www.canonical.com/>
+   License: GPL-2.0
    ftp://ftp.debian.org/debian/pool/main/c/casper/
 
-License:
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License version 2 as published
-  by the Free Software Foundation.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this package; if not, see <http://www.gnu.org/licenses>
-
-On Debian systems, the complete text of the GNU General Public License version
-2 can be found in `/usr/share/common-licenses/GPL-2'.
+License: GPL-2.0
+ This package is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; version 2 of the License.
+ .
+ This package is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <http://www.gnu.org/licenses/>
+ .
+ On Debian systems, the complete text of the GNU General
+ Public License version 2 can be found in "/usr/share/common-licenses/GPL-2".
