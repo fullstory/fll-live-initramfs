@@ -1,8 +1,9 @@
-fll-live-initramfs (2.9.7) UNRELEASED; urgency=medium
+fll-live-initramfs (2.9.7) unstable; urgency=medium
 
-  * NOT RELEASED YET
+  * drop versioned dependency on initramfs-tools, it's provided by all
+    relevant Debian releases.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 03 Jan 2015 21:21:24 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 04 Jan 2015 01:34:26 +0100
 
 fll-live-initramfs (2.9.6) unstable; urgency=medium
 
