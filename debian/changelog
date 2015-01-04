@@ -1,3 +1,9 @@
+fll-live-initramfs (2.9.8) UNRELEASED; urgency=medium
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 04 Jan 2015 01:35:16 +0100
+
 fll-live-initramfs (2.9.7) unstable; urgency=medium
 
   * drop versioned dependency on initramfs-tools, it's provided by all
