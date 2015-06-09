@@ -1,6 +1,6 @@
 Source: fll-live-initramfs
 Maintainer: Stefan Lippers-Hollmann <s.l-h@gmx.de>
-Uploaders: Niall Walsh <niallwalsh@users.berlios.de>
+Uploaders: Niall Walsh <niallwalsh@celtux.org>
 Section: misc
 Priority: extra
 Build-Depends: debhelper (>= 9.20120115)
