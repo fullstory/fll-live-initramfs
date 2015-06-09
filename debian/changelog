@@ -1,9 +1,5 @@
-fll-live-initramfs (2.9.8) UNRELEASED; urgency=medium
+fll-live-initramfs (2.9.8) unstable; urgency=medium
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Niall Walsh ]
   * run scripts/init-top/udev (again) from scripts/fll as it appears to
     be running too early.
 
