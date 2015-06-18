@@ -534,11 +534,6 @@ mountroot()
 		esac
 	done
 
-        #
-        # Run init-top udev (again) as it's racing and failing
-        #
-        /scripts/init-top/udev
-
 	#
 	# Run scripts in local-top, like lvm2
 	#
