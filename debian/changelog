@@ -1,10 +1,7 @@
-fll-live-initramfs (2.9.10) UNRELEASED; urgency=medium
+fll-live-initramfs (2.9.10) unstable; urgency=medium
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Niall Walsh ]
-  * for now run udevadm trigger+settle in scripts/fll (for single-core systems)
+  * for now run udevadm trigger+settle in scripts/fll (for single-core
+    systems).
 
  -- Niall Walsh <niallwalsh@celtux.org>  Fri, 19 Jun 2015 04:54:59 +0100
 
