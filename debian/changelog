@@ -1,8 +1,9 @@
-fll-live-initramfs (2.9.11) UNRELEASED; urgency=medium
+fll-live-initramfs (2.9.11) unstable; urgency=medium
 
-  * NOT RELEASED YET
+  * remove the udevadm trigger+settle again for testing, this should be fixed
+    in udev 221.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 19 Jun 2015 06:11:20 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 04 Jul 2015 23:15:40 +0200
 
 fll-live-initramfs (2.9.10) unstable; urgency=medium
 

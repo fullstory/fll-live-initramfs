@@ -541,10 +541,6 @@ mountroot()
 	run_scripts /scripts/local-top
 	[ "$quiet" != "y" ] && log_end_msg
 
-	# ODD single core systems seem to need this!
-	udevadm trigger --action=add
-	udevadm settle || true
-
 	# debug checkpoint
 	maybe_break fll-premount
 
