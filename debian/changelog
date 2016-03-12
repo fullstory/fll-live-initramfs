@@ -1,3 +1,11 @@
+fll-live-initramfs (2.9.13) unstable; urgency=medium
+
+  * fix lintian warning:
+    command-with-path-in-maintainer-script postinst: /usr/sbin/update-initramfs
+    rely on $(which update-initramfs) instead.
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 12 Mar 2016 02:46:10 +0100
+
 fll-live-initramfs (2.9.12) unstable; urgency=medium
 
   * fix F.U.L.L.S.T.O.R.Y. homepage URL.
