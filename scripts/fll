@@ -9,7 +9,7 @@
 #	License:	GPLv2
 #
 #	F.U.L.L.S.T.O.R.Y Project Homepage:
-#	http://developer.berlios.de/projects/fullstory
+#	https://github.com/fullstory
 #
 #	This script snippet needs to get executed under busybox sh, due to
 #	using awk; klibc sh doesn't provide an awk implementation

@@ -1,8 +1,8 @@
-fll-live-initramfs (2.9.12) UNRELEASED; urgency=medium
+fll-live-initramfs (2.9.12) unstable; urgency=medium
 
-  * NOT RELEASED YET
+  * fix F.U.L.L.S.T.O.R.Y. homepage URL.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 04 Jul 2015 23:16:26 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 12 Mar 2016 02:43:23 +0100
 
 fll-live-initramfs (2.9.11) unstable; urgency=medium
 
