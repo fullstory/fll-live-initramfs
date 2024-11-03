@@ -1,8 +1,16 @@
-fll-live-initramfs (2.9.14) UNRELEASED; urgency=medium
+fll-live-initramfs (2.9.14) unstable; urgency=medium
 
-  * NOT RELEASED YET
+  + switch to compat level 13.
+  * bump standards version to 4.7.0, no changes necessary.
+  * make lintian a little happier:
+    - source: vcs-field-uses-insecure-uri Git
+    - source: insecure-copyright-format-uri
+    - source: silent-on-rules-requiring-root
+    - source: trailing-whitespace [debian/changelog:290]
+    - priority-extra-is-replaced-by-priority-optional
+    - source: obsolete-url-in-packaging ftp://ftp.debian.org [debian/copyright]
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 12 Mar 2016 02:47:16 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 04 Nov 2024 00:17:43 +0100
 
 fll-live-initramfs (2.9.13) unstable; urgency=medium
 
@@ -287,7 +295,7 @@ fll-live-initramfs (2.6.0) unstable; urgency=low
   * avoid depending on /bin/busybox for initramfs scripts, /bin/busybox is no
     longer present in initramfs images created with initramfs-tools >>0.98.8.
   * don't mount aufs over /run/.
-  * only recommend busybox, it's technically no longer required, but very 
+  * only recommend busybox, it's technically no longer required, but very
     convenient for debugging.
   * bump standards version to 3.9.2, no changes necessary.
   * hide eventual modprobe failures for loop.ko, it might be complied in
