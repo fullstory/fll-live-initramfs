@@ -6,3 +6,6 @@
 override_dh_fixperms:
 	dh_fixperms
 	chmod 0755 debian/fll-live-initramfs/usr/share/initramfs-tools/*/fll
+
+override_dh_installinitramfs:
+	dh_installinitramfs --no-scripts

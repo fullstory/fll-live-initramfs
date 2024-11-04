@@ -1,13 +1,17 @@
-fll-live-initramfs (2.9.16) UNRELEASED; urgency=medium
+fll-live-initramfs (2.9.16) unstable; urgency=medium
 
-  * NOT RELEASED YET
+  * override dh_installinitramfs to use --no-scripts, so it won't trigger on
+    purge (interfering with pyfll, due to update-initramfs being undiverted at
+    that point).
+  * drop custom postinst.
+  * bump compat level to 13 again.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 04 Nov 2024 02:16:12 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 04 Nov 2024 04:24:37 +0100
 
 fll-live-initramfs (2.9.15) unstable; urgency=medium
 
   * revert to compat level 11 for now, to paper over the change of
-   update-initramfs trigger handling.
+    update-initramfs trigger handling.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 04 Nov 2024 02:15:20 +0100
 
