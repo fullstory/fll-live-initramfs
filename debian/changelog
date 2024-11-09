@@ -1,8 +1,9 @@
-fll-live-initramfs (2.9.26) UNRELEASED; urgency=medium
+fll-live-initramfs (2.9.26) unstable; urgency=medium
 
-  * NOT RELEASED YET
+  * Setup the x-display-managers in initramfs if systemd-homed is not
+    installed in live chroot.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 09 Nov 2024 23:36:47 +0100
+ -- Kel Modderman <kelvmod@gmail.com>  Sun, 10 Nov 2024 09:10:07 +1000
 
 fll-live-initramfs (2.9.25) unstable; urgency=medium
 

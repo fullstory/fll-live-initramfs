@@ -456,6 +456,96 @@ fll_firmware() {
 }
 
 ###############################################################################
+# 	configure x-display-manager's
+###############################################################################
+setup_gdm3() {
+	# autologin + greeter theme
+	# timed login required for login after x restart
+	sed -i	-e "/^AutomaticLogin\=.*/d" \
+		-e "/^AutomaticLoginEnable\=.*/d" \
+		-e "/^TimedLoginEnable\=.*/d" \
+		-e "/^TimedLogin\=.*/d" \
+		-e "/^TimedLoginDelay\=.*/d" \
+		-e "s/^\(\[daemon\]$\)/\1\nAutomaticLogin\=${FLL_LIVE_USER}\nAutomaticLoginEnable\=true\n \
+			\nTimedLoginEnable\=true\nTimedLogin\=${FLL_LIVE_USER}\nTimedLoginDelay\=1/" \
+			"${1}/etc/gdm3/daemon.conf"
+}
+
+setup_lightdm() {
+	# set autologin user and set timeout to zero
+	mkdir -p "${1}/etc/lightdm/lightdm.conf.d"
+	if [ ! -e "${1}/etc/lightdm/lightdm.conf.d/80_${FLL_LIVE_USER}.conf" ]; then
+		cat >"${1}/etc/lightdm/lightdm.conf.d/80_${FLL_LIVE_USER}.conf" <<EOF
+[SeatDefaults]
+greeter-hide-users=false
+autologin-user=${FLL_LIVE_USER}
+autologin-user-timeout=0
+EOF
+	fi
+}
+
+setup_lxdm() {
+	# set autologin user
+	if [ -L "${1}/etc/lxdm/default.conf" ] && [ ! -e "${1}/etc/lxdm/live.conf" ]; then
+		rm -f "${1}/etc/lxdm/default.conf"
+		sed "s/^# autologin=.*/&\nautologin=${FLL_LIVE_USER}/" \
+			"${1}/etc/lxdm/lxdm.conf" > "/etc/lxdm/${FLL_LIVE_USER}.conf"
+		ln -fs "${FLL_LIVE_USER}.conf" "${1}/etc/lxdm/default.conf"
+	fi
+}
+
+setup_sddm() {
+	mkdir -p "${1}/etc/sddm.conf.d"
+	printf "[Autologin]\nUser=${FLL_LIVE_USER}\nSession=${FLL_XSESSION}\n" \
+		>>"${1}/etc/sddm.conf.d/${FLL_LIVE_USER}.conf"
+}
+
+setup_slim() {
+	# set autologin for $FLL_LIVE_USER to yes
+	sed -i	-e "s/^default_user.*/\#FLL\#&/" \
+		-e "s/^\#FLL\#\(default_user[ \t]*${FLL_LIVE_USER}$\)/\1/" \
+		-e "s/^auto_login.*/\#FLL\#&/" \
+		-e "s/^\#FLL\#\(auto_login[ \t]*yes$\)/\1/" \
+			"${1}/etc/slim.conf"
+	grep -q ^default_user "${1}/etc/slim.conf" || \
+		printf "default_user\t${FLL_LIVE_USER}\n" >> "${1}/etc/slim.conf"
+	grep -q ^auto_login "${1}/etc/slim.conf" || \
+		printf "auto_login\tyes\n" >> "${1}/etc/slim.conf"
+}
+
+setup_dm() {
+	SLIM="$(which slim 2>/dev/null)"
+	if [ -x "${SLIM}" ]; then
+		echo "Configuring slim"
+		setup_slim "$1"
+	fi
+
+	GDM3="$(which gdm3 2>/dev/null)"
+	if [ -x "${GDM3}" ]; then
+		echo "Configuring gdm3"
+		setup_gdm3 "$1"
+	fi
+
+	LXDM="$(which lxdm 2>/dev/null)"
+	if [ -x "${LXDM}" ]; then
+		echo "Configuring lxdm"
+		setup_lxdm "$1"
+	fi
+
+	LIGHTDM="$(which lightdm 2>/dev/null)"
+	if [ -x "${LIGHTDM}" ]; then
+		echo "Configuring lightdm"
+		setup_lightdm "$1"
+	fi
+
+	SDDM="$(which sddm 2>/dev/null)"
+	if [ -x "${SDDM}" ]; then
+		echo "Configuring sddm"
+		setup_sddm "$1"
+	fi
+}
+
+###############################################################################
 # 	define mountroot() for init
 ###############################################################################
 mountroot()
@@ -1171,8 +1261,9 @@ EOF
 
 	# use adduser if systemd-homed is not present
 	if [ ! -x "${rootmnt}/usr/bin/homectl" ]; then
-		chroot ${rootmnt} adduser --disabled-password \
+		chroot "${rootmnt}" adduser --disabled-password \
 			--gecos "${FLL_LIVE_USER}" "${FLL_LIVE_USER}" >/dev/null
+		setup_dm "${rootmnt}"
 	fi
 
 	# Generate /etc/fstab
