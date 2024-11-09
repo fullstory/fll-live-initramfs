@@ -1,3 +1,9 @@
+fll-live-initramfs (2.9.27) unstable; urgency=medium
+
+  * Bugfix xdm setup and execute regardless of adduser vs sydetmd-homed.
+
+ -- Kel Modderman <kelvmod@gmail.com>  Sun, 10 Nov 2024 09:41:40 +1000
+
 fll-live-initramfs (2.9.26) unstable; urgency=medium
 
   * Setup the x-display-managers in initramfs if systemd-homed is not
