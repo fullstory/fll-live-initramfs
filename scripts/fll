@@ -500,7 +500,7 @@ mountroot()
 				CUSTOM_HOSTNAME="${opt#hostname=}"
 				;;
 			username=*)
-				FLL_LIVE_USER="${param#username=}"
+				FLL_LIVE_USER="${opt#username=}"
 				;;
 			image_dir=*)
 				FLL_IMAGE_DIR="${opt#image_dir=}"
@@ -1085,9 +1085,9 @@ EOF
 	fi
 
 	# Patch /etc/default/distro
-	sed -i "s/^FLL_LIVE_USER=.*/FLL_LIVE_USER=\"${FLL_LIVE_USER}\"/; \
-		s/^FLL_IMAGE_DIR=.*/FLL_IMAGE_DIR=\"${FLL_IMAGE_DIR}\"/; \
-		s/^FLL_IMAGE_LOCATION=.*/FLL_IMAGE_LOCATION=\"${FLL_IMAGE_LOCATION}\"/" \
+	sed -i "s#^FLL_LIVE_USER=.*#FLL_LIVE_USER=\"${FLL_LIVE_USER}\"#; \
+		s#^FLL_IMAGE_DIR=.*#FLL_IMAGE_DIR=\"${FLL_IMAGE_DIR}\"#; \
+		s#^FLL_IMAGE_LOCATION=.*#FLL_IMAGE_LOCATION=\"${FLL_IMAGE_LOCATION}\"#" \
 		${rootmnt}/etc/default/distro
 
 	# Generate /etc/fstab, create live user

@@ -1,3 +1,10 @@
+fll-live-initramfs (2.9.19) UNRELEASED; urgency=medium
+
+  * Fix username= cmdline parsing and adjust sed expression which
+    patches /etc/default/distro with update variables.
+
+ -- Kel Modderman <kelvmod@gmail.com>  Sat, 09 Nov 2024 18:15:24 +1000
+
 fll-live-initramfs (2.9.18) unstable; urgency=medium
 
   * Fix obvious shell syntax errors.
