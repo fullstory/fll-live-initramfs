@@ -1165,6 +1165,7 @@ EOF
 	# Create live user (if one doesn't already exist)
 	if [ ! -e "${rootmnt}/home/${FLL_LIVE_USER}" ]; then
 		if [ -x "${rootmnt}/usr/bin/homectl" ]; then
+			mkdir -p "${rootmnt}/etc/systemd/system/systemd-homed-firstboot.service.d"
 			cat > "${rootmnt}/etc/systemd/system/systemd-homed-firstboot.service.d/${FLL_DISTRO_NAME}.conf" \
 <<EOF
 [Unit]
