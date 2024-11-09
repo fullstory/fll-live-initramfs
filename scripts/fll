@@ -469,6 +469,9 @@ mountroot()
 			blacklist=*)
 				BLACKLIST="${BLACKLIST} ${opt#blacklist=}"
 				;;
+			desktop=*)
+				DESKTOP="${opt#desktop=}"
+				;;
 			firmware)
 				FLL_FIRMWARE="yes"
 				;;
@@ -1066,11 +1069,6 @@ mountroot()
 	done
 	:> ${rootmnt}/root/.hushlogin
 
-	# Patch /etc/pam.d/login
-	if [ -w ${rootmnt}/etc/pam.d/login ]; then
-		sed -i '/^[^#].*pam_lastlog\.so/s/^/# /' ${rootmnt}/etc/pam.d/login
-	fi
-
 	# Create sudoers.d snippet
 	if [ ! -e "${rootmnt}/etc/sudoers.d/15_${FLL_DISTRO_NAME}" ]; then
 		# append sudoers entry
@@ -1088,17 +1086,90 @@ EOF
 	sed -i "s#^FLL_LIVE_USER=.*#FLL_LIVE_USER=\"${FLL_LIVE_USER}\"#; \
 		s#^FLL_IMAGE_DIR=.*#FLL_IMAGE_DIR=\"${FLL_IMAGE_DIR}\"#; \
 		s#^FLL_IMAGE_LOCATION=.*#FLL_IMAGE_LOCATION=\"${FLL_IMAGE_LOCATION}\"#" \
-		${rootmnt}/etc/default/distro
+		"${rootmnt}/etc/default/distro"
 
-	# Generate /etc/fstab, create live user
+	if [ -z "${DESKTOP}" ]; then
+		# in the absence of an explicit destop= cheatcode setting,
+		# these defaults are checked in reverse order
+		[ -x "${rootmnt}/usr/bin/cinnamon-session" ] && DESKTOP="cinnamon"
+		[ -x "${rootmnt}/usr/bin/kodi" ] && DESKTOP="kodi"
+		[ -x "${rootmnt}/usr/bin/icewm" ] && DESKTOP="icewm"
+		[ -x "${rootmnt}/usr/bin/startfluxbox" ] && DESKTOP="fluxbox"
+		[ -x "${rootmnt}/usr/bin/startlxde" ] && \
+			[ -x "${rootmnt}/usr/bin/openbox" ] && DESKTOP="lxde"
+		[ -x "${rootmnt}/usr/bin/startlxqt" ] && \
+			[ -x "${rootmnt}/usr/bin/openbox" ] && DESKTOP="lxqt"
+		[ -x "${rootmnt}/usr/bin/xfwm4" ] && DESKTOP="xfce"
+		[ -x "${rootmnt}/usr/bin/metacity" ] && DESKTOP="gnome"
+		[ -x "${rootmnt}/usr/bin/startplasma-x11" ] && DESKTOP="kde-x11"
+		[ -x "${rootmnt}/usr/bin/startplasma-wayland" ] && DESKTOP="kde-wayland"
+	fi
+
+	case "${DESKTOP}" in
+		cinnamon)
+			XTYPE="x11"
+			XSESSION="cinnamon"
+			;;
+		flux*)
+			XTYPE="x11"
+			XSESSION="fluxbox"
+			;;
+		gnome)
+			XTYPE="x11"
+			XSESSION="gnome"
+			;;
+		icewm)
+			XTYPE="x11"
+			XSESSION="IceWM"
+			;;
+		kde|kde-wayland)
+			XTYPE="wayland"
+			XSESSION="plasmawayland"
+			;;
+		kde-x11)
+			XTYPE="x11"
+			XSESSION="plasma"
+			;;
+		kodi)
+			XTYPE="wayland"
+			XSESSION="kodi-gbm"
+			;;
+		kodi-x11)
+			XTYPE="x11"
+			XSESSION="kodi"
+			;;
+		lxde)
+			XTYPE="x11"
+			XSESSION="LXDE"
+			;;
+		lxqt)
+			XTYPE="x11"
+			XSESSION="lxqt"
+			;;
+		xfce*)
+			XTYPE="x11"
+			XSESSION="xfce"
+			;;
+		*)
+			echo "unknown desktop: ${DESKTOP}"
+			return 1
+			;;
+	esac
+
 	for dir in dev proc run sys; do
 		mount --bind /${dir} ${rootmnt}/${dir}
 	done
+	# Generate /etc/fstab
 	chroot ${rootmnt} fll_fstab_generator --file /etc/fstab \
 		--mkdir --nomounts --noswap
+	# Create live user (if one doesn't already exist)
 	if [ ! -e "${rootmnt}/home/${FLL_LIVE_USER}" ]; then
-		chroot ${rootmnt} adduser --disabled-password --gecos \
-			"${FLL_LIVE_USER}" "${FLL_LIVE_USER}"
+		[ -z "${FLL_LIVE_USER_GROUPS}" ] && \
+		FLL_LIVE_USER_GROUPS="dialout dip cdrom audio video plugdev users floppy netdev scanner lpadmin sudo"
+		FLL_LIVE_USER_GROUPS=$(echo "${FLL_LIVE_USER_GROUPS}" | sed -e 's/\s\+/,/g')
+		chroot ${rootmnt} homectl create "${FLL_LIVE_USER}" \
+			--real-name="${FLL_LIVE_USER}" --member-of="${FLL_LIVE_USER_GROUPS}" \
+			--auto-login=on --session-launcher="${XSESSION}" --session-type="${XTYPE}"
 	fi
 	for dir in dev proc run sys; do
 		umount ${rootmnt}/${dir}
