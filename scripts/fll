@@ -1151,8 +1151,8 @@ EOF
 			FLL_XSESSION="xfce"
 			;;
 		*)
-			echo "unknown desktop: ${DESKTOP}"
-			return 1
+			FLL_XTYPE=""
+			FLL_XSESSION=""
 			;;
 	esac
 
