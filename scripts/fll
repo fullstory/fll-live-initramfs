@@ -3,7 +3,8 @@
 ###############################################################################
 #	F.U.L.L.S.T.O.R.Y initramfs live media init functions
 #
-#	Copyright:	© 2007-2010 Kel Modderman <kel@otaku42.de>
+#	Copyright:
+			© 2007-2024 Kel Modderman <kelvmod@gmail.com>
 #			© 2006-2014 Stefan Lippers-Hollmann <s.l-h@gmx.de>
 #			© 2007-2014 Niall Walsh <niallwalsh@celtux.org>
 #	License:	GPLv2
@@ -1010,9 +1011,6 @@ mountroot()
 		fi
 	fi
 
-	# debug checkpoint
-	maybe_break fll-bindmount
-
 	# prepare /dev /media /proc and /sys
 	for dir in dev media proc run sys; do
 		mkdir -p -m 0755 "${rootmnt}/${dir}"
@@ -1020,9 +1018,6 @@ mountroot()
 
 	# tmp with correct permissions for users
 	mkdir -p -m 1777 "${rootmnt}/tmp"
-
-	# debug checkpoint
-	maybe_break fll-bottom
 
 	# reset alsa state
 	rm -f ${rootmnt}/var/lib/alsa/asound.state
@@ -1064,6 +1059,10 @@ mountroot()
 			fi
 		done
 	fi
+
+	# final debug checkpoint
+	maybe_break fll-bottom
+
 	printf "\nStarting init process...\n\n"
 }
 

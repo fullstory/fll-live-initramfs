@@ -4,7 +4,7 @@ Upstream-Contact: Stefan Lippers-Hollmann <s.l-h@gmx.de>
 Source: https://github.com/fullstory/fll-live-initramfs.git
 
 Files: *
-Copyright: 2007-2010, Kel Modderman <kel@otaku42.de>
+Copyright: 2007-2024, Kel Modderman <kelvmod@gmail.com>
            2007-2015, Stefan Lippers-Hollmann <s.l-h@gmx.de>
            2007-2014, Niall Walsh <niallwalsh@users.berlios.de>
 License: GPL-2.0
