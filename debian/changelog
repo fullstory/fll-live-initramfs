@@ -7,6 +7,7 @@ fll-live-initramfs (2.9.17) UNRELEASED; urgency=medium
   * Remove fll-bindmount breakpoint - no bind mounting exists anymore.
   * Remove fll-bottom break point to the ... bottom.
   * Update email address in various copyright texts.
+  * Remove hacking of no longer used /etc/inittab.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 04 Nov 2024 04:36:05 +0100
 

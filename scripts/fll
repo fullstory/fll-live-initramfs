@@ -1034,11 +1034,6 @@ mountroot()
 	# disable movement of static $rootmnt/dev by scripts/init-bottom/udev
 	export no_static_dev="1"
 
-	# live-only (reverted by fll-installer): enable serial console access
-	if [ -n "${FLL_SERIAL_PORT}" ]; then
-		echo "T0:2345:respawn:/sbin/getty -n -i -l /usr/bin/fll_login -L ${FLL_SERIAL_PORT} ${FLL_SERIAL_SPEED} vt100" >> "${rootmnt}/etc/inittab"
-	fi
-
 	# disable checkroot/checkfs
 	touch ${rootmnt}/fastboot
 
