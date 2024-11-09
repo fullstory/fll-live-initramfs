@@ -1169,6 +1169,12 @@ EOF
 		echo "FLL_XSESSION=\"${FLL_XSESSION}\"" >> "${rootmnt}/etc/default/distro"
 	fi
 
+	# use adduser if systemd-homed is not present
+	if [ ! -x "${rootmnt}/usr/bin/homectl" ]; then
+		chroot ${rootmnt} adduser --disabled-password \
+			--gecos "${FLL_LIVE_USER}" "${FLL_LIVE_USER}" >/dev/null
+	fi
+
 	# Generate /etc/fstab
 	for dir in dev proc run sys; do
 		mount --bind /${dir} ${rootmnt}/${dir}

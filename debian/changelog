@@ -1,3 +1,9 @@
+fll-live-initramfs (2.9.25) unstable; urgency=medium
+
+  * Retain support for adduser.
+
+ -- Kel Modderman <kelvmod@gmail.com>  Sat, 09 Nov 2024 23:17:40 +1000
+
 fll-live-initramfs (2.9.24) unstable; urgency=medium
 
   * Handle the no desktop case better.
