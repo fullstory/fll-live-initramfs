@@ -1107,48 +1107,48 @@ EOF
 
 	case "${DESKTOP}" in
 		cinnamon)
-			XTYPE="x11"
-			XSESSION="cinnamon"
+			FLL_XTYPE="x11"
+			FLL_XSESSION="cinnamon"
 			;;
 		flux*)
-			XTYPE="x11"
-			XSESSION="fluxbox"
+			FLL_XTYPE="x11"
+			FLL_XSESSION="fluxbox"
 			;;
 		gnome)
-			XTYPE="x11"
-			XSESSION="gnome"
+			FLL_XTYPE="x11"
+			FLL_XSESSION="gnome"
 			;;
 		icewm)
-			XTYPE="x11"
-			XSESSION="IceWM"
+			FLL_XTYPE="x11"
+			FLL_XSESSION="IceWM"
 			;;
 		kde|kde-wayland)
-			XTYPE="wayland"
-			XSESSION="plasmawayland"
+			FLL_XTYPE="wayland"
+			FLL_XSESSION="plasmawayland"
 			;;
 		kde-x11)
-			XTYPE="x11"
-			XSESSION="plasma"
+			FLL_XTYPE="x11"
+			FLL_XSESSION="plasma"
 			;;
 		kodi)
-			XTYPE="wayland"
-			XSESSION="kodi-gbm"
+			FLL_XTYPE="wayland"
+			FLL_XSESSION="kodi-gbm"
 			;;
 		kodi-x11)
-			XTYPE="x11"
-			XSESSION="kodi"
+			FLL_XTYPE="x11"
+			FLL_XSESSION="kodi"
 			;;
 		lxde)
-			XTYPE="x11"
-			XSESSION="LXDE"
+			FLL_XTYPE="x11"
+			FLL_XSESSION="LXDE"
 			;;
 		lxqt)
-			XTYPE="x11"
-			XSESSION="lxqt"
+			FLL_XTYPE="x11"
+			FLL_XSESSION="lxqt"
 			;;
 		xfce*)
-			XTYPE="x11"
-			XSESSION="xfce"
+			FLL_XTYPE="x11"
+			FLL_XSESSION="xfce"
 			;;
 		*)
 			echo "unknown desktop: ${DESKTOP}"
@@ -1156,43 +1156,25 @@ EOF
 			;;
 	esac
 
+	if grep -q "^FLL_XTYPE" "${rootmnt}/etc/default/distro"; then
+		sed -i "s/FLL_XTYPE=.*/FLL_XTYPE=\"${FLL_XTYPE}\"" \
+			"${rootmnt}/etc/default/distro"
+	else
+		echo "FLL_XTYPE=\"${FLL_XTYPE}\"" >> "${rootmnt}/etc/default/distro"
+	fi
+	if grep -q "^FLL_XSESSION" "${rootmnt}/etc/default/distro"; then
+		sed -i "s/FLL_XSESSION=.*/FLL_XSESSION=\"${FLL_XSESSION}\"" \
+			"${rootmnt}/etc/default/distro"
+	else
+		echo "FLL_XSESSION=\"${FLL_XSESSION}\"" >> "${rootmnt}/etc/default/distro"
+	fi
+
+	# Generate /etc/fstab
 	for dir in dev proc run sys; do
 		mount --bind /${dir} ${rootmnt}/${dir}
 	done
-	# Generate /etc/fstab
 	chroot ${rootmnt} fll_fstab_generator --file /etc/fstab \
 		--mkdir --nomounts --noswap
-	# Create live user (if one doesn't already exist)
-	if [ ! -e "${rootmnt}/home/${FLL_LIVE_USER}" ]; then
-		if [ -x "${rootmnt}/usr/bin/homectl" ]; then
-			mkdir -p "${rootmnt}/etc/systemd/system/systemd-homed-firstboot.service.d"
-			cat > "${rootmnt}/etc/systemd/system/systemd-homed-firstboot.service.d/${FLL_DISTRO_NAME}.conf" \
-<<EOF
-[Unit]
-Description=First Boot Home Area Wizard
-Documentation=man:homectl(1)
-ConditionFirstBoot=yes
-After=home.mount systemd-homed.service
-Before=systemd-user-sessions.service first-boot-complete.target
-
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-ExecStart=homectl create "${FLL_LIVE_USER}" --storage=directory --real-name="${FLL_LIVE_USER}" --member-of="${FLL_LIVE_USER_GROUPS}" --auto-login=on --session-launcher="${XSESSION}" --session-type="${XTYPE}"
-StandardOutput=tty
-StandardInput=tty
-StandardError=tty
-ImportCredential=home.*
-
-[Install]
-WantedBy=systemd-homed.service
-Also=systemd-homed.service
-EOF
-		else
-			chroot ${rootmnt} adduser --disabled-password --gecos \
-				"${FLL_LIVE_USER}" "${FLL_LIVE_USER}"
-		fi
-	fi
 	for dir in dev proc run sys; do
 		umount ${rootmnt}/${dir}
 	done
