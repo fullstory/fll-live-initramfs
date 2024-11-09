@@ -1,3 +1,9 @@
+fll-live-initramfs (2.9.21) unstable; urgency=medium
+
+  * Provide a systemd-homed-firstboot.service.d override configuration.
+
+ -- Kel Modderman <kelvmod@gmail.com>  Sat, 09 Nov 2024 21:12:16 +1000
+
 fll-live-initramfs (2.9.20) unstable; urgency=medium
 
   * Switch to homectl for user creation.

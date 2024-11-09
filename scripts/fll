@@ -1164,12 +1164,33 @@ EOF
 		--mkdir --nomounts --noswap
 	# Create live user (if one doesn't already exist)
 	if [ ! -e "${rootmnt}/home/${FLL_LIVE_USER}" ]; then
-		[ -z "${FLL_LIVE_USER_GROUPS}" ] && \
-		FLL_LIVE_USER_GROUPS="dialout dip cdrom audio video plugdev users floppy netdev scanner lpadmin sudo"
-		FLL_LIVE_USER_GROUPS=$(echo "${FLL_LIVE_USER_GROUPS}" | sed -e 's/\s\+/,/g')
-		chroot ${rootmnt} homectl create "${FLL_LIVE_USER}" \
-			--real-name="${FLL_LIVE_USER}" --member-of="${FLL_LIVE_USER_GROUPS}" \
-			--auto-login=on --session-launcher="${XSESSION}" --session-type="${XTYPE}"
+		if [ -x "${rootmnt}/usr/bin/homectl" ]; then
+			cat > "${rootmnt}/etc/systemd/system/systemd-homed-firstboot.service.d/${FLL_DISTRO_NAME}.conf" \
+<<EOF
+[Unit]
+Description=First Boot Home Area Wizard
+Documentation=man:homectl(1)
+ConditionFirstBoot=yes
+After=home.mount systemd-homed.service
+Before=systemd-user-sessions.service first-boot-complete.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=homectl create "${FLL_LIVE_USER}" --storage=directory --real-name="${FLL_LIVE_USER}" --member-of="${FLL_LIVE_USER_GROUPS}" --auto-login=on --session-launcher="${XSESSION}" --session-type="${XTYPE}"
+StandardOutput=tty
+StandardInput=tty
+StandardError=tty
+ImportCredential=home.*
+
+[Install]
+WantedBy=systemd-homed.service
+Also=systemd-homed.service
+EOF
+		else
+			chroot ${rootmnt} adduser --disabled-password --gecos \
+				"${FLL_LIVE_USER}" "${FLL_LIVE_USER}"
+		fi
 	fi
 	for dir in dev proc run sys; do
 		umount ${rootmnt}/${dir}
