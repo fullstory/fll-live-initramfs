@@ -499,6 +499,9 @@ mountroot()
 			hostname=*)
 				CUSTOM_HOSTNAME="${opt#hostname=}"
 				;;
+			username=*)
+				FLL_LIVE_USER="${param#username=}"
+				;;
 			image_dir=*)
 				FLL_IMAGE_DIR="${opt#image_dir=}"
 				FLL_IMAGE_LOCATION="${FLL_IMAGE_DIR}/${FLL_IMAGE_FILE}"
@@ -1054,6 +1057,52 @@ mountroot()
 			fi
 		done
 	fi
+
+	# Setup root user environment
+	for file in '.bash_logout' '.bash_profile' '.bashrc' '.profile'; do
+		if [ -f ${rootmnt}/etc/skel/${file} ] && [ ! -f ${rootmnt}/root/${file} ]; then
+			cp ${rootmnt}/etc/skel/${file} ${rootmnt}/root/${file}
+		fi
+	done
+	:> ${rootmnt}/root/.hushlogin
+
+	# Patch /etc/pam.d/login
+	if [ -w ${rootmnt}/etc/pam.d/login ]; then
+		sed -i '/^[^#].*pam_lastlog\.so/s/^/# /' ${rootmnt}/etc/pam.d/login
+	fi
+
+	# Create sudoers.d snippet
+	if [ ! -e "${rootmnt}/etc/sudoers.d/15_${FLL_DISTRO_NAME}" ]; then
+		# append sudoers entry
+		cat >> "${rootmnt}/etc/sudoers.d/15_${FLL_DISTRO_NAME}" \
+<<EOF
+# WARNING: This allows the unprivileged ${FLL_LIVE_USER} user to start commands as root
+# WARNING: This is totally insecure and (almost) makes ${FLL_LIVE_USER} a second root account.
+# WARNING: Never allow external access to the ${FLL_LIVE_USER} user!!!
+${FLL_LIVE_USER} ALL=(ALL:ALL) NOPASSWD: ALL
+EOF
+		chmod 0440 "${rootmnt}/etc/sudoers.d/15_${FLL_DISTRO_NAME}"
+	fi
+
+	# Patch /etc/default/distro
+	sed -i "s/^FLL_LIVE_USER=.*/FLL_LIVE_USER=\"${FLL_LIVE_USER}\"/; \
+		s/^FLL_IMAGE_DIR=.*/FLL_IMAGE_DIR=\"${FLL_IMAGE_DIR}\"/;
+		s/^FLL_IMAGE_LOCATION=.*/FLL_IMAGE_LOCATION=\"${FLL_IMAGE_LOCATION}\"/" \
+		${rootmnt}/etc/default/distro
+
+	# Generate /etc/fstab, create live user
+	for dir in dev proc run sys; do
+		mount --bind /${dir} ${rootmnt}/${dir}
+	done
+	chroot ${rootmnt} fll_fstab_generator --file /etc/fstab \
+		--mkdir --nomounts --noswap
+	if [ ! -e "${rootmnt}/home/${FLL_LIVE_USER}" ]; then
+		chroot ${rootmnt} adduser --disabled-password --gecos \
+			"${FLL_LIVE_USER}" "${FLL_LIVE_USER}"
+	fi
+	for dir in dev proc run sys; do
+		umount ${rootmnt}/${dir}
+	done
 
 	# final debug checkpoint
 	maybe_break fll-bottom
