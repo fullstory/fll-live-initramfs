@@ -1,3 +1,9 @@
+fll-live-initramfs (2.9.18) unstable; urgency=medium
+
+  * Fix obvious shell syntax errors.
+
+ -- Kel Modderman <kelvmod@gmail.com>  Sat, 09 Nov 2024 17:56:38 +1000
+
 fll-live-initramfs (2.9.17) unstable; urgency=medium
 
   [ Kel Modderman ]

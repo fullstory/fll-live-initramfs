@@ -4,7 +4,7 @@
 #	F.U.L.L.S.T.O.R.Y initramfs live media init functions
 #
 #	Copyright:
-			© 2007-2024 Kel Modderman <kelvmod@gmail.com>
+#			© 2007-2024 Kel Modderman <kelvmod@gmail.com>
 #			© 2006-2014 Stefan Lippers-Hollmann <s.l-h@gmx.de>
 #			© 2007-2014 Niall Walsh <niallwalsh@celtux.org>
 #	License:	GPLv2
@@ -1086,7 +1086,7 @@ EOF
 
 	# Patch /etc/default/distro
 	sed -i "s/^FLL_LIVE_USER=.*/FLL_LIVE_USER=\"${FLL_LIVE_USER}\"/; \
-		s/^FLL_IMAGE_DIR=.*/FLL_IMAGE_DIR=\"${FLL_IMAGE_DIR}\"/;
+		s/^FLL_IMAGE_DIR=.*/FLL_IMAGE_DIR=\"${FLL_IMAGE_DIR}\"/; \
 		s/^FLL_IMAGE_LOCATION=.*/FLL_IMAGE_LOCATION=\"${FLL_IMAGE_LOCATION}\"/" \
 		${rootmnt}/etc/default/distro
 
