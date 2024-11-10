@@ -1263,7 +1263,7 @@ EOF
 	if [ ! -x "${rootmnt}/usr/bin/homectl" ]; then
 		setup_dm "${rootmnt}"
 		chroot "${rootmnt}" adduser --disabled-password \
-			--gecos "${FLL_LIVE_USER}" "${FLL_LIVE_USER}" >/dev/null
+			--gecos "${FLL_LIVE_USER}" "${FLL_LIVE_USER}"
 	fi
 
 	# Generate /etc/fstab
