@@ -516,31 +516,31 @@ setup_slim() {
 setup_dm() {
 	SLIM="${1}/usr/bin/slim"
 	if [ -x "${SLIM}" ]; then
-		echo "Configuring slim"
+		echo "Configuring slim..."
 		setup_slim "$1"
 	fi
 
 	GDM3="${1}/usr/bin/gdm3"
 	if [ -x "${GDM3}" ]; then
-		echo "Configuring gdm3"
+		echo "Configuring gdm3..."
 		setup_gdm3 "$1"
 	fi
 
 	LXDM="${1}/usr/bin/lxdm"
 	if [ -x "${LXDM}" ]; then
-		echo "Configuring lxdm"
+		echo "Configuring lxdm..."
 		setup_lxdm "$1"
 	fi
 
 	LIGHTDM="${1}/usr/bin/lightdm"
 	if [ -x "${LIGHTDM}" ]; then
-		echo "Configuring lightdm"
+		echo "Configuring lightdm..."
 		setup_lightdm "$1"
 	fi
 
 	SDDM="${1}/usr/bin/sddm"
 	if [ -x "${SDDM}" ]; then
-		echo "Configuring sddm"
+		echo "Configuring sddm..."
 		setup_sddm "$1"
 	fi
 }
