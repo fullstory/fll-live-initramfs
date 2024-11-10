@@ -520,19 +520,19 @@ setup_dm() {
 		setup_slim "$1"
 	fi
 
-	GDM3="${1}/usr/bin/gdm3"
+	GDM3="${1}/usr/sbin/gdm3"
 	if [ -x "${GDM3}" ]; then
 		echo "Configuring gdm3..."
 		setup_gdm3 "$1"
 	fi
 
-	LXDM="${1}/usr/bin/lxdm"
+	LXDM="${1}/usr/sbin/lxdm"
 	if [ -x "${LXDM}" ]; then
 		echo "Configuring lxdm..."
 		setup_lxdm "$1"
 	fi
 
-	LIGHTDM="${1}/usr/bin/lightdm"
+	LIGHTDM="${1}/usr/sbin/lightdm"
 	if [ -x "${LIGHTDM}" ]; then
 		echo "Configuring lightdm..."
 		setup_lightdm "$1"

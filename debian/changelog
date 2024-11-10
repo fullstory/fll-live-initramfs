@@ -1,3 +1,9 @@
+fll-live-initramfs (2.9.30) unstable; urgency=medium
+
+  * Fix paths to gdm3, slim and lxdm.
+
+ -- Kel Modderman <kelvmod@gmail.com>  Sun, 10 Nov 2024 11:44:26 +1000
+
 fll-live-initramfs (2.9.29) unstable; urgency=medium
 
   * Remove resirection to null when adding live user.
