@@ -1259,10 +1259,9 @@ EOF
 		echo "FLL_XSESSION=\"${FLL_XSESSION}\"" >> "${rootmnt}/etc/default/distro"
 	fi
 
-	setup_dm "${rootmnt}"
-
 	# use adduser if systemd-homed is not present
 	if [ ! -x "${rootmnt}/usr/bin/homectl" ]; then
+		setup_dm "${rootmnt}"
 		chroot "${rootmnt}" adduser --disabled-password \
 			--gecos "${FLL_LIVE_USER}" "${FLL_LIVE_USER}" >/dev/null
 	fi
