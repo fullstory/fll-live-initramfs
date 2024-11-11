@@ -1,9 +1,8 @@
-fll-live-initramfs (2.9.32) UNRELEASED; urgency=medium
+fll-live-initramfs (2.9.32) unstable; urgency=medium
 
-  * 
   * Import timezone management code from fll-live-initscripts.
 
- -- Kel Modderman <kelvmod@gmail.com>  Mon, 11 Nov 2024 17:24:22 +1000
+ -- Kel Modderman <kelvmod@gmail.com>  Mon, 11 Nov 2024 17:24:48 +1000
 
 fll-live-initramfs (2.9.31) unstable; urgency=medium
 
