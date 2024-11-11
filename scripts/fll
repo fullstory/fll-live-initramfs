@@ -628,6 +628,15 @@ mountroot()
 				FLL_SERIAL_OPTS="${FLL_SERIAL#*,}"
 				FLL_SERIAL_SPEED="${FLL_SERIAL_OPTS%[a-z]*}"
 				;;
+			utc=yes)
+				UTC="yes"
+				;;
+			utc|gmt)
+				CUSTOM_TZ="Etc/UTC"
+				;;
+			tz=*)
+				CUSTOM_TZ="${opt#tz=}"
+				;;
 		esac
 	done
 
@@ -1261,6 +1270,31 @@ ${FLL_LIVE_USER} ALL=(ALL:ALL) NOPASSWD: ALL
 EOF
 			chmod 0440 "${rootmnt}/etc/sudoers.d/15_${FLL_DISTRO_NAME}"
 		fi
+	fi
+
+	# allow CUSTOM_TZ to override above TZ definitions
+	if [ -n "${CUSTOM_TZ}" ]; then
+		case "${CUSTOM_TZ}" in
+			utc|UTC)
+				CUSTOM_TZ="Etc/UTC"
+				;;
+		esac
+		[ -f "${rootmnt}/usr/share/zoneinfo/${CUSTOM_TZ}" ] && TZ="${CUSTOM_TZ}"
+	fi
+
+	# configure timezone, fallback to UTC
+	[ -f "${rootmnt}/usr/share/zoneinfo/${TZ}" ] || TZ="Etc/UTC"
+	echo "configuring timezone data for '${TZ}'"
+	echo "${TZ}" > "${rootmnt}/etc/timezone"
+	rm -f "${rootmnt}/etc/localtime"
+	ln -sf "/usr/share/zoneinfo/${TZ}" "${rootmnt}/etc/localtime"
+
+	# make localtime default, unless tz=Etc/UTC or utc=yes
+	if [ "${TZ}" = "Etc/UTC" ] || [ "${UTC}" = "yes" ]; then
+		printf "0.000000 0 0.000000\n0\nUTC\n" > "${rootmnt}/etc/adjtime"
+	else
+		# debian defaults to UTC=yes, which is rumored to be dual-boot unfriendly
+		printf "0.000000 0 0.000000\n0\nLOCAL\n" > "${rootmnt}/etc/adjtime"
 	fi
 
 	# final debug checkpoint
