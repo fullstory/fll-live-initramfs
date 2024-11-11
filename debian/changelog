@@ -1,6 +1,8 @@
 fll-live-initramfs (2.9.32) unstable; urgency=medium
 
   * Import timezone management code from fll-live-initscripts.
+  * Default to a wayland xesssion for gnome. Add desktop=gnome-x11
+    cheatcode.
 
  -- Kel Modderman <kelvmod@gmail.com>  Mon, 11 Nov 2024 17:24:48 +1000
 

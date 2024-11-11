@@ -1201,6 +1201,10 @@ mountroot()
 			FLL_XSESSION="fluxbox"
 			;;
 		gnome)
+			FLL_XTYPE="wayland"
+			FLL_XSESSION="gnome"
+			;;
+		gnome-x11)
 			FLL_XTYPE="x11"
 			FLL_XSESSION="gnome"
 			;;
