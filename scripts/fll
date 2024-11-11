@@ -496,7 +496,7 @@ setup_lxdm() {
 
 setup_sddm() {
 	mkdir -p "${1}/etc/sddm.conf.d"
-	printf "[Autologin]\nUser=${FLL_LIVE_USER}\nSession=${FLL_XSESSION}\n" \
+	printf "[Autologin]\nUser=${FLL_LIVE_USER}\nSession=${FLL_XSESSION}\nRelogin=true\n" \
 		>>"${1}/etc/sddm.conf.d/${FLL_LIVE_USER}.conf"
 }
 

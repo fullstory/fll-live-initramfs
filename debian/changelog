@@ -1,6 +1,10 @@
 fll-live-initramfs (2.9.31) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
+
+  [ Kel Modderman ]
+  * Set Relogin=true in sddm config.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 10 Nov 2024 05:06:05 +0100
 
