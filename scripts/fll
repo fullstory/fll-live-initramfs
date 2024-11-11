@@ -1261,8 +1261,6 @@ ${FLL_LIVE_USER} ALL=(ALL:ALL) NOPASSWD: ALL
 EOF
 			chmod 0440 "${rootmnt}/etc/sudoers.d/15_${FLL_DISTRO_NAME}"
 		fi
-		chroot "${rootmnt}" adduser --disabled-password \
-			--gecos "${FLL_LIVE_USER}" "${FLL_LIVE_USER}"
 	fi
 
 	# final debug checkpoint
