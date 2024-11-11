@@ -1,3 +1,9 @@
+fll-live-initramfs (2.9.34) unstable; urgency=medium
+
+  * Fix detection of desktop xsession files.
+
+ -- Kel Modderman <kelvmod@gmail.com>  Mon, 11 Nov 2024 20:27:42 +1000
+
 fll-live-initramfs (2.9.33) unstable; urgency=medium
 
   * Overhaul xsession detection to use desktop file presence as markers.

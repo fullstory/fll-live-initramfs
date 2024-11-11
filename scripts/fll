@@ -1177,19 +1177,19 @@ mountroot()
 	if [ -z "${DESKTOP}" ]; then
 		# in the absence of an explicit destop= cheatcode setting,
 		# these defaults are checked in reverse order
-		[ -x "${rootmnt}/usr/share/xsessions/cinnamon.desktop" ] && DESKTOP="cinnamon-x11"
-		[ -x "${rootmnt}/usr/share/wayland-sessions/cinnamon-wayland.desktop" ] && DESKTOP="cinnamon"
-		[ -x "${rootmnt}/usr/share/xsessions/kodi.desktop" ] && DESKTOP="kodi-x11"
-		[ -x "${rootmnt}/usr/share/wayland-sessions/kodi-gbm.desktop" ] && DESKTOP="kodi"
-		[ -x "${rootmnt}/usr/share/xsessions/icewm-session.desktop" ] && DESKTOP="icewm"
-		[ -x "${rootmnt}/usr/share/xsessions/fluxbox.desktop" ] && DESKTOP="fluxbox"
-		[ -x "${rootmnt}/usr/share/xsessions/LXDE.desktop" ] && DESKTOP="lxde"
-		[ -x "${rootmnt}/usr/share/xsessions/lxqt.desktop" ] && DESKTOP="lxqt"
-		[ -x "${rootmnt}/usr/share/xsessions/xfce.desktop" ] && DESKTOP="xfce"
-		[ -x "${rootmnt}/usr/share/xsessions/gnome.desktop" ] && DESKTOP="gnome-x11"
-		[ -x "${rootmnt}/usr/share/wayland-sessions/gnome.desktop" ] && DESKTOP="gnome"
-		[ -x "${rootmnt}/usr/share/xsessions/plasma.desktop" ] && DESKTOP="kde-x11"
-		[ -x "${rootmnt}/usr/share/wayland-sessions/plasmawayland.desktop" ] && DESKTOP="kde-wayland"
+		[ -r "${rootmnt}/usr/share/xsessions/cinnamon.desktop" ] && DESKTOP="cinnamon-x11"
+		[ -r "${rootmnt}/usr/share/wayland-sessions/cinnamon-wayland.desktop" ] && DESKTOP="cinnamon"
+		[ -r "${rootmnt}/usr/share/xsessions/kodi.desktop" ] && DESKTOP="kodi-x11"
+		[ -r "${rootmnt}/usr/share/wayland-sessions/kodi-gbm.desktop" ] && DESKTOP="kodi"
+		[ -r "${rootmnt}/usr/share/xsessions/icewm-session.desktop" ] && DESKTOP="icewm"
+		[ -r "${rootmnt}/usr/share/xsessions/fluxbox.desktop" ] && DESKTOP="fluxbox"
+		[ -r "${rootmnt}/usr/share/xsessions/LXDE.desktop" ] && DESKTOP="lxde"
+		[ -r "${rootmnt}/usr/share/xsessions/lxqt.desktop" ] && DESKTOP="lxqt"
+		[ -r "${rootmnt}/usr/share/xsessions/xfce.desktop" ] && DESKTOP="xfce"
+		[ -r "${rootmnt}/usr/share/xsessions/gnome.desktop" ] && DESKTOP="gnome-x11"
+		[ -r "${rootmnt}/usr/share/wayland-sessions/gnome.desktop" ] && DESKTOP="gnome"
+		[ -r "${rootmnt}/usr/share/xsessions/plasma.desktop" ] && DESKTOP="kde-x11"
+		[ -r "${rootmnt}/usr/share/wayland-sessions/plasmawayland.desktop" ] && DESKTOP="kde-wayland"
 	fi
 
 	case "${DESKTOP}" in
