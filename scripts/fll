@@ -1177,22 +1177,27 @@ mountroot()
 	if [ -z "${DESKTOP}" ]; then
 		# in the absence of an explicit destop= cheatcode setting,
 		# these defaults are checked in reverse order
-		[ -x "${rootmnt}/usr/bin/cinnamon-session" ] && DESKTOP="cinnamon"
-		[ -x "${rootmnt}/usr/bin/kodi" ] && DESKTOP="kodi"
-		[ -x "${rootmnt}/usr/bin/icewm" ] && DESKTOP="icewm"
-		[ -x "${rootmnt}/usr/bin/startfluxbox" ] && DESKTOP="fluxbox"
-		[ -x "${rootmnt}/usr/bin/startlxde" ] && \
-			[ -x "${rootmnt}/usr/bin/openbox" ] && DESKTOP="lxde"
-		[ -x "${rootmnt}/usr/bin/startlxqt" ] && \
-			[ -x "${rootmnt}/usr/bin/openbox" ] && DESKTOP="lxqt"
-		[ -x "${rootmnt}/usr/bin/xfwm4" ] && DESKTOP="xfce"
-		[ -x "${rootmnt}/usr/bin/metacity" ] && DESKTOP="gnome"
-		[ -x "${rootmnt}/usr/bin/startplasma-x11" ] && DESKTOP="kde-x11"
-		[ -x "${rootmnt}/usr/bin/startplasma-wayland" ] && DESKTOP="kde-wayland"
+		[ -x "${rootmnt}/usr/share/xsessions/cinnamon.desktop" ] && DESKTOP="cinnamon-x11"
+		[ -x "${rootmnt}/usr/share/wayland-sessions/cinnamon-wayland.desktop" ] && DESKTOP="cinnamon"
+		[ -x "${rootmnt}/usr/share/xsessions/kodi.desktop" ] && DESKTOP="kodi-x11"
+		[ -x "${rootmnt}/usr/share/wayland-sessions/kodi-gbm.desktop" ] && DESKTOP="kodi"
+		[ -x "${rootmnt}/usr/share/xsessions/icewm-session.desktop" ] && DESKTOP="icewm"
+		[ -x "${rootmnt}/usr/share/xsessions/fluxbox.desktop" ] && DESKTOP="fluxbox"
+		[ -x "${rootmnt}/usr/share/xsessions/LXDE.desktop" ] && DESKTOP="lxde"
+		[ -x "${rootmnt}/usr/share/xsessions/lxqt.desktop" ] && DESKTOP="lxqt"
+		[ -x "${rootmnt}/usr/share/xsessions/xfce.desktop" ] && DESKTOP="xfce"
+		[ -x "${rootmnt}/usr/share/xsessions/gnome.desktop" ] && DESKTOP="gnome-x11"
+		[ -x "${rootmnt}/usr/share/wayland-sessions/gnome.desktop" ] && DESKTOP="gnome"
+		[ -x "${rootmnt}/usr/share/xsessions/plasma.desktop" ] && DESKTOP="kde-x11"
+		[ -x "${rootmnt}/usr/share/wayland-sessions/plasmawayland.desktop" ] && DESKTOP="kde-wayland"
 	fi
 
 	case "${DESKTOP}" in
 		cinnamon)
+			FLL_XTYPE="wayland"
+			FLL_XSESSION="cinnamon"
+			;;
+		cinnamon-x11)
 			FLL_XTYPE="x11"
 			FLL_XSESSION="cinnamon"
 			;;
