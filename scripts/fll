@@ -1266,16 +1266,6 @@ EOF
 			--gecos "${FLL_LIVE_USER}" "${FLL_LIVE_USER}"
 	fi
 
-	# Generate /etc/fstab
-	for dir in dev proc run sys; do
-		mount --bind /${dir} ${rootmnt}/${dir}
-	done
-	chroot ${rootmnt} fll_fstab_generator --file /etc/fstab \
-		--mkdir --nomounts --noswap
-	for dir in dev proc run sys; do
-		umount ${rootmnt}/${dir}
-	done
-
 	# final debug checkpoint
 	maybe_break fll-bottom
 
