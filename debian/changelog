@@ -1,9 +1,16 @@
-fll-live-initramfs (2.9.35) UNRELEASED; urgency=medium
+fll-live-initramfs (2.9.36) unstable; urgency=medium
+
+  * Fix gnome xsession type detection and cinnamon wayland session
+    name.
+
+ -- Kel Modderman <kelvmod@gmail.com>  Mon, 11 Nov 2024 21:19:00 +1000
+
+fll-live-initramfs (2.9.35) unstable; urgency=medium
 
   * Add xsession functionality to lightdm setup.
   * Add support for gnome-x11 session.
 
- -- Kel Modderman <kelvmod@gmail.com>  Mon, 11 Nov 2024 20:39:24 +1000
+ -- Kel Modderman <kelvmod@gmail.com>  Mon, 11 Nov 2024 21:18:15 +1000
 
 fll-live-initramfs (2.9.34) unstable; urgency=medium
 

@@ -470,7 +470,7 @@ setup_gdm3() {
 			\nTimedLoginEnable\=true\nTimedLogin\=${FLL_LIVE_USER}\nTimedLoginDelay\=1/" \
 			"${1}/etc/gdm3/daemon.conf"
 
-	case "${FLL_XSESSION}" in
+	case "${FLL_XTYPE}" in
 		x11)
 			sed -i "s/#WaylandEnable=false/WaylandEnable=false/" "${1}/etc/gdm3/daemon.conf"
 			;;
@@ -1202,7 +1202,7 @@ mountroot()
 	case "${DESKTOP}" in
 		cinnamon)
 			FLL_XTYPE="wayland"
-			FLL_XSESSION="cinnamon"
+			FLL_XSESSION="cinnamon-wayland"
 			;;
 		cinnamon-x11)
 			FLL_XTYPE="x11"
