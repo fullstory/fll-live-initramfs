@@ -6,6 +6,8 @@ fll-live-initramfs (2.9.31) UNRELEASED; urgency=medium
   [ Kel Modderman ]
   * Set Relogin=true in sddm config.
   * Do not execute fll_fstab_generator in chroot.
+  * Create passwordless sudoers config only for the non systemd-homd
+    live user.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 10 Nov 2024 05:06:05 +0100
 

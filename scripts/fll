@@ -1159,19 +1159,6 @@ mountroot()
 	done
 	:> ${rootmnt}/root/.hushlogin
 
-	# Create sudoers.d snippet
-	if [ ! -e "${rootmnt}/etc/sudoers.d/15_${FLL_DISTRO_NAME}" ]; then
-		# append sudoers entry
-		cat >> "${rootmnt}/etc/sudoers.d/15_${FLL_DISTRO_NAME}" \
-<<EOF
-# WARNING: This allows the unprivileged ${FLL_LIVE_USER} user to start commands as root
-# WARNING: This is totally insecure and (almost) makes ${FLL_LIVE_USER} a second root account.
-# WARNING: Never allow external access to the ${FLL_LIVE_USER} user!!!
-${FLL_LIVE_USER} ALL=(ALL:ALL) NOPASSWD: ALL
-EOF
-		chmod 0440 "${rootmnt}/etc/sudoers.d/15_${FLL_DISTRO_NAME}"
-	fi
-
 	# Patch /etc/default/distro
 	sed -i "s#^FLL_LIVE_USER=.*#FLL_LIVE_USER=\"${FLL_LIVE_USER}\"#; \
 		s#^FLL_IMAGE_DIR=.*#FLL_IMAGE_DIR=\"${FLL_IMAGE_DIR}\"#; \
@@ -1262,6 +1249,18 @@ EOF
 	# use adduser if systemd-homed is not present
 	if [ ! -x "${rootmnt}/usr/bin/homectl" ]; then
 		setup_dm "${rootmnt}"
+		# Create sudoers.d snippet
+		if [ ! -e "${rootmnt}/etc/sudoers.d/15_${FLL_DISTRO_NAME}" ]; then
+			# append sudoers entry
+			cat >> "${rootmnt}/etc/sudoers.d/15_${FLL_DISTRO_NAME}" \
+<<EOF
+# WARNING: This allows the unprivileged ${FLL_LIVE_USER} user to start commands as root
+# WARNING: This is totally insecure and (almost) makes ${FLL_LIVE_USER} a second root account.
+# WARNING: Never allow external access to the ${FLL_LIVE_USER} user!!!
+${FLL_LIVE_USER} ALL=(ALL:ALL) NOPASSWD: ALL
+EOF
+			chmod 0440 "${rootmnt}/etc/sudoers.d/15_${FLL_DISTRO_NAME}"
+		fi
 		chroot "${rootmnt}" adduser --disabled-password \
 			--gecos "${FLL_LIVE_USER}" "${FLL_LIVE_USER}"
 	fi
