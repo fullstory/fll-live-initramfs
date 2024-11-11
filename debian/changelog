@@ -1,3 +1,9 @@
+fll-live-initramfs (2.9.38) UNRELEASED; urgency=medium
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 11 Nov 2024 23:58:26 +0100
+
 fll-live-initramfs (2.9.37) unstable; urgency=medium
 
   * Allow cinnamon to default to x11 xsession for now.
