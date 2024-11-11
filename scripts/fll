@@ -1127,6 +1127,15 @@ mountroot()
 	printf "KERNEL==\"%s\", ENV{ID_CDROM}==\"?*\", SYMLINK+=\"fll-cdrom\"\n" \
 		"${FLL_MEDIA_FOUND#/dev/}" >> ${rootmnt}/etc/udev/rules.d/70-fll-live.rules
 
+	# honour blacklist= cheatcode to disable naughty modules before udev
+	if [ "${BLACKLIST}" ]; then
+		for module in ${BLACKLIST}; do
+			if ! grep -s -q "^blacklist ${module}" "${rootmnt}/etc/modprobe.d/*"; then
+				echo "blacklist ${module}" >> "${rootmnt}/etc/modprobe.d/fll-blacklist.conf"
+			fi
+		done
+	fi
+
 	# disable movement of static $rootmnt/dev by scripts/init-bottom/udev
 	export no_static_dev="1"
 
@@ -1140,15 +1149,6 @@ mountroot()
 		# update /etc/hosts
 		sed -i '/localhost/!s/^\(127.0.0.1[ \t]\+\)\(.\+\)$/\1'"${CUSTOM_HOSTNAME}"'/' \
 			"${rootmnt}/etc/hosts"
-	fi
-
-	# honour blacklist= cheatcode to disable naughty modules before udev
-	if [ "${BLACKLIST}" ]; then
-		for module in ${BLACKLIST}; do
-			if ! grep -s -q "^blacklist ${module}" "${rootmnt}/etc/modprobe.d/*"; then
-				echo "blacklist ${module}" >> "${rootmnt}/etc/modprobe.d/fll-blacklist.conf"
-			fi
-		done
 	fi
 
 	# Setup root user environment

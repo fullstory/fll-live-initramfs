@@ -10,6 +10,8 @@ fll-live-initramfs (2.9.31) UNRELEASED; urgency=medium
     live user.
   * No longer run adduser in chroot, return that functionality to fll-
     live-initscripts.
+  * Relocate blacklist= cheatcode handling to close proximity with other
+    kernel/udev related functions.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 10 Nov 2024 05:06:05 +0100
 
