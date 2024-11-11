@@ -1,3 +1,10 @@
+fll-live-initramfs (2.9.35) UNRELEASED; urgency=medium
+
+  * Add xsession functionality to lightdm setup.
+  * Add support for gnome-x11 session.
+
+ -- Kel Modderman <kelvmod@gmail.com>  Mon, 11 Nov 2024 20:39:24 +1000
+
 fll-live-initramfs (2.9.34) unstable; urgency=medium
 
   * Fix detection of desktop xsession files.

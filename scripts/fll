@@ -469,6 +469,12 @@ setup_gdm3() {
 		-e "s/^\(\[daemon\]$\)/\1\nAutomaticLogin\=${FLL_LIVE_USER}\nAutomaticLoginEnable\=true\n \
 			\nTimedLoginEnable\=true\nTimedLogin\=${FLL_LIVE_USER}\nTimedLoginDelay\=1/" \
 			"${1}/etc/gdm3/daemon.conf"
+
+	case "${FLL_XSESSION}" in
+		x11)
+			sed -i "s/#WaylandEnable=false/WaylandEnable=false/" "${1}/etc/gdm3/daemon.conf"
+			;;
+	esac
 }
 
 setup_lightdm() {
@@ -480,6 +486,7 @@ setup_lightdm() {
 greeter-hide-users=false
 autologin-user=${FLL_LIVE_USER}
 autologin-user-timeout=0
+autologin-session=${FLL_XSESSION}
 EOF
 	fi
 }
