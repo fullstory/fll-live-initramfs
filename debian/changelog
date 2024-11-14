@@ -1,12 +1,8 @@
-fll-live-initramfs (2.9.38) UNRELEASED; urgency=medium
+fll-live-initramfs (2.9.38) unstable; urgency=medium
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * No longer mount second squashfs.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 11 Nov 2024 23:58:26 +0100
+ -- Kel Modderman <kelvmod@gmail.com>  Thu, 14 Nov 2024 19:43:58 +1000
 
 fll-live-initramfs (2.9.37) unstable; urgency=medium
 
