@@ -736,7 +736,7 @@ mountroot()
 			#			  loop is broken
 			# FLL_MEDIA_FOUND	- set only when we have the live media compressed
 			#			  filesystem located and mounted
-			unset FLL_BLOCKMNT FLL_PROBE FLL_DOUMOUNT FLL_DOMOVEMOUNT FLL_MEDIA_FOUND FLL_2FS
+			unset FLL_BLOCKMNT FLL_PROBE FLL_DOUMOUNT FLL_DOMOVEMOUNT FLL_MEDIA_FOUND
 
 			#
 			# determine filesystem type of block device
@@ -756,8 +756,6 @@ mountroot()
 					if [ "${LABEL}" = "${FLL_UUID}.${FLL_IMAGE_LOCATION#*\.}" ]; then
 						FLL_BLOCKMNT="${FLL_MOUNTPOINT}"
 						FLL_PROBE="${dev}"
-					elif [ "${LABEL}" = "${FLL_UUID}.2" ]; then
-						FLL_2FS="${dev}"
 					fi
 				fi
 				mkdir -p "${FLL_BLOCKMNT}"
@@ -856,40 +854,13 @@ mountroot()
 								printf "filesystem on ${FLL_MEDIA_FOUND}\n"
 							fi
 
-							# find secondary squashfs if we didn't pick it up already
-							if [ -z "${FLL_2FS}" ]; then
-								if [ -f "${FLL_PROBE}" ]; then
-									FLL_2FS="${FLL_PROBE%.*}.2"
-								else
-									MAINFS="${FSTYPE}"
-									printf "Checking ${FLL_PROBE%%[1234567890]*}* for 2nd squashfs..."
-									for testfs in ${FLL_PROBE%%[1234567890]*}*; do
-										if fll_finger_fstype "${testfs}" >/dev/null 2>&1; then
-											if [ "${FSTYPE}" = "squashfs" ]; then
-												fll_finger_label "${testfs}" >/dev/null 2>&1
-												if [ "${LABEL}" = "${FLL_UUID}.2" ]; then
-													FLL_2FS="${testfs}"
-													printf "found on ${testfs}"
-													continue
-												fi
-											fi
-										fi
-									done
-									FSTYPE="${MAINFS}"
-									if [ -z "${FLL_2FS}" ]; then
-										printf "none present"
-									fi
-									printf "\n"
-								fi
-							fi
-
 							# copy to tmpfs
 							if [ "${FLL_TORAM}" = "yes" ]; then
 								# required tmpfs size: compressed filesystem size + 10% buffer
 								eval $(fll_meminfo)
 
 								if [ -f "${FLL_PROBE}" ]; then
-									FLL_TORAM_FSSIZE=$(du -m "${FLL_PROBE}" "${FLL_2FS}" | awk -v c=0 '{c+=$1}END{print int(c * 1.1) }')
+									FLL_TORAM_FSSIZE=$(du -m "${FLL_PROBE}" | awk -v c=0 '{c+=$1}END{print int(c * 1.1) }')
 								else
 									FLL_TORAM_FSSIZE=$(df -m "${FLL_PROBE}" | awk '/^\//{print int($2 * 1.2) }')
 								fi
@@ -915,17 +886,6 @@ mountroot()
 									fi
 									if $toramcmd; then
 										toramcmd=""
-										if [ -f "${FLL_2FS}" ]; then
-											printf "Copying 2nd filesystem from ${FLL_2FS} to ram..."
-											fll_copy_with_perc "${FLL_2FS}" "/fll/toram/${FLL_IMAGE_DIR}/"
-											printf "done\n"
-											FLL_2FS="/fll/toram/${FLL_IMAGE_DIR}/${FLL_IMAGE_FILE%.*}.2"
-										elif [ -n "${FLL_2FS}" ]; then
-											printf "Copying 2nd filesystem from ${FLL_2FS} to ram..."
-											cp "${FLL_2FS}" "/fll/toram/${FLL_IMAGE_DIR}/${FLL_IMAGE_FILE%.*}.2"
-											printf "done\n"
-											FLL_2FS="/fll/toram/${FLL_IMAGE_DIR}/${FLL_IMAGE_FILE%.*}.2"
-										fi
 										if [ "${FLL_BLOCKMNT}" = "${FLL_MOUNTPOINT}" ]; then
 											# umount the direct squashfs partition
 											fll_umount "${FLL_BLOCKMNT}"
@@ -1006,15 +966,6 @@ mountroot()
 
 	# debug checkpoint
 	maybe_break fll-postmount
-
-	# mount secondary squashfs if we have one
-	if [ -n "${FLL_2FS}" ]; then
-		mkdir "${FLL_MOUNTPOINT}.2"
-		FLL_DOMOVEMOUNT="${FLL_MOUNTPOINT}.2 ${FLL_DOMOVEMOUNT}"
-		fll_mount squashfs "${FLL_2FS}" "${FLL_MOUNTPOINT}.2" ro
-		#mount -t squashfs "${FLL_2FS}" "${FLL_MOUNTPOINT}.2"
-	fi
-
 
 	#
 	# prepare COW union filesystem
