@@ -11,37 +11,9 @@
 # https://github.com/fullstory
 ###
 
-###
-# don't prompt for ejecting in a virtual machine, unless overriden
-###
-if [ -r /sys/devices/virtual/dmi/id/bios_vendor ]; then
-    case "$(head -n1 /sys/devices/virtual/dmi/id/bios_vendor)" in
-        "Bochs")
-            # qemu/ kvm
-            NOPROMPT="1"
-            ;;
-        "innotek GmbH")
-            # VirtualBox
-            NOPROMPT="1"
-            ;;
-    esac
-fi
-
-if [ -f /proc/cmdline ]; then
-    for param in $(cat /proc/cmdline); do
-        case "${param}" in
-            noeject|toram)
-                NOEJECT="1"
-                ;;
-            doprompt)
-                unset NOPROMPT
-                ;;
-            noprompt)
-                NOPROMPT="1"
-                ;;
-        esac
-    done
-fi
+NOPROMPT="/fll.noprompt"
+DOPROMPT="/fll.doprompt"
+NO_EJECT="/fll.no_eject"
 
 exec 9<&0 < /proc/mounts
 
@@ -105,13 +77,13 @@ if [ "$LIVE_MTPTS" ]; then
     [ "$?" -eq 0 ] || echo "\"umount -l -n -f -d -v $LIVE_MTPTS\" returned $?"
 fi
 
-if [ -b /dev/fll-cdrom ] && [ -z "${NOEJECT}" ]; then
+if [ -b /dev/fll-cdrom ] && [ ! -e "${NO_EJECT}" ]; then
     # disable kernel messages while ejecting cdrom (libata noise)
     echo "0" > /proc/sys/kernel/printk
 
     eject -m -p /dev/fll-cdrom
 
-    if [ -z "${NOPROMPT}" ]; then
+    if [ ! -e "${NOPROMPT}" ] || [ -e "${DOPROMPT}" ]; then
         echo "" > /dev/console
         echo "Please remove CD, close cdrom drive then press enter." > /dev/console
         echo "" > /dev/console
@@ -119,7 +91,7 @@ if [ -b /dev/fll-cdrom ] && [ -z "${NOEJECT}" ]; then
     fi
 fi
 
-if [ -e /shutdown-debug ]; then
+if [ -e /fll.shutdown.debug ]; then
     echo "" > /dev/console
     echo "Please press enter to shutdown." > /dev/console
     echo "" > /dev/console

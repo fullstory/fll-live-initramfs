@@ -1,3 +1,10 @@
+fll-live-initramfs (3.0.2) unstable; urgency=medium
+
+  * Move prompt and eject cheatcode handling into early boot and base
+    shutdown behaviour on existence of files in /run/initramfs.
+
+ -- Kel Modderman <kelvmod@gmail.com>  Mon, 18 Nov 2024 23:16:05 +1000
+
 fll-live-initramfs (3.0.1) unstable; urgency=medium
 
   * Add pre-shutdown script to tear down live mount points and eject.
