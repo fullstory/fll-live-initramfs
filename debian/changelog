@@ -1,6 +1,11 @@
 fll-live-initramfs (3.0.5) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
+
+  [ Kel Modderman ]
+  * Add another debug call to mount prior to dismantling the live
+    filesystems.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 19 Nov 2024 00:09:39 +0100
 
