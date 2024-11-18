@@ -64,4 +64,5 @@ mkdir -p "$DESTDIR"/lib/systemd/system-shutdown
 copy_file "regular file" \
 	/usr/share/fll-live-initramfs/fll.shutdown \
 	/usr/lib/systemd/system-shutdown/fll.shutdown
+copy_exec /usr/bin/systemd-detect-virt /usr/bin/systemd-detect-virt
 copy_exec /usr/bin/eject /usr/bin/eject

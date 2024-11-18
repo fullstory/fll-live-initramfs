@@ -1282,18 +1282,8 @@ EOF
 	rmdir /run/initramfs~
 	mount -o remount,exec /run
 
-	###
 	# don't prompt for ejecting in a virtual machine, unless overriden
-	###
-	if [ -r /sys/devices/virtual/dmi/id/bios_vendor ]; then
-		case "$(head -n1 /sys/devices/virtual/dmi/id/bios_vendor)" in
-			"Bochs"|"innotek GmbH")
-				# qemu/ kvm
-				touch /run/initramfs/fll.noprompt
-				;;
-		esac
-	fi
-
+	systemd-detect-virt --quiet && touch /run/initramfs/fll.noprompt
 	[ -n "${NOPROMPT}" ] && touch /run/initramfs/fll.noprompt
 	[ -n "${DOPROMPT}" ] && touch /run/initramfs/fll.doprompt
 	[ -n "${NO_EJECT}" ] && touch /run/initramfs/fll.no_eject
