@@ -1280,7 +1280,10 @@ EOF
 	cp -a /run/initramfs~/* /run/initramfs/
 	umount /run/initramfs~
 	rmdir /run/initramfs~
+	# Ensure systemd can pivot back at shutdown
 	mount -o remount,exec /run
+	# Reduce occupied ramdisk
+	rm -rf /run/initramfs/modules /run/initramfs/firmware
 
 	# don't prompt for ejecting in a virtual machine, unless overriden
 	systemd-detect-virt --quiet && touch /run/initramfs/fll.noprompt

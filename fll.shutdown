@@ -92,6 +92,7 @@ if [ -b /dev/fll-cdrom ] && [ ! -e "${NO_EJECT}" ]; then
 fi
 
 if [ -e /fll.shutdown.debug ]; then
+    mount
     echo "" > /dev/console
     echo "Please press enter to shutdown." > /dev/console
     echo "" > /dev/console
