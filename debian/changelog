@@ -1,3 +1,9 @@
+fll-live-initramfs (3.0.1) unstable; urgency=medium
+
+  * Add pre-shutdown script to tear down live mount points and eject.
+
+ -- Kel Modderman <kelvmod@gmail.com>  Mon, 18 Nov 2024 22:41:01 +1000
+
 fll-live-initramfs (3.0.0) unstable; urgency=medium
 
   * Use systemd-shutdown to establish a shutdown initrd environment.

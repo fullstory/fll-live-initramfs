@@ -1271,6 +1271,7 @@ EOF
 	cp -a /run/initramfs~/* /run/initramfs/
 	umount /run/initramfs~
 	rmdir /run/initramfs~
+	mount -o remount,exec /run
 
 	# final debug checkpoint
 	maybe_break fll-bottom

@@ -56,6 +56,12 @@ manual_add_modules nls_iso8859-1
 auto_add_modules
 
 # https://systemd.io/INITRD_INTERFACE/
-copy_exec /lib/systemd/systemd-shutdown /shutdown
+copy_exec /usr/lib/systemd/systemd-shutdown /shutdown
 mkdir -p "$DESTDIR"/etc
 touch "$DESTDIR"/etc/initrd-release
+# place our script in the initranfs
+mkdir -p "$DESTDIR"/lib/systemd/system-shutdown
+copy_file "regular file" \
+	/usr/share/fll-live-initramfs/fll.shutdown \
+	/usr/lib/systemd/system-shutdown/fll.shutdown
+copy_exec /usr/bin/eject /usr/bin/eject

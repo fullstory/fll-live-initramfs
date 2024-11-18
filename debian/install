@@ -1,2 +1,3 @@
 hooks/fll   usr/share/initramfs-tools/hooks
 scripts/fll usr/share/initramfs-tools/scripts
+fll.shutdown usr/share/fll-live-initramfs
