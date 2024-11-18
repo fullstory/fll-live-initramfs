@@ -1,8 +1,8 @@
-fll-live-initramfs (2.9.39) UNRELEASED; urgency=medium
+fll-live-initramfs (3.0.0) unstable; urgency=medium
 
-  * NOT RELEASED YET
+  * Use systemd-shutdown to establish a shutdown initrd environment.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 14 Nov 2024 21:16:28 +0100
+ -- Kel Modderman <kelvmod@gmail.com>  Mon, 18 Nov 2024 17:24:32 +1000
 
 fll-live-initramfs (2.9.38) unstable; urgency=medium
 

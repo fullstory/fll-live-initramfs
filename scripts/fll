@@ -1264,6 +1264,14 @@ EOF
 		printf "0.000000 0 0.000000\n0\nLOCAL\n" > "${rootmnt}/etc/adjtime"
 	fi
 
+	# Save an in-memory copy of the live initial ramdisk for shutdown
+	# https://systemd.io/INITRD_INTERFACE/
+	mkdir /run/initramfs~
+	mount --bind / /run/initramfs~
+	cp -a /run/initramfs~/* /run/initramfs/
+	umount /run/initramfs~
+	rmdir /run/initramfs~
+
 	# final debug checkpoint
 	maybe_break fll-bottom
 
