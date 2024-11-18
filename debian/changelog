@@ -1,3 +1,9 @@
+fll-live-initramfs (3.0.5) UNRELEASED; urgency=medium
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 19 Nov 2024 00:09:39 +0100
+
 fll-live-initramfs (3.0.4) unstable; urgency=medium
 
   * Call mount when pausing to debug fll.shutdown.
