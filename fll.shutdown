@@ -14,8 +14,9 @@
 NOPROMPT="/fll.noprompt"
 DOPROMPT="/fll.doprompt"
 NO_EJECT="/fll.no_eject"
+FLLDEBUG="/fll.debug"
 
-[ -e /fll.debug ] && mount
+[ -e "${FLLDEBUG}" ] && mount
 
 if [ -b /dev/fll-cdrom ] && [ ! -e "${NO_EJECT}" ]; then
     # disable kernel messages while ejecting cdrom (libata noise)
@@ -31,7 +32,7 @@ if [ -b /dev/fll-cdrom ] && [ ! -e "${NO_EJECT}" ]; then
     fi
 fi
 
-if [ -e /fll.debug ]; then
+if [ -e "${FLLDEBUG}" ]; then
     echo "" > /dev/console
     echo "Please press enter to shutdown." > /dev/console
     echo "" > /dev/console
