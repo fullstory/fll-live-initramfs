@@ -1,12 +1,9 @@
-fll-live-initramfs (3.0.6) UNRELEASED; urgency=medium
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (3.0.6) unstable; urgency=medium
 
   [ Kel Modderman ]
   * Shorten exitrd debug file to fll.debug and update code comments.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 19 Nov 2024 01:32:17 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 19 Nov 2024 01:54:54 +0100
 
 fll-live-initramfs (3.0.5) unstable; urgency=medium
 
