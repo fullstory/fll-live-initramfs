@@ -1273,16 +1273,16 @@ EOF
 		printf "0.000000 0 0.000000\n0\nLOCAL\n" > "${rootmnt}/etc/adjtime"
 	fi
 
-	# Save an in-memory copy of the live initial ramdisk for shutdown
+	# Save an in-memory copy of the live initial ramdisk for shutdown (exitrd)
 	# https://systemd.io/INITRD_INTERFACE/
 	mkdir /run/initramfs~
 	mount --bind / /run/initramfs~
 	cp -a /run/initramfs~/* /run/initramfs/
 	umount /run/initramfs~
 	rmdir /run/initramfs~
-	# Ensure systemd can pivot back at shutdown
+	# Ensure systemd can pivot into exitrd at shutdown
 	mount -o remount,exec /run
-	# Reduce occupied ramdisk
+	# Put exitrd on a diet to save memory
 	rm -rf /run/initramfs/lib/modules /run/initramfs/lib/firmware
 
 	# don't prompt for ejecting in a virtual machine, unless overriden
