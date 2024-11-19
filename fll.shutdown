@@ -17,68 +17,6 @@ NO_EJECT="/fll.no_eject"
 
 [ -e /fll.shutdown.debug ] && mount
 
-exec 9<&0 < /proc/mounts
-
-REG_MTPTS=""
-TMPFS_MTPTS=""
-while read -r DEV MTPT FSTYPE OPTS REST; do
-    case "$MTPT" in
-        #
-        # live hack
-        #
-        /fll/*)
-            case "$FSTYPE" in
-                iso9660)
-                    [ "$MTPT" = /fll/fromiso ] && LIVE_MTPTS="$MTPT $LIVE_MTPTS"
-                    ;;
-                *)
-                    LIVE_MTPTS="$MTPT $LIVE_MTPTS"
-                    ;;
-            esac
-            continue
-            ;;
-    esac
-    case "$FSTYPE" in
-        overlay|overlayfs|aufs|unionfs)
-            UNION_MTPTS="$MTPT $UNION_MTPTS"
-            ;;
-        squashfs)
-            SQUSH_MTPTS="$MTPT $SQUSH_MTPTS"
-            ;;
-    esac
-done
-
-exec 0<&9 9<&-
-
-if [ "$UNION_MTPTS" ]; then
-    echo "Unmounting union filesystems."
-    for MTPT in $UNION_MTPTS ; do
-        case "$MTPT" in
-            /)
-                # umount / and it's game-over
-                mount -o remount,ro $MTPT
-                [ "$?" -eq 0 ] || echo  "\"mount -o remount,ro $MTPT\" returned $?"
-                ;;
-            *)
-                umount -l -n -f -d -v $UNION_MTPTS
-                [ "$?" -eq 0 ] || echo "\"umount -l -n -f -d -v $UNION_MTPTS\" returned $?"
-                ;;
-        esac
-    done
-fi
-
-if [ "$SQSH_MTPTS" ]; then
-    echo "Unmounting squashfs filesystems."
-    umount -l -n -f -d -v $SQSH_MTPTS
-    [ "$?" -eq 0 ] || echo "\"umount -l -n -f -d -v $SQSH_MTPTS\" returned $?"
-fi
-
-if [ "$LIVE_MTPTS" ]; then
-    echo "Unmounting live filesystems."
-    umount -l -n -f -d -v $LIVE_MTPTS
-    [ "$?" -eq 0 ] || echo "\"umount -l -n -f -d -v $LIVE_MTPTS\" returned $?"
-fi
-
 if [ -b /dev/fll-cdrom ] && [ ! -e "${NO_EJECT}" ]; then
     # disable kernel messages while ejecting cdrom (libata noise)
     echo "0" > /proc/sys/kernel/printk
@@ -94,8 +32,6 @@ if [ -b /dev/fll-cdrom ] && [ ! -e "${NO_EJECT}" ]; then
 fi
 
 if [ -e /fll.shutdown.debug ]; then
-    echo "" > /dev/console
-    mount
     echo "" > /dev/console
     echo "Please press enter to shutdown." > /dev/console
     echo "" > /dev/console

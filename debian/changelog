@@ -1,13 +1,9 @@
-fll-live-initramfs (3.0.5) UNRELEASED; urgency=medium
+fll-live-initramfs (3.0.5) unstable; urgency=medium
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+  * Remove unrequired live mount point dismantle code from fll.shutdown,
+    systemd-shutdown takes care of it already.
 
-  [ Kel Modderman ]
-  * Add another debug call to mount prior to dismantling the live
-    filesystems.
-
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 19 Nov 2024 00:09:39 +0100
+ -- Kel Modderman <kelvmod@gmail.com>  Tue, 19 Nov 2024 10:20:03 +1000
 
 fll-live-initramfs (3.0.4) unstable; urgency=medium
 
