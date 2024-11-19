@@ -1,3 +1,9 @@
+fll-live-initramfs (3.0.6) UNRELEASED; urgency=medium
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 19 Nov 2024 01:32:17 +0100
+
 fll-live-initramfs (3.0.5) unstable; urgency=medium
 
   * Remove unrequired live mount point dismantle code from fll.shutdown,
