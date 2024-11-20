@@ -1,3 +1,9 @@
+fll-live-initramfs (3.0.9) UNRELEASED; urgency=medium
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 20 Nov 2024 20:46:15 +0100
+
 fll-live-initramfs (3.0.8) unstable; urgency=medium
 
   * Flag NO_EJECT when booting with fromhd or fromiso cheatcodes.
