@@ -1,11 +1,11 @@
-fll-live-initramfs (3.0.8) UNRELEASED; urgency=medium
+fll-live-initramfs (3.0.8) unstable; urgency=medium
 
   * Flag NO_EJECT when booting with fromhd or fromiso cheatcodes.
   * Set fll.debug flag in /run/initramfs from fll=debug cheatcode is used.
   * Move sudoers config and display manager autologin setup to
     fll-live-initscripts/fll_adduser.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 19 Nov 2024 23:48:25 +0100
+ -- Kel Modderman <kelvmod@gmail.com>  Wed, 20 Nov 2024 20:17:06 +1000
 
 fll-live-initramfs (3.0.7) unstable; urgency=medium
 
