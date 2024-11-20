@@ -1,6 +1,7 @@
 fll-live-initramfs (3.0.8) UNRELEASED; urgency=medium
 
-  * NOT RELEASED YET
+  * Flag NO_EJECT when booting with fromhd or fromiso cheatcodes.
+  * Set fll.debug flag in /run/initramfs from fll=debug cheatcode is used.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 19 Nov 2024 23:48:25 +0100
 

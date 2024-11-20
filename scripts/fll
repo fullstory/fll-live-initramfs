@@ -582,11 +582,12 @@ mountroot()
 				FLL_FIRMWARE="yes"
 				;;
 			fll=debug)
+				FLLDEBUG="1"
 				set -x
 				;;
 			fromhd*)
 				FLL_FROMHD="yes"
-
+				NO_EJECT="1"
 				# define dev node
 				case "${opt}" in
 					fromhd=*)
@@ -597,7 +598,7 @@ mountroot()
 			fromiso*)
 				FLL_FROMHD="yes"
 				FLL_FROMISO="yes"
-
+				NO_EJECT="1"
 				# define iso name
 				case "${opt}" in
 					fromiso=*)
@@ -1290,6 +1291,7 @@ EOF
 	[ -n "${NOPROMPT}" ] && touch /run/initramfs/fll.noprompt
 	[ -n "${DOPROMPT}" ] && touch /run/initramfs/fll.doprompt
 	[ -n "${NO_EJECT}" ] && touch /run/initramfs/fll.no_eject
+	[ -n "${FLLDEBUG}" ] && touch /run/initramfs/fll.debug
 
 	# final debug checkpoint
 	maybe_break fll-bottom
