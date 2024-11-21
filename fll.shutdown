@@ -11,8 +11,6 @@
 # https://github.com/fullstory
 ###
 
-NOPROMPT="/fll.noprompt"
-DOPROMPT="/fll.doprompt"
 NO_EJECT="/fll.no_eject"
 FLLDEBUG="/fll.debug"
 
@@ -24,12 +22,10 @@ if [ -b /dev/fll-cdrom ] && [ ! -e "${NO_EJECT}" ]; then
 
     eject -m -p /dev/fll-cdrom
 
-    if [ ! -e "${NOPROMPT}" ] || [ -e "${DOPROMPT}" ]; then
-        echo "" > /dev/console
-        echo "Please remove CD, close cdrom drive then press enter." > /dev/console
-        echo "" > /dev/console
-        read x < /dev/console
-    fi
+    echo "" > /dev/console
+    echo "Please remove CD, close cdrom drive then press enter." > /dev/console
+    echo "" > /dev/console
+    read x < /dev/console
 fi
 
 if [ -e "${FLLDEBUG}" ]; then

@@ -472,14 +472,8 @@ mountroot()
 			desktop=*)
 				DESKTOP="${opt#desktop=}"
 				;;
-			noeject|toram)
+			noeject)
 				NO_EJECT="1"
-				;;
-			doprompt)
-				DOPROMPT="1"
-				;;
-			noprompt)
-				NOPROMPT="1"
 				;;
 			firmware)
 				FLL_FIRMWARE="yes"
@@ -540,6 +534,7 @@ mountroot()
 				;;
 			toram)
 				FLL_TORAM="yes"
+				NO_EJECT="1"
 				;;
 			console=ttyS*,*)
 				# parse out port and speed
@@ -1173,9 +1168,7 @@ mountroot()
 	rm -rf /run/initramfs/lib/modules /run/initramfs/lib/firmware
 
 	# don't prompt for ejecting in a virtual machine, unless overriden
-	systemd-detect-virt --quiet && touch /run/initramfs/fll.noprompt
-	[ -n "${NOPROMPT}" ] && touch /run/initramfs/fll.noprompt
-	[ -n "${DOPROMPT}" ] && touch /run/initramfs/fll.doprompt
+	systemd-detect-virt --quiet && touch /run/initramfs/fll.no_eject
 	[ -n "${NO_EJECT}" ] && touch /run/initramfs/fll.no_eject
 	[ -n "${FLLDEBUG}" ] && touch /run/initramfs/fll.debug
 
