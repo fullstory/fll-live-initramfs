@@ -1054,8 +1054,8 @@ mountroot()
 		[ -r "${rootmnt}/usr/share/xsessions/xfce.desktop" ] && DESKTOP="xfce"
 		[ -r "${rootmnt}/usr/share/xsessions/gnome.desktop" ] && DESKTOP="gnome-x11"
 		[ -r "${rootmnt}/usr/share/wayland-sessions/gnome.desktop" ] && DESKTOP="gnome"
-		[ -r "${rootmnt}/usr/share/xsessions/plasma.desktop" ] && DESKTOP="kde-x11"
-		[ -r "${rootmnt}/usr/share/wayland-sessions/plasmawayland.desktop" ] && DESKTOP="kde-wayland"
+		[ -r "${rootmnt}/usr/share/xsessions/plasmax11.desktop" ] && DESKTOP="kde-x11"
+		[ -r "${rootmnt}/usr/share/wayland-sessions/plasma.desktop" ] && DESKTOP="kde-wayland"
 	fi
 
 	case "${DESKTOP}" in
@@ -1085,11 +1085,11 @@ mountroot()
 			;;
 		kde|kde-wayland)
 			FLL_XTYPE="wayland"
-			FLL_XSESSION="plasmawayland"
+			FLL_XSESSION="plasma"
 			;;
 		kde-x11)
 			FLL_XTYPE="x11"
-			FLL_XSESSION="plasma"
+			FLL_XSESSION="plasmax11"
 			;;
 		kodi)
 			FLL_XTYPE="wayland"
