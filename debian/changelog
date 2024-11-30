@@ -4,7 +4,10 @@ fll-live-initramfs (3.0.11) UNRELEASED; urgency=medium
   * NOT RELEASED YET
 
   [ Kel Modderman ]
-  * fll_copy_with_perc: use dd and track write progress via fdinfo.
+  * fll_copy_with_perc:
+    - use dd and track write progress via fdinfo
+    - second argument is output filename
+    - remove tests for existence of variable at top of function
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 27 Nov 2024 22:33:45 +0100
 

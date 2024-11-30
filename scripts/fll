@@ -272,18 +272,14 @@ fll_meminfo()
 ###############################################################################
 fll_copy_with_perc()
 {
-	if [ ! -f "${1}" ] || [ ! -d "${2}" ]; then
-		return 1
-	fi
-
 	if="${1}"
-	of="${2}/${1##*/}"
+	of="${2}"
 
 	# background the copy, grab the process id
 	dd if="${if}" of="${of}" status=none &
 
 	# calculate copying progress
-	awk -v pid="${!}" -v origfile="${if}" -v destfile="${of}" '
+	awk -v pid="${!}" -v if="${if}" -v of="${of}" '
 		function get_size(file)
 		{
 			cmd = "ls -l " file
@@ -322,16 +318,16 @@ fll_copy_with_perc()
 
 		BEGIN {
 			perc = 0
-			size_orig = get_size(origfile)
-			if (size_orig <= 0) {
-				printf("\nFailed to copy to ram: %s\n", origfile)
+			size_if = get_size(if)
+			if (size_if <= 0) {
+				printf("\nFailed to copy to ram: %s\n", if)
 				exit(1)
 			}
 
 			do {
-				dest_fd = get_fd(pid, destfile)
-				dest_pos = get_pos(pid, dest_fd)
-				perc = int(100 * dest_pos / size_orig)
+				of_fd = get_fd(pid, of)
+				of_pos = get_pos(pid, of_fd)
+				perc = int(100 * of_pos / size_if)
 				if (perc > 0 && perc < 100) {
 					printf("\r[")
 					for (i = 0; i <= perc; i += 2)
@@ -345,8 +341,8 @@ fll_copy_with_perc()
 			} while (system("sleep 1") == 0 &&
 					 system("test -d /proc/" pid "/fd") == 0)
 
-			# destfile size is > origfile size on tmpfs
-			if (get_size(destfile) >= size_orig) {
+			# of size is > if size on tmpfs
+			if (get_size(of) >= size_if) {
 				printf("\r[")
 				for (i = 0; i <= 100; i += 2)
 					printf("=")
@@ -355,7 +351,7 @@ fll_copy_with_perc()
 				exit(0)
 			}
 			else {
-				printf("\nFailed to copy to ram: %s\n", origfile)
+				printf("\nFailed to copy to ram: %s\n", if)
 				exit(1)
 			}
 		}'
@@ -801,12 +797,7 @@ mountroot()
 
 									# copy compressed filesystem to tmpfs
 									printf "Copying live filesystem from ${dev#/dev/} to ram...\n"
-									if [ -f "${FLL_PROBE}" ]; then
-										toramcmd="fll_copy_with_perc ${FLL_PROBE} /fll/toram/${FLL_IMAGE_DIR}"
-									else
-										toramcmd="fll_copy_with_perc ${FLL_PROBE} /fll/toram/${FLL_IMAGE_LOCATION}"
-									fi
-									if $toramcmd; then
+									if fll_copy_with_perc "${FLL_PROBE}" "/fll/toram/${FLL_IMAGE_LOCATION}"; then
 										if [ "${FLL_BLOCKMNT}" = "${FLL_MOUNTPOINT}" ]; then
 											# umount the direct squashfs partition
 											fll_umount "${FLL_BLOCKMNT}"
