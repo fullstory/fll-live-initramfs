@@ -277,16 +277,32 @@ fll_copy_with_perc()
 
 	# calculate copying progress
 	awk -v pid="${!}" -v ifile="${1}" -v ofile="${2}" '
-		function get_size(file)
+		function get_size(path)
 		{
+			if (system("test -b " path) == 0)
+				return get_blockdev_size(path)
+			else
+				return get_file_size(path)
+		}
+
+		function get_file_size(file)
+		{
+			size = 0
 			cmd = "ls -l " file
-			if ((cmd | getline) > 0) {
+			if ((cmd | getline) > 0)
 				size = int($5)
-				close(cmd)
-				if (size > 0)
-					return size
-			}
-			return 0
+			close(cmd)
+			return size
+		}
+
+		function get_blockdev_size(dev)
+		{
+			size = 0
+			cmd = "blockdev --getsize64 " dev
+			if ((cmd | getline) > 0)
+				size = int($1)
+			close(cmd)
+			return size
 		}
 
 		function get_fd(pid, file)
@@ -294,8 +310,10 @@ fll_copy_with_perc()
 			fd = -1
 			cmd = "ls -l /proc/" pid "/fd/"
 			while ((cmd | getline) > 0) {
-				if ($NF == file)
+				if ($NF == file) {
 					fd = $9
+					break
+				}
 			}
 			close(cmd)
 			return fd
@@ -306,8 +324,10 @@ fll_copy_with_perc()
 			pos = -1
 			cmd = "cat /proc/" pid "/fdinfo/" fd " 2>/dev/null"
 			while ((cmd | getline) > 0) {
-				if (/pos:/)
+				if (/pos:/) {
 					pos = $2
+					break
+				}
 			}
 			close(cmd)
 			return pos

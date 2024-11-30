@@ -6,6 +6,7 @@ fll-live-initramfs (3.0.11) UNRELEASED; urgency=medium
   [ Kel Modderman ]
   * fll_copy_with_perc:
     - use dd and track write progress via fdinfo
+    - obtain size of block devices with blockdev --getsize64
     - second argument is output filename
     - remove tests for existence of variable at top of function
 
