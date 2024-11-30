@@ -1,17 +1,13 @@
-fll-live-initramfs (3.0.11) UNRELEASED; urgency=medium
+fll-live-initramfs (3.0.11) unstable; urgency=medium
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * fll_copy_with_perc:
     - use dd and track write progress via fdinfo
     - obtain size of block devices with blockdev --getsize64
     - second argument is output filename
     - remove tests for existence of variable at top of function
-  * Add extra sanity check when performing bulk mount -o move
+  * Add extra sanity check when performing bulk mount -o move.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 27 Nov 2024 22:33:45 +0100
+ -- Kel Modderman <kelvmod@gmail.com>  Sat, 30 Nov 2024 16:35:20 +1000
 
 fll-live-initramfs (3.0.10) unstable; urgency=medium
 
