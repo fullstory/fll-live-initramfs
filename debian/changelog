@@ -9,6 +9,7 @@ fll-live-initramfs (3.0.11) UNRELEASED; urgency=medium
     - obtain size of block devices with blockdev --getsize64
     - second argument is output filename
     - remove tests for existence of variable at top of function
+  * Add extra sanity check when performing bulk mount -o move
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 27 Nov 2024 22:33:45 +0100
 

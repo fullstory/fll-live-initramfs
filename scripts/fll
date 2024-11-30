@@ -952,7 +952,8 @@ mountroot()
 	if [ "${FLL_DOMOVEMOUNT}" ]; then
 		printf "Moving all mounted filesystems to ${rootmnt}..."
 		for mnt in ${FLL_DOMOVEMOUNT}; do
-			if grep -q "${mnt}" /proc/mounts; then
+			if grep -q "${mnt}" /proc/mounts && \
+				! grep -q "${rootmnt}${mnt}" /proc/mounts; then
 				mkdir -p "${rootmnt}${mnt}"
 				mount -n -o move "${mnt}" "${rootmnt}${mnt}"
 			fi
