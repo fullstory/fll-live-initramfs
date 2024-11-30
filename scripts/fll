@@ -276,45 +276,63 @@ fll_copy_with_perc()
 		return 1
 	fi
 
+	if="${1}"
+	of="${2}/${1##*/}"
+
 	# background the copy, grab the process id
-	cp "${1}" "${2}/${1##*/}" &
+	dd if="${if}" of="${of}" status=none &
 
 	# calculate copying progress
-	awk -v pid="${!}" -v origfile="${1}" -v destfile="${2}/${1##*/}" '
-		function size_of(file,    cmd, size)
+	awk -v pid="${!}" -v origfile="${if}" -v destfile="${of}" '
+		function get_size(file)
 		{
 			cmd = "ls -l " file
 			if ((cmd | getline) > 0) {
-				size = int($5 / 1024)
+				size = int($5)
 				close(cmd)
 				if (size > 0)
 					return size
 			}
-
 			return 0
 		}
 
+		function get_fd(pid, file)
+		{
+			fd = -1
+			cmd = "ls -l /proc/" pid "/fd/"
+			while ((cmd | getline) > 0) {
+				if ($NF == file)
+					fd = $9
+			}
+			close(cmd)
+			return fd
+		}
+
+		function get_pos(pid, fd)
+		{
+			pos = -1
+			cmd = "cat /proc/" pid "/fdinfo/" fd " 2>/dev/null"
+			while ((cmd | getline) > 0) {
+				if (/pos:/)
+					pos = $2
+			}
+			close(cmd)
+			return pos
+		}
+
 		BEGIN {
-			do {
-				if (system("test -f " destfile) == 0) {
-					break
-				}
-				else if (system("sleep 1") == 0) {
-					wait++
-				}
-				else {
-					exit(1)
-				}
-			} while (wait < 15)
-
-			size_dest = perc = 0
-			size_orig = size_of(origfile)
-			if (size_orig <= 0)
+			perc = 0
+			size_orig = get_size(origfile)
+			if (size_orig <= 0) {
+				printf("\nFailed to copy to ram: %s\n", origfile)
 				exit(1)
+			}
 
 			do {
-				perc = int(100 * size_of(destfile) / size_orig)
-				if (perc < 100) {
+				dest_fd = get_fd(pid, destfile)
+				dest_pos = get_pos(pid, dest_fd)
+				perc = int(100 * dest_pos / size_orig)
+				if (perc > 0 && perc < 100) {
 					printf("\r[")
 					for (i = 0; i <= perc; i += 2)
 						printf("=")
@@ -324,13 +342,11 @@ fll_copy_with_perc()
 					printf("]  ")
 					printf("%02d%s", perc, "%")
 				}
-			} while (system("test -d /proc/" pid) == 0 &&
-				 system("sleep 2") == 0)
+			} while (system("sleep 1") == 0 &&
+					 system("test -d /proc/" pid "/fd") == 0)
 
-			#
 			# destfile size is > origfile size on tmpfs
-			#
-			if (size_of(destfile) >= size_orig) {
+			if (get_size(destfile) >= size_orig) {
 				printf("\r[")
 				for (i = 0; i <= 100; i += 2)
 					printf("=")
@@ -339,11 +355,10 @@ fll_copy_with_perc()
 				exit(0)
 			}
 			else {
-				printf("\nFailed to copy %s to ram\n", origfile)
+				printf("\nFailed to copy to ram: %s\n", origfile)
 				exit(1)
 			}
 		}'
-
 	return ${?}
 }
 
@@ -789,11 +804,9 @@ mountroot()
 									if [ -f "${FLL_PROBE}" ]; then
 										toramcmd="fll_copy_with_perc ${FLL_PROBE} /fll/toram/${FLL_IMAGE_DIR}"
 									else
-										toramcmd="cp ${FLL_PROBE} /fll/toram/${FLL_IMAGE_LOCATION}"
-										printf "... copy about to start without progress, please wait.\n"
+										toramcmd="fll_copy_with_perc ${FLL_PROBE} /fll/toram/${FLL_IMAGE_LOCATION}"
 									fi
 									if $toramcmd; then
-										toramcmd=""
 										if [ "${FLL_BLOCKMNT}" = "${FLL_MOUNTPOINT}" ]; then
 											# umount the direct squashfs partition
 											fll_umount "${FLL_BLOCKMNT}"
