@@ -1177,6 +1177,14 @@ mountroot()
 		printf "0.000000 0 0.000000\n0\nLOCAL\n" > "${rootmnt}/etc/adjtime"
 	fi
 
+	# configure live getty configuration for systemd
+	if [ -r "${rootmnt}/lib/systemd/system/getty@.service" ]; then
+		sed -e 's#^ExecStart=.*#ExecStart=-/sbin/agetty --noclear -n -i -l /usr/bin/fll_login %I 38400 linux#' \
+			"${rootmnt}/lib/systemd/system/getty@.service" > "${rootmnt}/etc/systemd/system/getty@.service"
+		ln -fs /etc/systemd/system/getty@.service "${rootmnt}/etc/systemd/system/getty.target.wants/getty@tty1.service"
+		ln -fs getty@.service "${rootmnt}/etc/systemd/system/autovt@.service"
+	fi
+
 	# Save an in-memory copy of the live initial ramdisk for shutdown (exitrd)
 	# https://systemd.io/INITRD_INTERFACE/
 	mkdir /run/initramfs~
