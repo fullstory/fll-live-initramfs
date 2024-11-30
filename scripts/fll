@@ -315,16 +315,16 @@ fll_copy_with_perc()
 
 		BEGIN {
 			perc = 0
-			size_ifile = get_size(ifile)
-			if (size_ifile <= 0) {
+			ifile_size = get_size(ifile)
+			if (ifile_size <= 0) {
 				printf("\nFailed to copy to ram: %s\n", ifile)
 				exit(1)
 			}
 
 			do {
-				ofile_fd = get_fd(pid, ofile)
-				ofile_pos = get_pos(pid, ofile_fd)
-				perc = int(100 * ofile_pos / size_ifile)
+				ifile_fd = get_fd(pid, ifile)
+				ifile_pos = get_pos(pid, ifile_fd)
+				perc = int(100 * ifile_pos / ifile_size)
 				if (perc > 0 && perc < 100) {
 					printf("\r[")
 					for (i = 0; i <= perc; i += 2)
@@ -339,7 +339,7 @@ fll_copy_with_perc()
 					 system("test -d /proc/" pid "/fd") == 0)
 
 			# ofile size is > if size on tmpfs
-			if (get_size(ofile) >= size_ifile) {
+			if (get_size(ofile) >= ifile_size) {
 				printf("\r[")
 				for (i = 0; i <= 100; i += 2)
 					printf("=")
