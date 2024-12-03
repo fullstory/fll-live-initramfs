@@ -1,3 +1,10 @@
+fll-live-initramfs (3.0.14) unstable; urgency=medium
+
+  * Make sure ${rootmnt}/fll exists before attempting to create fstype
+    symlink.
+
+ -- Kel Modderman <kelvmod@gmail.com>  Tue, 03 Dec 2024 22:43:45 +1000
+
 fll-live-initramfs (3.0.13) unstable; urgency=medium
 
   * Create convenience symlink to compressed fs at /fll/${FSTYPE} for

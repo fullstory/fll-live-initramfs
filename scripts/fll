@@ -891,6 +891,7 @@ mountroot()
 	# panic on failure to detect live media
 	if [ "${FLL_MEDIA_FOUND}" ]; then
 		# create a symlink to compressed fs for calamares to unpack
+		mkdir -p "${rootmnt}/fll"
 		ln -s "${FLL_PROBE}" "${rootmnt}/fll/${FSTYPE}"
 	else
 		panic "Failed to detect live media"
