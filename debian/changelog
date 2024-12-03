@@ -1,8 +1,9 @@
-fll-live-initramfs (3.0.13) UNRELEASED; urgency=medium
+fll-live-initramfs (3.0.13) unstable; urgency=medium
 
-  * NOT RELEASED YET
+  * Create convenience symlink to compressed fs at /fll/${FSTYPE} for
+    calamares to unpack.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 30 Nov 2024 20:58:42 +0100
+ -- Kel Modderman <kelvmod@gmail.com>  Tue, 03 Dec 2024 21:55:23 +1000
 
 fll-live-initramfs (3.0.12) unstable; urgency=medium
 
