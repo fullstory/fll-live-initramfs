@@ -889,11 +889,7 @@ mountroot()
 	done
 
 	# panic on failure to detect live media
-	if [ "${FLL_MEDIA_FOUND}" ]; then
-		# create a symlink to compressed fs for calamares to unpack
-		mkdir -p "${rootmnt}/fll"
-		ln -s "${FLL_PROBE}" "${rootmnt}/fll/${FSTYPE}"
-	else
+	if [ -z "${FLL_MEDIA_FOUND}" ]; then
 		panic "Failed to detect live media"
 	fi
 
@@ -967,7 +963,10 @@ mountroot()
 
 	# TODO Make a sane test and kill FLL_MOUNTPOINT
 	# sanity check, ${rootmnt}${FLL_MOUNTPOINT} _must_ exist
-	if [ ! -d "${rootmnt}${FLL_MOUNTPOINT}" ]; then
+	if [ -d "${rootmnt}${FLL_MOUNTPOINT}" ]; then
+		# create a symlink to compressed fs for calamares to unpack
+		ln -s "${FLL_PROBE}" "${rootmnt}/fll/${FSTYPE}"
+	else
 		panic "Failed to find ${FLL_MOUNTPOINT} on ${rootmnt}"
 	fi
 
