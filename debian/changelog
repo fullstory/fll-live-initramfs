@@ -1,3 +1,9 @@
+fll-live-initramfs (3.0.16) UNRELEASED; urgency=medium
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 04 Dec 2024 02:18:39 +0100
+
 fll-live-initramfs (3.0.15) unstable; urgency=medium
 
   * Create fstype symlink _after_ mounting a tmpfs on ${rootmnt}.
