@@ -1,6 +1,10 @@
 fll-live-initramfs (3.0.16) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
+
+  [ Kel Modderman ]
+  * Detect budgie-desktop xsession.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 04 Dec 2024 02:18:39 +0100
 
