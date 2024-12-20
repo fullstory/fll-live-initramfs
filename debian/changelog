@@ -5,6 +5,7 @@ fll-live-initramfs (3.0.17) UNRELEASED; urgency=medium
 
   [ Kel Modderman ]
   * Add support for xfce-wayland.
+  * Add support for lxqt wayland-session.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 07 Dec 2024 13:07:26 +0100
 
