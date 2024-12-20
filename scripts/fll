@@ -1077,6 +1077,7 @@ mountroot()
 		[ -r "${rootmnt}/usr/share/xsessions/fluxbox.desktop" ] && DESKTOP="fluxbox"
 		[ -r "${rootmnt}/usr/share/xsessions/LXDE.desktop" ] && DESKTOP="lxde"
 		[ -r "${rootmnt}/usr/share/xsessions/lxqt.desktop" ] && DESKTOP="lxqt"
+		[ -r "${rootmnt}/usr/share/wayland-sessions/xfce-wayland.desktop" ] && DESKTOP="xfce-wayland"
 		[ -r "${rootmnt}/usr/share/xsessions/xfce.desktop" ] && DESKTOP="xfce"
 		[ -r "${rootmnt}/usr/share/xsessions/gnome.desktop" ] && DESKTOP="gnome-x11"
 		[ -r "${rootmnt}/usr/share/wayland-sessions/gnome.desktop" ] && DESKTOP="gnome"
@@ -1137,10 +1138,15 @@ mountroot()
 			FLL_XTYPE="x11"
 			FLL_XSESSION="lxqt"
 			;;
-		xfce*)
+		xfce)
 			FLL_XTYPE="x11"
 			FLL_XSESSION="xfce"
 			;;
+		xfce-wayland)
+			FLL_XTYPE="wayland"
+			FLL_XSESSION="xfce-wayland"
+			;;
+
 		*)
 			FLL_XTYPE=""
 			FLL_XSESSION=""
