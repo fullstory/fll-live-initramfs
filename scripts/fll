@@ -1146,7 +1146,6 @@ mountroot()
 			FLL_XTYPE="wayland"
 			FLL_XSESSION="xfce-wayland"
 			;;
-
 		*)
 			FLL_XTYPE=""
 			FLL_XSESSION=""
