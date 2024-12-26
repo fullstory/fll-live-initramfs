@@ -1068,6 +1068,7 @@ mountroot()
 	if [ -z "${DESKTOP}" ]; then
 		# in the absence of an explicit destop= cheatcode setting,
 		# these defaults are checked in reverse order
+		[ -r "${rootmnt}/usr/share/xsessions/mate.desktop" ] && DESKTOP="mate"
 		[ -r "${rootmnt}/usr/share/xsessions/budgie-desktop.desktop" ] && DESKTOP="budgie-desktop"
 		[ -r "${rootmnt}/usr/share/wayland-sessions/cinnamon-wayland.desktop" ] && DESKTOP="cinnamon-wayland"
 		[ -r "${rootmnt}/usr/share/xsessions/cinnamon.desktop" ] && DESKTOP="cinnamon"
@@ -1142,6 +1143,10 @@ mountroot()
 		lxqt-wayland)
 			FLL_XTYPE="wayland"
 			FLL_XSESSION="lxqt-wayland"
+			;;
+		mate)
+			FLL_XTYPE="x11"
+			FLL_XSESSION="mate"
 			;;
 		xfce)
 			FLL_XTYPE="x11"
