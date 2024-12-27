@@ -1,12 +1,9 @@
-fll-live-initramfs (3.0.18) UNRELEASED; urgency=medium
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (3.0.18) unstable; urgency=medium
 
   [ Kel Modderman ]
   * Add support for MATE xsession.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 21 Dec 2024 22:50:08 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 27 Dec 2024 06:46:05 +0100
 
 fll-live-initramfs (3.0.17) unstable; urgency=medium
 
