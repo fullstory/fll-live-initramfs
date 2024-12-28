@@ -5,6 +5,7 @@ fll-live-initramfs (3.0.19) UNRELEASED; urgency=medium
 
   [ Kel Modderman ]
   * Add support for a labwc wayland session.
+  * Add plasma and plasmax11 desktop cheatcodes, preserve kde-*.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 27 Dec 2024 06:46:30 +0100
 
