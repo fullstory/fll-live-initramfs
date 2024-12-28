@@ -1,13 +1,15 @@
-fll-live-initramfs (3.0.19) UNRELEASED; urgency=medium
+fll-live-initramfs (3.0.20) unstable; urgency=medium
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+  * Fix path to labwc.desktop - s/xsessions/wayland-session/ doh.
 
-  [ Kel Modderman ]
+ -- Kel Modderman <kelvmod@gmail.com>  Sat, 28 Dec 2024 23:37:43 +1000
+
+fll-live-initramfs (3.0.19) unstable; urgency=medium
+
   * Add support for a labwc wayland session.
   * Add plasma and plasmax11 desktop cheatcodes, preserve kde-*.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 27 Dec 2024 06:46:30 +0100
+ -- Kel Modderman <kelvmod@gmail.com>  Sat, 28 Dec 2024 23:37:17 +1000
 
 fll-live-initramfs (3.0.18) unstable; urgency=medium
 
