@@ -1,6 +1,10 @@
 fll-live-initramfs (3.0.19) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
+
+  [ Kel Modderman ]
+  * Add support for a labwc wayland session.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 27 Dec 2024 06:46:30 +0100
 
