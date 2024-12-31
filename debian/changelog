@@ -1,6 +1,10 @@
 fll-live-initramfs (3.0.21) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
+
+  [ Kel Modderman ]
+  * Add support for hyprland wayland-session.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 28 Dec 2024 22:07:52 +0100
 

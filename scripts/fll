@@ -1068,6 +1068,7 @@ mountroot()
 	if [ -z "${DESKTOP}" ]; then
 		# in the absence of an explicit destop= cheatcode setting,
 		# these defaults are checked in reverse order
+		[ -r "${rootmnt}/usr/share/wayland-sessions/hyprland.desktop" ] && DESKTOP="hyprland"
 		[ -r "${rootmnt}/usr/share/wayland-sessions/labwc.desktop" ] && DESKTOP="labwc"
 		[ -r "${rootmnt}/usr/share/xsessions/mate.desktop" ] && DESKTOP="mate"
 		[ -r "${rootmnt}/usr/share/xsessions/budgie-desktop.desktop" ] && DESKTOP="budgie-desktop"
@@ -1112,6 +1113,10 @@ mountroot()
 		gnome-x11)
 			FLL_XTYPE="x11"
 			FLL_XSESSION="gnome"
+			;;
+		hyprland)
+			FLL_XTYPE="wayland"
+			FLL_XSESSION="hyprland"
 			;;
 		icewm)
 			FLL_XTYPE="x11"
