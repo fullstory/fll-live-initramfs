@@ -1176,7 +1176,7 @@ mountroot()
 		sed -i "s/FLL_XDESKTOP=.*/FLL_XDESKTOP=\"${DESKTOP}\"" \
 			"${rootmnt}/etc/default/distro"
 	else
-		echo "FLL_XDESKTOP=\"${FLL_XDESKTOP}\"" >> "${rootmnt}/etc/default/distro"
+		echo "FLL_XDESKTOP=\"${DESKTOP}\"" >> "${rootmnt}/etc/default/distro"
 	fi
 	if grep -q "^FLL_XTYPE" "${rootmnt}/etc/default/distro"; then
 		sed -i "s/FLL_XTYPE=.*/FLL_XTYPE=\"${FLL_XTYPE}\"" \

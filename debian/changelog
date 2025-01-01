@@ -1,3 +1,9 @@
+fll-live-initramfs (3.0.24) unstable; urgency=medium
+
+  * Bugfix: properly save the DESKTOP variable as FLL_XDESKTOP.
+
+ -- Kel Modderman <kelvmod@gmail.com>  Wed, 01 Jan 2025 21:37:11 +1000
+
 fll-live-initramfs (3.0.23) unstable; urgency=medium
 
   * Support cheatcodes for lxqt: lxqt-wayland|lxqt-labwc|labwc-
