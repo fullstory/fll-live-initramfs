@@ -1,3 +1,9 @@
+fll-live-initramfs (3.0.26) UNRELEASED; urgency=medium
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 01 Jan 2025 22:22:39 +0100
+
 fll-live-initramfs (3.0.25) unstable; urgency=medium
 
   * Fix lxqt-kwin cheatcode typo.
