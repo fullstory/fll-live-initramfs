@@ -1,4 +1,4 @@
-fll-live-initramfs (3.0.25) UNRELEASED; urgency=medium
+fll-live-initramfs (3.0.25) unstable; urgency=medium
 
   * Fix lxqt-kwin cheatcode typo.
 
