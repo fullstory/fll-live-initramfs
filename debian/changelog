@@ -1,3 +1,9 @@
+fll-live-initramfs (3.0.25) UNRELEASED; urgency=medium
+
+  * Fix lxqt-kwin cheatcode typo.
+
+ -- Kel Modderman <kelvmod@gmail.com>  Wed, 01 Jan 2025 22:20:01 +1000
+
 fll-live-initramfs (3.0.24) unstable; urgency=medium
 
   * Bugfix: properly save the DESKTOP variable as FLL_XDESKTOP.

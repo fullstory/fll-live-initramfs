@@ -1150,7 +1150,7 @@ mountroot()
 			FLL_XTYPE="x11"
 			FLL_XSESSION="lxqt"
 			;;
-		lxqt-wayland|lxqt-labwc|labwc-kwin|lxqt-hyprland|lxqt-sway|lxqt-wayfire)
+		lxqt-wayland|lxqt-labwc|lxqt-kwin|lxqt-hyprland|lxqt-sway|lxqt-wayfire)
 			FLL_XTYPE="wayland"
 			FLL_XSESSION="lxqt-wayland"
 			;;
