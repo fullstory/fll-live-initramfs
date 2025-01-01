@@ -1,3 +1,10 @@
+fll-live-initramfs (3.0.23) UNRELEASED; urgency=medium
+
+  * Support cheatcodes for lxqt: lxqt-wayland|lxqt-labwc|labwc-
+    kwin|lxqt-hyprland|lxqt-sway|lxqt-wayfire.
+
+ -- Kel Modderman <kelvmod@gmail.com>  Wed, 01 Jan 2025 20:28:28 +1000
+
 fll-live-initramfs (3.0.22) unstable; urgency=medium
 
   * Add support for desktop variants (e.g. different compositors for a
