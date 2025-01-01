@@ -1150,7 +1150,7 @@ mountroot()
 			FLL_XTYPE="x11"
 			FLL_XSESSION="lxqt"
 			;;
-		lxqt-wayland)
+		lxqt-wayland|lxqt-labwc|lxqt-wayfire)
 			FLL_XTYPE="wayland"
 			FLL_XSESSION="lxqt-wayland"
 			;;
@@ -1172,6 +1172,12 @@ mountroot()
 			;;
 	esac
 
+	if grep -q "^FLL_XDESKTOP" "${rootmnt}/etc/default/distro"; then
+		sed -i "s/FLL_XDESKTOP=.*/FLL_XDESKTOP=\"${DESKTOP}\"" \
+			"${rootmnt}/etc/default/distro"
+	else
+		echo "FLL_XDESKTOP=\"${FLL_XDESKTOP}\"" >> "${rootmnt}/etc/default/distro"
+	fi
 	if grep -q "^FLL_XTYPE" "${rootmnt}/etc/default/distro"; then
 		sed -i "s/FLL_XTYPE=.*/FLL_XTYPE=\"${FLL_XTYPE}\"" \
 			"${rootmnt}/etc/default/distro"

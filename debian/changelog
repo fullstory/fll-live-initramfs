@@ -1,8 +1,10 @@
-fll-live-initramfs (3.0.22) UNRELEASED; urgency=medium
+fll-live-initramfs (3.0.22) unstable; urgency=medium
 
-  * NOT RELEASED YET
+  * Add support for desktop variants (e.g. different compositors for a
+    given wayland session) by catching and storing FLL_XDESKTOP in
+    /etc/default/distro for use by fll-home.service during boot.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 01 Jan 2025 01:20:47 +0100
+ -- Kel Modderman <kelvmod@gmail.com>  Wed, 01 Jan 2025 20:14:21 +1000
 
 fll-live-initramfs (3.0.21) unstable; urgency=medium
 
