@@ -1,3 +1,9 @@
+fll-live-initramfs (3.0.27) UNRELEASED; urgency=medium
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 02 Jan 2025 21:24:00 +0100
+
 fll-live-initramfs (3.0.26) unstable; urgency=medium
 
   * Add support for wayland-sessions/sway.
