@@ -1,12 +1,9 @@
-fll-live-initramfs (3.0.27) UNRELEASED; urgency=medium
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (3.0.27) unstable; urgency=medium
 
   [ Kel Modderman ]
   * lxqt: default to wayland session.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 02 Jan 2025 21:24:00 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 01 May 2025 04:08:50 +0200
 
 fll-live-initramfs (3.0.26) unstable; urgency=medium
 
