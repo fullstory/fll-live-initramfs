@@ -1,14 +1,11 @@
-fll-live-initramfs (3.0.28) UNRELEASED; urgency=medium
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (4.0.0) unstable; urgency=medium
 
   [ Kel Modderman ]
   * Introduce fll_blockdev_detect and strip boot time features back to
     bare minimum required to boot from iso9660 fs for iso media on a linux
     filesystem.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 01 May 2025 04:09:03 +0200
+ -- Kel Modderman <kelvmod@gmail.com>  Sun, 08 Jun 2025 21:38:15 +1000
 
 fll-live-initramfs (3.0.27) unstable; urgency=medium
 
