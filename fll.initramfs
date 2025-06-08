@@ -75,7 +75,7 @@ FLL_UNION_MODULE="overlay"
 modprobe "${FLL_UNION_MODULE}"
 
 # prepare COW union filesystem
-FLL_UNION_COWDIR="${FLL_ROOT}/fll/cow"
+FLL_UNION_COWDIR="/fll/cow"
 mkdir -p "${FLL_UNION_COWDIR}"
 mount -n -t tmpfs -o size=90%,mode=755 tmpfs "${FLL_UNION_COWDIR}"
 
@@ -86,13 +86,14 @@ mkdir -p "${FLL_UNION_COWDIR}/upper" "${FLL_UNION_COWDIR}/work"
 # mount the union COW filesystem
 mount -t "${FLL_UNION_MODULE}" -o "${FLL_UNION_OPTIONS}" "${FLL_UNION_MODULE}" "${FLL_ROOT}"
 
-# migrate media mountpoints
-for mnt in ${FLL_MOUNT_POINT} /fll/fromiso; do
+# create /fll and migrate mountpoints
+mkdir -p "${FLL_ROOT}/fll"
+for mnt in ${FLL_UNION_COWDIR} ${FLL_MOUNT_POINT} /fll/fromiso; do
     if grep -q "${mnt}" /proc/mounts; then
+        # create symlink to squashfs for calamares
+        [ -f "${mnt}/${FLL_IMAGE_LOCATION}" ] && ln -sf "${mnt}/${FLL_IMAGE_LOCATION}" "${FLL_ROOT}/fll/squashfs"
         mkdir -p "${FLL_ROOT}${mnt}"
         mount -n -o move "${mnt}" "${FLL_ROOT}${mnt}"
-        # create symlink to squashfs for calamares
-        ln -sf "${mnt}/${FLL_IMAGE_LOCATION}" "${FLL_ROOT}/fll/squashfs"
     fi
 done
 
