@@ -12,7 +12,18 @@
 # exit 0 if fll media is detected on a block device
 ###
 
-[ -n "${ID_FS_TYPE}" ] || exit 1
+[ -n "${ID_FS_TYPE}" ] || ID_FS_TYPE="$(blkid -s TYPE -o value ${DEVNAME})"
+
+case "${ID_FS_TYPE}" in
+    iso9660|ext*|btrfs|xfs|reiserfs)
+        :
+        ;;
+    *)
+        exit 1
+        ;;
+esac
+
+[ -n "${ID_FS_UUID}" ] || ID_FS_UUID="$(blkid -s UUID -o value ${DEVNAME})"
 
 # source distro-defaults
 [ -s /etc/default/distro ] && . /etc/default/distro
@@ -41,28 +52,19 @@ for opt in $(cat /proc/cmdline); do
     esac
 done
 
-case "$ID_FS_TYPE" in
-    iso9660|ext*|btrfs|xfs|reiserfs)
-        :
-        ;;
-    *)
-        exit 1
-        ;;
-esac
-
 FLL_MOUNT_POINT="/fll/${DEVNAME#/dev/}"
 [ -d "${FLL_MOUNT_POINT}" ] && exit 1 || mkdir -p "${FLL_MOUNT_POINT}"
 
 mkdir -p "${FLL_MOUNT_POINT}"
-mount -o ro,noatime "${DEVNAME}" "${FLL_MOUNT_POINT}"
+mount -t "${ID_FS_TYPE}" -o ro "${DEVNAME}" "${FLL_MOUNT_POINT}"
 # iso on media (cd/dvd/usb)
 if [ "${ID_FS_UUID}" = "${FLL_UUID}" ] && [ -f "${FLL_MOUNT_POINT}/${FLL_IMAGE_LOCATION}" ]; then
-    mount -o ro "${FLL_MOUNT_POINT}/${FLL_IMAGE_LOCATION}" "${FLL_ROOT}"
+    mount -t squashfs -o ro "${FLL_MOUNT_POINT}/${FLL_IMAGE_LOCATION}" "${FLL_ROOT}"
 # iso on filesystem (fromiso=)
 elif [ -f "${FLL_MOUNT_POINT}/${FLL_MEDIA_NAME#/}" ] && \
      [ "$(blkid -s UUID -o value ${FLL_MOUNT_POINT}/${FLL_MEDIA_NAME#/})" = "${FLL_UUID}" ]; then
-    mount -o ro "${FLL_MOUNT_POINT}/${FLL_MEDIA_NAME#/}" "/fll/fromiso"
-    mount -o ro "/fll/fromiso/${FLL_IMAGE_LOCATION}" "${FLL_ROOT}"
+    mount -t iso9660 -o ro "${FLL_MOUNT_POINT}/${FLL_MEDIA_NAME#/}" "/fll/fromiso"
+    mount -t squashfs -o ro "/fll/fromiso/${FLL_IMAGE_LOCATION}" "${FLL_ROOT}"
 else
     # no iso media detected by UUID
     umount "${FLL_MOUNT_POINT}"
