@@ -1,6 +1,12 @@
 fll-live-initramfs (3.0.28) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
+
+  [ Kel Modderman ]
+  * Introduce fll_blockdev_detect and strip boot time features back to
+    bare minimum required to boot from iso9660 fs for iso media on a linux
+    filesystem.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 01 May 2025 04:09:03 +0200
 

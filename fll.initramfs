@@ -1,0 +1,104 @@
+#!/bin/sh
+
+###
+# F.U.L.L.S.T.O.R.Y initramfs live media program + script
+#
+# Copyright: (C) 2025, Kel Modderman <kelvmod@gmail.com>
+# License:   GPLv2
+#
+# F.U.L.L.S.T.O.R.Y Project Homepage:
+# https://github.com/fullstory
+#
+# exit 0 if fll media is detected on a block device
+###
+
+[ -n "${ID_FS_TYPE}" ] || exit 1
+
+# source distro-defaults
+[ -s /etc/default/distro ] && . /etc/default/distro
+FLL_ROOT="${rootmnt:-/root}"
+
+# parse fll options given on cmdline
+for opt in $(cat /proc/cmdline); do
+    case "${opt}" in
+        fll=debug)
+            set -x
+            ;;
+        fromiso=*)
+            FLL_MEDIA_NAME="${opt#fromiso=}"
+            ;;
+        iso_uuid=*)
+            FLL_UUID="${opt#iso_uuid=}"
+            ;;
+        image_dir=*)
+            FLL_IMAGE_DIR="${opt#image_dir=}"
+            FLL_IMAGE_LOCATION="${FLL_IMAGE_DIR}/${FLL_IMAGE_FILE}"
+            ;;
+        image_name=*)
+            FLL_IMAGE_FILE="${opt#image_name=}"
+            FLL_IMAGE_LOCATION="${FLL_IMAGE_DIR}/${FLL_IMAGE_FILE}"
+            ;;
+    esac
+done
+
+case "$ID_FS_TYPE" in
+    iso9660|ext*|btrfs|xfs|reiserfs)
+        :
+        ;;
+    *)
+        exit 1
+        ;;
+esac
+
+FLL_MOUNT_POINT="/fll/${DEVNAME#/dev/}"
+[ -d "${FLL_MOUNT_POINT}" ] && exit 1 || mkdir -p "${FLL_MOUNT_POINT}"
+
+mkdir -p "${FLL_MOUNT_POINT}"
+mount -o ro,noatime "${DEVNAME}" "${FLL_MOUNT_POINT}"
+# iso on media (cd/dvd/usb)
+if [ "${ID_FS_UUID}" = "${FLL_UUID}" ] && [ -f "${FLL_MOUNT_POINT}/${FLL_IMAGE_LOCATION}" ]; then
+    mount -o ro "${FLL_MOUNT_POINT}/${FLL_IMAGE_LOCATION}" "${FLL_ROOT}"
+# iso on filesystem (fromiso=)
+elif [ -f "${FLL_MOUNT_POINT}/${FLL_MEDIA_NAME#/}" ] && \
+     [ "$(blkid -s UUID -o value ${FLL_MOUNT_POINT}/${FLL_MEDIA_NAME#/})" = "${FLL_UUID}" ]; then
+    mount -o ro "${FLL_MOUNT_POINT}/${FLL_MEDIA_NAME#/}" "/fll/fromiso"
+    mount -o ro "/fll/fromiso/${FLL_IMAGE_LOCATION}" "${FLL_ROOT}"
+else
+    # no iso media detected by UUID
+    umount "${FLL_MOUNT_POINT}"
+    exit 1
+fi
+
+FLL_UNION_MODULE="overlay"
+modprobe "${FLL_UNION_MODULE}"
+
+# prepare COW union filesystem
+FLL_UNION_COWDIR="${FLL_ROOT}/fll/cow"
+mkdir -p "${FLL_UNION_COWDIR}"
+mount -n -t tmpfs -o size=90%,mode=755 tmpfs "${FLL_UNION_COWDIR}"
+
+# union module options
+FLL_UNION_OPTIONS="lowerdir=${FLL_MOUNTPOINT},upperdir=${FLL_UNION_COWDIR}/upper,workdir=${FLL_UNION_COWDIR}/work"
+mkdir -p "${FLL_UNION_COWDIR}/upper" "${FLL_UNION_COWDIR}/work"
+
+# mount the union COW filesystem
+mount -t "${FLL_UNION_MODULE}" -o "${FLL_UNION_OPTIONS}" "${FLL_UNION_MODULE}" "${FLL_ROOT}"
+
+# migrate media mountpoints
+for mnt in ${FLL_MOUNT_POINT} /fll/fromiso; do
+    if grep -q "${mnt}" /proc/mounts; then
+        mkdir -p "${FLL_ROOT}${mnt}"
+        mount -n -o move "${mnt}" "${FLL_ROOT}${mnt}"
+        # create symlink to squashfs for calamares
+        ln -sf "${mnt}/${FLL_IMAGE_LOCATION}" "${FLL_ROOT}/fll/squashfs"
+    fi
+done
+
+# create udev rule for persistent symlink to device live media was found on
+printf "KERNEL==\"%s\", SYMLINK+=\"fll\"\n" \
+    "${DEVNAME#/dev/}" >  ${FLL_ROOT}/etc/udev/rules.d/70-fll-live.rules
+printf "KERNEL==\"%s\", ENV{ID_CDROM}==\"?*\", SYMLINK+=\"fll-cdrom\"\n" \
+    "${DEVNAME#/dev/}" >> ${FLL_ROOT}/etc/udev/rules.d/70-fll-live.rules
+
+# success
+exit 0

@@ -12,7 +12,7 @@
 ###############################################################################
 
 # initramfs-tools prerequisite handling
-PREREQS="nbd lvm"
+PREREQS="lvm"
 
 prereqs()
 {
@@ -31,26 +31,18 @@ esac
 [ -s /etc/default/distro ] || exit 0
 
 # distro-defaults
-install -m 0644 -D /etc/default/distro \
-	${DESTDIR}/etc/default/distro
+copy_file "regular file" /etc/default/distro /etc/default/distro
 
 # filesystem unioning modules
-manual_add_modules unionfs
-manual_add_modules aufs
 manual_add_modules overlay
 
 # squashfs and loop
 manual_add_modules squashfs
 manual_add_modules loop
 
-# ms filesystem drivers
-manual_add_modules vfat
-manual_add_modules ntfs
-
 # needed for vfat and iso9660
 manual_add_modules nls_cp437
 manual_add_modules nls_utf8
-manual_add_modules nls_iso8859-1
 
 # ensure maximum hardware support
 auto_add_modules
@@ -59,10 +51,15 @@ auto_add_modules
 copy_exec /usr/lib/systemd/systemd-shutdown /shutdown
 mkdir -p "$DESTDIR"/etc
 touch "$DESTDIR"/etc/initrd-release
-# place our script in the initranfs
 mkdir -p "$DESTDIR"/lib/systemd/system-shutdown
 copy_file "regular file" \
 	/usr/share/fll-live-initramfs/fll.shutdown \
 	/usr/lib/systemd/system-shutdown/fll.shutdown
 copy_exec /usr/bin/systemd-detect-virt /usr/bin/systemd-detect-virt
 copy_exec /usr/bin/eject /usr/bin/eject
+
+# initramfs live media program + script
+copy_exec /usr/bin/fll_blockdev_detect /usr/bin/fll_blockdev_detect
+copy_file "regular file" \
+	/usr/share/fll-live-initramfs/fll.initramfs \
+	/usr/lib/fll/fll.initramfs
