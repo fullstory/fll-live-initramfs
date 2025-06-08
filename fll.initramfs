@@ -27,7 +27,6 @@ esac
 
 # source distro-defaults
 [ -s /etc/default/distro ] && . /etc/default/distro
-FLL_ROOT="${rootmnt:-/root}"
 
 # parse fll options given on cmdline
 for opt in $(cat /proc/cmdline); do
@@ -52,22 +51,24 @@ for opt in $(cat /proc/cmdline); do
     esac
 done
 
-FLL_MOUNT_POINT="/fll/${DEVNAME#/dev/}"
-[ -d "${FLL_MOUNT_POINT}" ] && exit 1 || mkdir -p "${FLL_MOUNT_POINT}"
+FLL_ROOT="${rootmnt:-/root}"
+FLL_ROOTFS_MNT="/fll/${FLL_UUID}"
+FLL_BLOCKDEV_MNT="/fll/${DEVNAME#/dev/}"
+[ -d "${FLL_BLOCKDEV_MNT}" ] && exit 1 || mkdir -p "${FLL_BLOCKDEV_MNT}"
 
-mkdir -p "${FLL_MOUNT_POINT}"
-mount -t "${ID_FS_TYPE}" -o ro "${DEVNAME}" "${FLL_MOUNT_POINT}"
+mkdir -p "${FLL_BLOCKDEV_MNT}"
+mount -t "${ID_FS_TYPE}" -o ro "${DEVNAME}" "${FLL_BLOCKDEV_MNT}"
 # iso on media (cd/dvd/usb)
-if [ "${ID_FS_UUID}" = "${FLL_UUID}" ] && [ -f "${FLL_MOUNT_POINT}/${FLL_IMAGE_LOCATION}" ]; then
-    mount -t squashfs -o ro "${FLL_MOUNT_POINT}/${FLL_IMAGE_LOCATION}" "${FLL_ROOT}"
+if [ "${ID_FS_UUID}" = "${FLL_UUID}" ] && [ -f "${FLL_BLOCKDEV_MNT}/${FLL_IMAGE_LOCATION}" ]; then
+    mount -t squashfs -o ro "${FLL_BLOCKDEV_MNT}/${FLL_IMAGE_LOCATION}" "${FLL_ROOTFS_MNT}"
 # iso on filesystem (fromiso=)
-elif [ -f "${FLL_MOUNT_POINT}/${FLL_MEDIA_NAME#/}" ] && \
-     [ "$(blkid -s UUID -o value ${FLL_MOUNT_POINT}/${FLL_MEDIA_NAME#/})" = "${FLL_UUID}" ]; then
-    mount -t iso9660 -o ro "${FLL_MOUNT_POINT}/${FLL_MEDIA_NAME#/}" "/fll/fromiso"
-    mount -t squashfs -o ro "/fll/fromiso/${FLL_IMAGE_LOCATION}" "${FLL_ROOT}"
+elif [ -f "${FLL_BLOCKDEV_MNT}/${FLL_MEDIA_NAME#/}" ] && \
+     [ "$(blkid -s UUID -o value ${FLL_BLOCKDEV_MNT}/${FLL_MEDIA_NAME#/})" = "${FLL_UUID}" ]; then
+    mount -t iso9660 -o ro "${FLL_BLOCKDEV_MNT}/${FLL_MEDIA_NAME#/}" "/fll/fromiso"
+    mount -t squashfs -o ro "/fll/fromiso/${FLL_IMAGE_LOCATION}" "${FLL_ROOTFS_MNT}"
 else
     # no iso media detected by UUID
-    umount "${FLL_MOUNT_POINT}"
+    umount "${FLL_BLOCKDEV_MNT}"
     exit 1
 fi
 
@@ -80,7 +81,7 @@ mkdir -p "${FLL_UNION_COWDIR}"
 mount -n -t tmpfs -o size=90%,mode=755 tmpfs "${FLL_UNION_COWDIR}"
 
 # union module options
-FLL_UNION_OPTIONS="lowerdir=${FLL_MOUNTPOINT},upperdir=${FLL_UNION_COWDIR}/upper,workdir=${FLL_UNION_COWDIR}/work"
+FLL_UNION_OPTIONS="lowerdir=${FLL_ROOTFS_MNT},upperdir=${FLL_UNION_COWDIR}/upper,workdir=${FLL_UNION_COWDIR}/work"
 mkdir -p "${FLL_UNION_COWDIR}/upper" "${FLL_UNION_COWDIR}/work"
 
 # mount the union COW filesystem
@@ -88,7 +89,7 @@ mount -t "${FLL_UNION_MODULE}" -o "${FLL_UNION_OPTIONS}" "${FLL_UNION_MODULE}" "
 
 # create /fll and migrate mountpoints
 mkdir -p "${FLL_ROOT}/fll"
-for mnt in ${FLL_UNION_COWDIR} ${FLL_MOUNT_POINT} /fll/fromiso; do
+for mnt in ${FLL_ROOTFS_MNT} ${FLL_UNION_COWDIR} ${FLL_BLOCKDEV_MNT} /fll/fromiso; do
     if grep -q "${mnt}" /proc/mounts; then
         # create symlink to squashfs for calamares
         [ -f "${mnt}/${FLL_IMAGE_LOCATION}" ] && ln -sf "${mnt}/${FLL_IMAGE_LOCATION}" "${FLL_ROOT}/fll/squashfs"
