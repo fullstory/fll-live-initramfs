@@ -37,8 +37,8 @@ for opt in $(cat /proc/cmdline); do
         fromiso=*)
             FLL_MEDIA_NAME="${opt#fromiso=}"
             ;;
-        iso_uuid=*)
-            FLL_UUID="${opt#iso_uuid=}"
+        uuid=*)
+            FLL_UUID="${opt#uuid=}"
             ;;
         image_dir=*)
             FLL_IMAGE_DIR="${opt#image_dir=}"
