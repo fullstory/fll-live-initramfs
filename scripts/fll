@@ -72,12 +72,11 @@ mountroot()
 	# debug checkpoint
 	maybe_break fll-premount
 
-	/usr/bin/fll_blockdev_detect --monitor --execp=/usr/lib/fll/fll.initramfs
+	/usr/bin/fll_blockdev_detect --monitor --execp=/usr/lib/fll/fll.initramfs || \
+		panic "Failed to detect live media"
 
 	# debug checkpoint
 	maybe_break fll-postmount
-
-	printf "Preparing live filesystem...\n"
 
 	# prepare /dev /media /proc and /sys
 	for dir in dev media proc run sys; do
