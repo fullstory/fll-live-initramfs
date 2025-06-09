@@ -95,8 +95,9 @@ FLL_UNION_MODULE="overlay"
 FLL_UNION_COWDIR="/fll/cow"
 FLL_UNION_OPTIONS="lowerdir=${FLL_ROOTFS_MNT},upperdir=${FLL_UNION_COWDIR}/upper,workdir=${FLL_UNION_COWDIR}/work"
 modprobe "${FLL_UNION_MODULE}"
-mkdir -p "${FLL_UNION_COWDIR}/upper" "${FLL_UNION_COWDIR}/work"
+mkdir -p "${FLL_UNION_COWDIR}"
 mount -n -t tmpfs -o size=90%,mode=755 tmpfs "${FLL_UNION_COWDIR}"
+mkdir -p "${FLL_UNION_COWDIR}/upper" "${FLL_UNION_COWDIR}/work"
 mount -t "${FLL_UNION_MODULE}" -o "${FLL_UNION_OPTIONS}" "${FLL_UNION_MODULE}" "${FLL_ROOT}"
 
 # create /fll and migrate mountpoints
