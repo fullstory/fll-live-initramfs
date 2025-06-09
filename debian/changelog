@@ -1,8 +1,8 @@
-fll-live-initramfs (4.0.1) UNRELEASED; urgency=medium
+fll-live-initramfs (4.0.1) unstable; urgency=medium
 
-  * NOT RELEASED YET
+  * drop support for reiserfs (removed with kernel v6.13).
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 09 Jun 2025 01:37:18 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 09 Jun 2025 02:12:17 +0200
 
 fll-live-initramfs (4.0.0) unstable; urgency=medium
 
