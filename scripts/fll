@@ -72,8 +72,8 @@ mountroot()
 	# debug checkpoint
 	maybe_break fll-premount
 
-	/usr/bin/fll_blockdev_detect --monitor --execp=/usr/lib/fll/fll.initramfs || \
-		panic "Failed to detect live media"
+	/usr/bin/fll_blockdev_detect --monitor --execp=/usr/lib/fll/fll.initramfs
+	[ -e "${rootmnt}/fll/squashfs" ] || panic "Failed to detect live media"
 
 	# debug checkpoint
 	maybe_break fll-postmount
