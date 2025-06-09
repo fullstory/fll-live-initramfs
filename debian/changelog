@@ -1,3 +1,9 @@
+fll-live-initramfs (4.0.4) UNRELEASED; urgency=medium
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 10 Jun 2025 00:56:07 +0200
+
 fll-live-initramfs (4.0.3) unstable; urgency=medium
 
   * Add support for grub2-fll-fromiso: if fromhd=UUID= is provided then
