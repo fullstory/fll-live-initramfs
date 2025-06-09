@@ -56,12 +56,13 @@ for opt in $(cat /proc/cmdline); do
     esac
 done
 
-FLL_ROOT="${rootmnt:-/root}"
-FLL_ROOTFS_MNT="/fll/${FLL_UUID}"
+FLL_ROOTFS_MNT="${rootmnt:-/root}"
+FLL_SQUASHFS_MNT="/fll/${FLL_UUID}"
 FLL_BLOCKDEV_MNT="/fll/${DEVNAME#/dev/}"
+# exit if we've already probed this device before
 [ -d "${FLL_BLOCKDEV_MNT}" ] && exit 1 || mkdir -p "${FLL_BLOCKDEV_MNT}"
 
-mkdir -p "${FLL_BLOCKDEV_MNT}" "${FLL_ROOTFS_MNT}"
+mkdir -p "${FLL_BLOCKDEV_MNT}" "${FLL_SQUASHFS_MNT}"
 mount -t "${ID_FS_TYPE}" -o ro "${DEVNAME}" "${FLL_BLOCKDEV_MNT}"
 # iso9660 filesystem on block device (cd/dvd/usb)
 if [ "${ID_FS_UUID}" = "${FLL_UUID}" ] && [ -f "${FLL_BLOCKDEV_MNT}/${FLL_IMAGE_LOCATION}" ]; then
@@ -84,34 +85,34 @@ if [ "${FLL_MD5SUM_CHECK}" = "yes" ] && ! ( cd "${FLL_ISOMEDIA_MNT}" && md5sum -
 fi
 
 # mount squashfs compressed rootfs
-mount -t squashfs -o ro "${FLL_ISOMEDIA_MNT}/${FLL_IMAGE_LOCATION}" "${FLL_ROOTFS_MNT}"
+mount -t squashfs -o ro "${FLL_ISOMEDIA_MNT}/${FLL_IMAGE_LOCATION}" "${FLL_SQUASHFS_MNT}"
 
 # prepare COW/tmpfs union filesystem
 FLL_UNION_MODULE="overlay"
 FLL_UNION_COWDIR="/fll/cow"
-FLL_UNION_OPTIONS="lowerdir=${FLL_ROOTFS_MNT},upperdir=${FLL_UNION_COWDIR}/upper,workdir=${FLL_UNION_COWDIR}/work"
+FLL_UNION_OPTIONS="lowerdir=${FLL_SQUASHFS_MNT},upperdir=${FLL_UNION_COWDIR}/upper,workdir=${FLL_UNION_COWDIR}/work"
 modprobe "${FLL_UNION_MODULE}"
 mkdir -p "${FLL_UNION_COWDIR}"
 mount -n -t tmpfs -o size=90%,mode=755 tmpfs "${FLL_UNION_COWDIR}"
 mkdir -p "${FLL_UNION_COWDIR}/upper" "${FLL_UNION_COWDIR}/work"
-mount -t "${FLL_UNION_MODULE}" -o "${FLL_UNION_OPTIONS}" "${FLL_UNION_MODULE}" "${FLL_ROOT}"
+mount -t "${FLL_UNION_MODULE}" -o "${FLL_UNION_OPTIONS}" "${FLL_UNION_MODULE}" "${FLL_ROOTFS_MNT}"
 
 # create /fll and migrate mountpoints
-mkdir -p "${FLL_ROOT}/fll"
-for mnt in ${FLL_ROOTFS_MNT} ${FLL_UNION_COWDIR} ${FLL_BLOCKDEV_MNT} ${FLL_ISOMEDIA_MNT}; do
+mkdir -p "${FLL_ROOTFS_MNT}/fll"
+for mnt in ${FLL_SQUASHFS_MNT} ${FLL_UNION_COWDIR} ${FLL_BLOCKDEV_MNT} ${FLL_ISOMEDIA_MNT}; do
     if grep -q "${mnt}" /proc/mounts; then
         # create symlink to squashfs for calamares
-        [ -f "${mnt}/${FLL_IMAGE_LOCATION}" ] && ln -sf "${mnt}/${FLL_IMAGE_LOCATION}" "${FLL_ROOT}/fll/squashfs"
-        mkdir -p "${FLL_ROOT}${mnt}"
-        mount -n -o move "${mnt}" "${FLL_ROOT}${mnt}"
+        [ -f "${mnt}/${FLL_IMAGE_LOCATION}" ] && ln -sf "${mnt}/${FLL_IMAGE_LOCATION}" "${FLL_ROOTFS_MNT}/fll/squashfs"
+        mkdir -p "${FLL_ROOTFS_MNT}${mnt}"
+        mount -n -o move "${mnt}" "${FLL_ROOTFS_MNT}${mnt}"
     fi
 done
 
 # create udev rule for persistent symlink to device live media was found on
 printf "KERNEL==\"%s\", SYMLINK+=\"fll\"\n" \
-    "${DEVNAME#/dev/}" >  ${FLL_ROOT}/etc/udev/rules.d/70-fll-live.rules
+    "${DEVNAME#/dev/}" >  ${FLL_ROOTFS_MNT}/etc/udev/rules.d/70-fll-live.rules
 printf "KERNEL==\"%s\", ENV{ID_CDROM}==\"?*\", SYMLINK+=\"fll-cdrom\"\n" \
-    "${DEVNAME#/dev/}" >> ${FLL_ROOT}/etc/udev/rules.d/70-fll-live.rules
+    "${DEVNAME#/dev/}" >> ${FLL_ROOTFS_MNT}/etc/udev/rules.d/70-fll-live.rules
 
 # success
 exit 0
