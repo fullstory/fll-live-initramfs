@@ -1,7 +1,7 @@
 fll-live-initramfs (4.0.2) unstable; urgency=medium
 
   [ Kel Modderman ]
-  * Impliment md5sum checking.
+  * Implement md5sum checking.
 
  -- Kel Modderman <kelvmod@gmail.com>  Mon, 09 Jun 2025 13:47:23 +1000
 
