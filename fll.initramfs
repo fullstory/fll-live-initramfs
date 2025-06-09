@@ -39,6 +39,12 @@ for opt in $(cat /proc/cmdline); do
         fromiso=*)
             FLL_MEDIA_NAME="${opt#fromiso=}"
             ;;
+        fromhd=*)
+            # support for grub2-fll-fromiso: if fromhd=UUID= is provided
+            # then only accept block devices with matching ID_FS_UUID.
+            FLL_FROMHD="${opt#fromhd=}"
+            [ "${FLL_FROMHD}" = "UUID=${ID_FS_UUID}" ] || exit 1
+            ;;
         uuid=*)
             FLL_UUID="${opt#uuid=}"
             ;;
