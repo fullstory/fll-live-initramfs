@@ -78,13 +78,9 @@ else
 fi
 
 # check integrity of live media if requested
-if [ "${FLL_MD5SUM_CHECK}" = "yes" ]; then
-    if ( cd "${FLL_ISOMEDIA_MNT}" && md5sum -c "md5sums" ); then
-        :
-    else
-        printf "ERROR: md5sum check failed\n"
-        exit 1
-    fi
+if [ "${FLL_MD5SUM_CHECK}" = "yes" ] && ! ( cd "${FLL_ISOMEDIA_MNT}" && md5sum -c "md5sums" ); then
+    printf "ERROR: md5sum check failed\n"
+    exit 1
 fi
 
 # mount squashfs compressed rootfs
