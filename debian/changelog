@@ -1,10 +1,10 @@
-fll-live-initramfs (4.0.3) UNRELEASED; urgency=medium
+fll-live-initramfs (4.0.3) unstable; urgency=medium
 
   * Add support for grub2-fll-fromiso: if fromhd=UUID= is provided then
     only accept block devices with matching ID_FS_UUID.
   * Panic on failure of fll_blockdev_detect to detect live media.
 
- -- Kel Modderman <kelvmod@gmail.com>  Mon, 09 Jun 2025 20:19:47 +1000
+ -- Kel Modderman <kelvmod@gmail.com>  Mon, 09 Jun 2025 20:53:20 +1000
 
 fll-live-initramfs (4.0.2) unstable; urgency=medium
 
