@@ -89,6 +89,27 @@ mountroot()
 	# disable checkroot/checkfs
 	touch ${rootmnt}/fastboot
 
+	# Save an in-memory copy of the live initial ramdisk for shutdown (exitrd)
+	# https://systemd.io/INITRD_INTERFACE/
+	mkdir /run/initramfs~
+	mount --bind / /run/initramfs~
+	cp -a /run/initramfs~/* /run/initramfs/
+	umount /run/initramfs~
+	rmdir /run/initramfs~
+	# Ensure systemd can pivot into exitrd at shutdown
+	mount -o remount,exec /run
+	# Put exitrd on a diet to save memory
+	rm -rf /run/initramfs/lib/modules /run/initramfs/lib/firmware
+
+	# don't prompt for ejecting in a virtual machine, unless overriden
+	systemd-detect-virt --quiet && touch /run/initramfs/fll.no_eject
+	[ -n "${NO_EJECT}" ] && touch /run/initramfs/fll.no_eject
+	[ -n "${FLL_DEBUG}" ] && touch /run/initramfs/fll.debug
+
+	# Patch /etc/default/distro for custom username
+	sed -i "s#^FLL_LIVE_USER=.*#FLL_LIVE_USER=\"${FLL_LIVE_USER}\"#" \
+		"${rootmnt}/etc/default/distro"
+
 	# custom hostname given on cmdline
 	if [ "${CUSTOM_HOSTNAME}" ]; then
 		echo "${CUSTOM_HOSTNAME}" > "${rootmnt}/etc/hostname"
@@ -98,20 +119,43 @@ mountroot()
 			"${rootmnt}/etc/hosts"
 	fi
 
-	# Setup root user environment
-	for file in '.bash_logout' '.bash_profile' '.bashrc' '.profile'; do
-		if [ -f ${rootmnt}/etc/skel/${file} ] && [ ! -f ${rootmnt}/root/${file} ]; then
-			cp ${rootmnt}/etc/skel/${file} ${rootmnt}/root/${file}
-		fi
-	done
-	:> ${rootmnt}/root/.hushlogin
+	# allow CUSTOM_TZ to override above TZ definitions
+	if [ -n "${CUSTOM_TZ}" ]; then
+		case "${CUSTOM_TZ}" in
+			utc|UTC)
+				CUSTOM_TZ="Etc/UTC"
+				;;
+		esac
+		[ -f "${rootmnt}/usr/share/zoneinfo/${CUSTOM_TZ}" ] && TZ="${CUSTOM_TZ}"
+	fi
 
-	# Patch /etc/default/distro
-	sed -i "s#^FLL_LIVE_USER=.*#FLL_LIVE_USER=\"${FLL_LIVE_USER}\"#; \
-		s#^FLL_IMAGE_DIR=.*#FLL_IMAGE_DIR=\"${FLL_IMAGE_DIR}\"#; \
-		s#^FLL_IMAGE_LOCATION=.*#FLL_IMAGE_LOCATION=\"${FLL_IMAGE_LOCATION}\"#" \
-		"${rootmnt}/etc/default/distro"
+	# configure timezone, fallback to UTC
+	[ -f "${rootmnt}/usr/share/zoneinfo/${TZ}" ] || TZ="Etc/UTC"
+	echo "configuring timezone data for '${TZ}'"
+	echo "${TZ}" > "${rootmnt}/etc/timezone"
+	rm -f "${rootmnt}/etc/localtime"
+	ln -sf "/usr/share/zoneinfo/${TZ}" "${rootmnt}/etc/localtime"
 
+	# make localtime default, unless tz=Etc/UTC or utc=yes
+	if [ "${TZ}" = "Etc/UTC" ] || [ "${UTC}" = "yes" ]; then
+		printf "0.000000 0 0.000000\n0\nUTC\n" > "${rootmnt}/etc/adjtime"
+	else
+		# debian defaults to UTC=yes, which is rumored to be dual-boot unfriendly
+		printf "0.000000 0 0.000000\n0\nLOCAL\n" > "${rootmnt}/etc/adjtime"
+	fi
+
+	# configure live getty configuration for systemd
+	if [ -r "${rootmnt}/lib/systemd/system/getty@.service" ]; then
+		sed -e 's#^ExecStart=.*#ExecStart=-/sbin/agetty --noclear -n -i -l /usr/bin/fll_login %I 38400 linux#' \
+			"${rootmnt}/lib/systemd/system/getty@.service" > \
+			"${rootmnt}/etc/systemd/system/getty@.service"
+		ln -fs /etc/systemd/system/getty@.service \
+			"${rootmnt}/etc/systemd/system/getty.target.wants/getty@tty1.service"
+		ln -fs getty@.service "${rootmnt}/etc/systemd/system/autovt@.service"
+	fi
+
+	# configure xsession environment variables before beginning boot so
+	# they may be inherited by fll-home.service during boot sequence
 	if [ -z "${DESKTOP}" ]; then
 		# in the absence of an explicit destop= cheatcode setting,
 		# these defaults are checked in reverse order
@@ -242,56 +286,6 @@ mountroot()
 	else
 		echo "FLL_XSESSION=\"${FLL_XSESSION}\"" >> "${rootmnt}/etc/default/distro"
 	fi
-
-	# allow CUSTOM_TZ to override above TZ definitions
-	if [ -n "${CUSTOM_TZ}" ]; then
-		case "${CUSTOM_TZ}" in
-			utc|UTC)
-				CUSTOM_TZ="Etc/UTC"
-				;;
-		esac
-		[ -f "${rootmnt}/usr/share/zoneinfo/${CUSTOM_TZ}" ] && TZ="${CUSTOM_TZ}"
-	fi
-
-	# configure timezone, fallback to UTC
-	[ -f "${rootmnt}/usr/share/zoneinfo/${TZ}" ] || TZ="Etc/UTC"
-	echo "configuring timezone data for '${TZ}'"
-	echo "${TZ}" > "${rootmnt}/etc/timezone"
-	rm -f "${rootmnt}/etc/localtime"
-	ln -sf "/usr/share/zoneinfo/${TZ}" "${rootmnt}/etc/localtime"
-
-	# make localtime default, unless tz=Etc/UTC or utc=yes
-	if [ "${TZ}" = "Etc/UTC" ] || [ "${UTC}" = "yes" ]; then
-		printf "0.000000 0 0.000000\n0\nUTC\n" > "${rootmnt}/etc/adjtime"
-	else
-		# debian defaults to UTC=yes, which is rumored to be dual-boot unfriendly
-		printf "0.000000 0 0.000000\n0\nLOCAL\n" > "${rootmnt}/etc/adjtime"
-	fi
-
-	# configure live getty configuration for systemd
-	if [ -r "${rootmnt}/lib/systemd/system/getty@.service" ]; then
-		sed -e 's#^ExecStart=.*#ExecStart=-/sbin/agetty --noclear -n -i -l /usr/bin/fll_login %I 38400 linux#' \
-			"${rootmnt}/lib/systemd/system/getty@.service" > "${rootmnt}/etc/systemd/system/getty@.service"
-		ln -fs /etc/systemd/system/getty@.service "${rootmnt}/etc/systemd/system/getty.target.wants/getty@tty1.service"
-		ln -fs getty@.service "${rootmnt}/etc/systemd/system/autovt@.service"
-	fi
-
-	# Save an in-memory copy of the live initial ramdisk for shutdown (exitrd)
-	# https://systemd.io/INITRD_INTERFACE/
-	mkdir /run/initramfs~
-	mount --bind / /run/initramfs~
-	cp -a /run/initramfs~/* /run/initramfs/
-	umount /run/initramfs~
-	rmdir /run/initramfs~
-	# Ensure systemd can pivot into exitrd at shutdown
-	mount -o remount,exec /run
-	# Put exitrd on a diet to save memory
-	rm -rf /run/initramfs/lib/modules /run/initramfs/lib/firmware
-
-	# don't prompt for ejecting in a virtual machine, unless overriden
-	systemd-detect-virt --quiet && touch /run/initramfs/fll.no_eject
-	[ -n "${NO_EJECT}" ] && touch /run/initramfs/fll.no_eject
-	[ -n "${FLL_DEBUG}" ] && touch /run/initramfs/fll.debug
 
 	# final debug checkpoint
 	maybe_break fll-bottom
