@@ -1,6 +1,11 @@
 fll-live-initramfs (4.0.4) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
+
+  [ Kel Modderman ]
+  * Remove blacklist boot cheatcode it is not executed early enough in
+    boot that this position.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 10 Jun 2025 00:56:07 +0200
 

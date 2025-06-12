@@ -26,9 +26,6 @@ mountroot()
 	# parse fll options given on cmdline
 	for opt in $(cat /proc/cmdline); do
 		case "${opt}" in
-			blacklist=*)
-				BLACKLIST="${BLACKLIST} ${opt#blacklist=}"
-				;;
 			desktop=*)
 				DESKTOP="${opt#desktop=}"
 				;;
@@ -85,15 +82,6 @@ mountroot()
 
 	# tmp with correct permissions for users
 	mkdir -p -m 1777 "${rootmnt}/tmp"
-
-	# honour blacklist= cheatcode to disable naughty modules before udev
-	if [ "${BLACKLIST}" ]; then
-		for module in ${BLACKLIST}; do
-			if ! grep -s -q "^blacklist ${module}" "${rootmnt}/etc/modprobe.d/*"; then
-				echo "blacklist ${module}" >> "${rootmnt}/etc/modprobe.d/fll-blacklist.conf"
-			fi
-		done
-	fi
 
 	# disable movement of static $rootmnt/dev by scripts/init-bottom/udev
 	export no_static_dev="1"
