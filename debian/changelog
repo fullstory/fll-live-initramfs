@@ -10,6 +10,7 @@ fll-live-initramfs (4.0.4) UNRELEASED; urgency=medium
   * Move /root dotfile setup to fll-home.service.
   * Reorder fll initramfs scripts a little more logically so that similar
     elements are grouped together and fold some long lines.
+  * Remove desktop cheatcode handling from initramfs.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 10 Jun 2025 00:56:07 +0200
 
