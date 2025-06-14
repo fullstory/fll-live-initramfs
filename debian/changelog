@@ -1,7 +1,4 @@
-fll-live-initramfs (4.0.4) UNRELEASED; urgency=medium
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (4.0.4) unstable; urgency=medium
 
   [ Kel Modderman ]
   * Remove blacklist boot cheatcode it is not executed early enough in
@@ -12,7 +9,7 @@ fll-live-initramfs (4.0.4) UNRELEASED; urgency=medium
     elements are grouped together and fold some long lines.
   * Remove desktop cheatcode handling from initramfs.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 10 Jun 2025 00:56:07 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 14 Jun 2025 02:04:59 +0200
 
 fll-live-initramfs (4.0.3) unstable; urgency=medium
 
