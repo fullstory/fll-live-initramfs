@@ -1,7 +1,6 @@
 #!/bin/sh
-
-###
-# F.U.L.L.S.T.O.R.Y initramfs live media program + script
+#
+# F.U.L.L.S.T.O.R.Y initramfs live media mount script
 #
 # Copyright: (C) 2025, Kel Modderman <kelvmod@gmail.com>
 # License:   GPLv2
@@ -9,8 +8,12 @@
 # F.U.L.L.S.T.O.R.Y Project Homepage:
 # https://github.com/fullstory
 #
-# exit 0 if fll media is detected on a block device
-###
+# This script:
+#  * inspects a block device/partition for the UUID of the carrier
+#    filesystem (iso9660) containing the compressed rootfs (squashfs)
+#  * mounts compressed rootfs and setups up COW/tmpfs overlay
+#  * creates a symlink to the compressed rootfs image for use by calamares
+#  * create udev rule for persistent symlink to device live media was found on
 
 [ -n "${ID_FS_TYPE}" ] || ID_FS_TYPE="$(blkid -s TYPE -o value ${DEVNAME})"
 

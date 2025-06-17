@@ -1,6 +1,5 @@
 #!/bin/sh
-
-###############################################################################
+#
 #	F.U.L.L.S.T.O.R.Y initramfs live media init functions
 #
 #	Copyright:
@@ -12,8 +11,13 @@
 #	F.U.L.L.S.T.O.R.Y Project Homepage:
 #	https://github.com/fullstory
 #
-#	This script snippet needs to get executed under busybox sh, due to
-#	using awk; klibc sh doesn't provide an awk implementation
+#	This script:
+#	 * listens to udev block device events (via fll_blockdev_detect) and
+#	   calls a script which inspects each block device/partition for the UUID
+#	   of the carrier filesystem (iso9660) containing the compressed rootfs
+#	 * checks the compressed rootfs was detected successfully
+#	 * prepares systemd-exitrd for shutdown/reboot in /run/initramfs
+#	 * configures hostname, timezone, and getty
 
 ###############################################################################
 # 	define mountroot() for init

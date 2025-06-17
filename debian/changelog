@@ -1,6 +1,10 @@
 fll-live-initramfs (4.0.5) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
+
+  [ Kel Modderman ]
+  * Update comments in scripts/fll and fll.initramfs
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 14 Jun 2025 02:05:15 +0200
 
