@@ -86,7 +86,8 @@ FLL_ROOTFS_MNT="${rootmnt:-/root}"
 FLL_SQUASHFS_MNT="/fll/${FLL_UUID}"
 FLL_BLOCKDEV_MNT="/fll/${DEVNAME#/dev/}"
 # exit if we've already probed this device before
-[ -d "${FLL_BLOCKDEV_MNT}" ] && exit 1 || mkdir -p "${FLL_BLOCKDEV_MNT}"
+[ -d "${FLL_BLOCKDEV_MNT}" ] && exit 1
+mkdir -p "${FLL_BLOCKDEV_MNT}"
 
 mkdir -p "${FLL_BLOCKDEV_MNT}" "${FLL_SQUASHFS_MNT}"
 mount -t "${ID_FS_TYPE}" -o ro "${DEVNAME}" "${FLL_BLOCKDEV_MNT}"
@@ -141,9 +142,6 @@ done
 
 # tmp with correct permissions for users
 mkdir -p -m 1777 "${rootmnt}/tmp"
-
-# disable checkroot/checkfs
-touch ${rootmnt}/fastboot
 
 # create udev rule for persistent symlink to device live media was found on
 printf "KERNEL==\"%s\", SYMLINK+=\"fll\"\n" \
