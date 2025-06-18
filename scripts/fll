@@ -17,45 +17,24 @@
 #	   of the carrier filesystem (iso9660) containing the compressed rootfs
 #	 * checks the compressed rootfs was detected successfully
 #	 * prepares systemd-exitrd for shutdown/reboot in /run/initramfs
-#	 * configures hostname, timezone, and getty
 
 ###############################################################################
 # 	define mountroot() for init
 ###############################################################################
 mountroot()
 {
-	# source distro-defaults
-	. /etc/default/distro
-
 	# parse fll options given on cmdline
 	for opt in $(cat /proc/cmdline); do
 		case "${opt}" in
 			noeject)
-				NO_EJECT="1"
+				FLL_NO_EJECT="1"
 				;;
 			fll=debug)
 				FLL_DEBUG="1"
 				set -x
 				;;
-			hostname=*)
-				CUSTOM_HOSTNAME="${opt#hostname=}"
-				;;
-			username=*)
-				FLL_LIVE_USER="${opt#username=}"
-				;;
 			quiet)
-				if [ -f /proc/sys/kernel/printk ]; then
-					echo "0" > /proc/sys/kernel/printk
-				fi
-				;;
-			utc=yes)
-				UTC="yes"
-				;;
-			utc|gmt)
-				CUSTOM_TZ="Etc/UTC"
-				;;
-			tz=*)
-				CUSTOM_TZ="${opt#tz=}"
+				echo "0" > /proc/sys/kernel/printk
 				;;
 		esac
 	done
@@ -76,19 +55,8 @@ mountroot()
 	# debug checkpoint
 	maybe_break fll-postmount
 
-	# prepare /dev /media /proc and /sys
-	for dir in dev media proc run sys; do
-		mkdir -p -m 0755 "${rootmnt}/${dir}"
-	done
-
-	# tmp with correct permissions for users
-	mkdir -p -m 1777 "${rootmnt}/tmp"
-
 	# disable movement of static $rootmnt/dev by scripts/init-bottom/udev
 	export no_static_dev="1"
-
-	# disable checkroot/checkfs
-	touch ${rootmnt}/fastboot
 
 	# Save an in-memory copy of the live initial ramdisk for shutdown (exitrd)
 	# https://systemd.io/INITRD_INTERFACE/
@@ -103,57 +71,10 @@ mountroot()
 	rm -rf /run/initramfs/lib/modules /run/initramfs/lib/firmware
 
 	# don't prompt for ejecting in a virtual machine, unless overriden
-	systemd-detect-virt --quiet && touch /run/initramfs/fll.no_eject
-	[ -n "${NO_EJECT}" ] && touch /run/initramfs/fll.no_eject
+	if [ -n "${FLL_NO_EJECT}" ] || systemd-detect-virt --quiet; then
+		touch /run/initramfs/fll.no_eject
+	fi
 	[ -n "${FLL_DEBUG}" ] && touch /run/initramfs/fll.debug
-
-	# Patch /etc/default/distro for custom username
-	sed -i "s#^FLL_LIVE_USER=.*#FLL_LIVE_USER=\"${FLL_LIVE_USER}\"#" \
-		"${rootmnt}/etc/default/distro"
-
-	# custom hostname given on cmdline
-	if [ "${CUSTOM_HOSTNAME}" ]; then
-		echo "${CUSTOM_HOSTNAME}" > "${rootmnt}/etc/hostname"
-		echo "${CUSTOM_HOSTNAME}" > "${rootmnt}/etc/mailname"
-		# update /etc/hosts
-		sed -i '/localhost/!s/^\(127.0.0.1[ \t]\+\)\(.\+\)$/\1'"${CUSTOM_HOSTNAME}"'/' \
-			"${rootmnt}/etc/hosts"
-	fi
-
-	# allow CUSTOM_TZ to override above TZ definitions
-	if [ -n "${CUSTOM_TZ}" ]; then
-		case "${CUSTOM_TZ}" in
-			utc|UTC)
-				CUSTOM_TZ="Etc/UTC"
-				;;
-		esac
-		[ -f "${rootmnt}/usr/share/zoneinfo/${CUSTOM_TZ}" ] && TZ="${CUSTOM_TZ}"
-	fi
-
-	# configure timezone, fallback to UTC
-	[ -f "${rootmnt}/usr/share/zoneinfo/${TZ}" ] || TZ="Etc/UTC"
-	echo "configuring timezone data for '${TZ}'"
-	echo "${TZ}" > "${rootmnt}/etc/timezone"
-	rm -f "${rootmnt}/etc/localtime"
-	ln -sf "/usr/share/zoneinfo/${TZ}" "${rootmnt}/etc/localtime"
-
-	# make localtime default, unless tz=Etc/UTC or utc=yes
-	if [ "${TZ}" = "Etc/UTC" ] || [ "${UTC}" = "yes" ]; then
-		printf "0.000000 0 0.000000\n0\nUTC\n" > "${rootmnt}/etc/adjtime"
-	else
-		# debian defaults to UTC=yes, which is rumored to be dual-boot unfriendly
-		printf "0.000000 0 0.000000\n0\nLOCAL\n" > "${rootmnt}/etc/adjtime"
-	fi
-
-	# configure live getty configuration for systemd
-	if [ -r "${rootmnt}/lib/systemd/system/getty@.service" ]; then
-		sed -e 's#^ExecStart=.*#ExecStart=-/sbin/agetty --noclear -n -i -l /usr/bin/fll_login %I 38400 linux#' \
-			"${rootmnt}/lib/systemd/system/getty@.service" > \
-			"${rootmnt}/etc/systemd/system/getty@.service"
-		ln -fs /etc/systemd/system/getty@.service \
-			"${rootmnt}/etc/systemd/system/getty.target.wants/getty@tty1.service"
-		ln -fs getty@.service "${rootmnt}/etc/systemd/system/autovt@.service"
-	fi
 
 	# final debug checkpoint
 	maybe_break fll-bottom

@@ -14,6 +14,8 @@
 #  * mounts compressed rootfs and setups up COW/tmpfs overlay
 #  * creates a symlink to the compressed rootfs image for use by calamares
 #  * create udev rule for persistent symlink to device live media was found on
+#  * updates live username variable if given on boot cmdline
+#  * configures live hostname, timezone, and getty
 
 [ -n "${ID_FS_TYPE}" ] || ID_FS_TYPE="$(blkid -s TYPE -o value ${DEVNAME})"
 
@@ -48,8 +50,8 @@ for opt in $(cat /proc/cmdline); do
             FLL_FROMHD="${opt#fromhd=}"
             [ "${FLL_FROMHD}" = "UUID=${ID_FS_UUID}" ] || exit 1
             ;;
-        uuid=*)
-            FLL_UUID="${opt#uuid=}"
+        hostname=*)
+            CUSTOM_HOSTNAME="${opt#hostname=}"
             ;;
         image_dir=*)
             FLL_IMAGE_DIR="${opt#image_dir=}"
@@ -61,6 +63,21 @@ for opt in $(cat /proc/cmdline); do
             ;;
         md5sum)
             FLL_MD5SUM_CHECK="yes"
+            ;;
+        tz=*)
+            CUSTOM_TZ="${opt#tz=}"
+            ;;
+        username=*)
+            FLL_LIVE_USER="${opt#username=}"
+            ;;
+        utc=yes)
+            UTC="yes"
+            ;;
+        utc|gmt)
+            CUSTOM_TZ="Etc/UTC"
+            ;;
+        uuid=*)
+            FLL_UUID="${opt#uuid=}"
             ;;
     esac
 done
@@ -117,11 +134,70 @@ for mnt in ${FLL_SQUASHFS_MNT} ${FLL_UNION_COWDIR} ${FLL_BLOCKDEV_MNT} ${FLL_ISO
     fi
 done
 
+# prepare /dev /media /proc and /sys
+for dir in dev media proc run sys; do
+    mkdir -p -m 0755 "${rootmnt}/${dir}"
+done
+
+# tmp with correct permissions for users
+mkdir -p -m 1777 "${rootmnt}/tmp"
+
+# disable checkroot/checkfs
+touch ${rootmnt}/fastboot
+
 # create udev rule for persistent symlink to device live media was found on
 printf "KERNEL==\"%s\", SYMLINK+=\"fll\"\n" \
     "${DEVNAME#/dev/}" >  ${FLL_ROOTFS_MNT}/etc/udev/rules.d/70-fll-live.rules
 printf "KERNEL==\"%s\", ENV{ID_CDROM}==\"?*\", SYMLINK+=\"fll-cdrom\"\n" \
     "${DEVNAME#/dev/}" >> ${FLL_ROOTFS_MNT}/etc/udev/rules.d/70-fll-live.rules
+
+# Patch /etc/default/distro for custom username
+sed -i "s#^FLL_LIVE_USER=.*#FLL_LIVE_USER=\"${FLL_LIVE_USER}\"#" \
+    "${FLL_ROOTFS_MNT}/etc/default/distro"
+
+# custom hostname given on cmdline
+if [ "${CUSTOM_HOSTNAME}" ]; then
+    echo "${CUSTOM_HOSTNAME}" > "${FLL_ROOTFS_MNT}/etc/hostname"
+    echo "${CUSTOM_HOSTNAME}" > "${FLL_ROOTFS_MNT}/etc/mailname"
+    # update /etc/hosts
+    sed -i '/localhost/!s/^\(127.0.0.1[ \t]\+\)\(.\+\)$/\1'"${CUSTOM_HOSTNAME}"'/' \
+        "${FLL_ROOTFS_MNT}/etc/hosts"
+fi
+
+# allow CUSTOM_TZ to override above TZ definitions
+if [ -n "${CUSTOM_TZ}" ]; then
+    case "${CUSTOM_TZ}" in
+        utc|UTC)
+            CUSTOM_TZ="Etc/UTC"
+            ;;
+    esac
+    [ -f "${FLL_ROOTFS_MNT}/usr/share/zoneinfo/${CUSTOM_TZ}" ] && TZ="${CUSTOM_TZ}"
+fi
+
+# configure timezone, fallback to UTC
+[ -f "${FLL_ROOTFS_MNT}/usr/share/zoneinfo/${TZ}" ] || TZ="Etc/UTC"
+echo "configuring timezone data for '${TZ}'"
+echo "${TZ}" > "${FLL_ROOTFS_MNT}/etc/timezone"
+rm -f "${FLL_ROOTFS_MNT}/etc/localtime"
+ln -sf "/usr/share/zoneinfo/${TZ}" "${FLL_ROOTFS_MNT}/etc/localtime"
+
+# make localtime default, unless tz=Etc/UTC or utc=yes
+if [ "${TZ}" = "Etc/UTC" ] || [ "${UTC}" = "yes" ]; then
+    printf "0.000000 0 0.000000\n0\nUTC\n" > "${FLL_ROOTFS_MNT}/etc/adjtime"
+else
+    # debian defaults to UTC=yes, which is rumored to be dual-boot unfriendly
+    printf "0.000000 0 0.000000\n0\nLOCAL\n" > "${FLL_ROOTFS_MNT}/etc/adjtime"
+fi
+
+# configure live getty configuration for systemd
+if [ -r "${FLL_ROOTFS_MNT}/lib/systemd/system/getty@.service" ]; then
+    sed -e 's#^ExecStart=.*#ExecStart=-/sbin/agetty --noclear -n -i -l /usr/bin/fll_login %I 38400 linux#' \
+        "${FLL_ROOTFS_MNT}/lib/systemd/system/getty@.service" > \
+        "${FLL_ROOTFS_MNT}/etc/systemd/system/getty@.service"
+    ln -fs /etc/systemd/system/getty@.service \
+        "${FLL_ROOTFS_MNT}/etc/systemd/system/getty.target.wants/getty@tty1.service"
+    ln -fs getty@.service "${FLL_ROOTFS_MNT}/etc/systemd/system/autovt@.service"
+fi
 
 # success
 exit 0

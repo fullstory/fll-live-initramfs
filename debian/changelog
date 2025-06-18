@@ -4,7 +4,9 @@ fll-live-initramfs (4.0.5) UNRELEASED; urgency=medium
   * NOT RELEASED YET
 
   [ Kel Modderman ]
-  * Update comments in scripts/fll and fll.initramfs
+  * Update comments in scripts/fll and fll.initramfs.
+  * Merge more functionality from scripts/fll to fll.initramfs to keep rootfs
+    related code together.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 14 Jun 2025 02:05:15 +0200
 
