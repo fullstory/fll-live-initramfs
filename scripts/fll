@@ -1,84 +1,84 @@
 #!/bin/sh
 #
-#	F.U.L.L.S.T.O.R.Y initramfs live media init functions
+# F.U.L.L.S.T.O.R.Y initramfs live media init functions
 #
-#	Copyright:
-#			© 2007-2025 Kel Modderman <kelvmod@gmail.com>
-#			© 2006-2014 Stefan Lippers-Hollmann <s.l-h@gmx.de>
-#			© 2007-2014 Niall Walsh <niallwalsh@celtux.org>
-#	License:	GPLv2
+# Copyright:
+#   © 2007-2025 Kel Modderman <kelvmod@gmail.com>
+#   © 2006-2014 Stefan Lippers-Hollmann <s.l-h@gmx.de>
+#   © 2007-2014 Niall Walsh <niallwalsh@celtux.org>
+# License: GPLv2
 #
-#	F.U.L.L.S.T.O.R.Y Project Homepage:
-#	https://github.com/fullstory
+# F.U.L.L.S.T.O.R.Y Project Homepage:
+#   https://github.com/fullstory
 #
-#	This script:
-#	 * listens to udev block device events (via fll_blockdev_detect) and
-#	   calls a script which inspects each block device/partition for the UUID
-#	   of the carrier filesystem (iso9660) containing the compressed rootfs
-#	 * checks the compressed rootfs was detected successfully
-#	 * prepares systemd-exitrd for shutdown/reboot in /run/initramfs
+# This script:
+#  * listens to udev block device events (via fll_blockdev_detect) and
+#    calls a script which inspects each block device/partition for the UUID
+#    of the carrier filesystem (iso9660) containing the compressed rootfs
+#  * checks the compressed rootfs was detected successfully
+#  * prepares systemd-exitrd for shutdown/reboot in /run/initramfs
 
 ###############################################################################
-# 	define mountroot() for init
+# define mountroot() for init
 ###############################################################################
 mountroot()
 {
-	# parse fll options given on cmdline
-	for opt in $(cat /proc/cmdline); do
-		case "${opt}" in
-			noeject)
-				FLL_NO_EJECT="1"
-				;;
-			fll=debug)
-				FLL_DEBUG="1"
-				set -x
-				;;
-			quiet)
-				echo "0" > /proc/sys/kernel/printk
-				;;
-		esac
-	done
+    # parse fll options given on cmdline
+    for opt in $(cat /proc/cmdline); do
+        case "${opt}" in
+            noeject)
+                FLL_NO_EJECT="1"
+                ;;
+            fll=debug)
+                FLL_DEBUG="1"
+                set -x
+                ;;
+            quiet)
+                echo "0" > /proc/sys/kernel/printk
+                ;;
+        esac
+    done
 
-	#
-	# Run scripts in local-top, like lvm2
-	#
-	[ "$quiet" != "y" ] && log_begin_msg "Running /scripts/local-top"
-	run_scripts /scripts/local-top
-	[ "$quiet" != "y" ] && log_end_msg
+    #
+    # Run scripts in local-top, like lvm2
+    #
+    [ "$quiet" != "y" ] && log_begin_msg "Running /scripts/local-top"
+    run_scripts /scripts/local-top
+    [ "$quiet" != "y" ] && log_end_msg
 
-	# debug checkpoint
-	maybe_break fll-premount
+    # debug checkpoint
+    maybe_break fll-premount
 
-	/usr/bin/fll_blockdev_detect --monitor --execp=/usr/lib/fll/fll.initramfs
-	[ -L "${rootmnt}/fll/squashfs" ] || panic "Failed to detect live media"
+    /usr/bin/fll_blockdev_detect --monitor --execp=/usr/lib/fll/fll.initramfs
+    [ -L "${rootmnt}/fll/squashfs" ] || panic "Failed to detect live media"
 
-	# debug checkpoint
-	maybe_break fll-postmount
+    # debug checkpoint
+    maybe_break fll-postmount
 
-	# disable movement of static $rootmnt/dev by scripts/init-bottom/udev
-	export no_static_dev="1"
+    # disable movement of static $rootmnt/dev by scripts/init-bottom/udev
+    export no_static_dev="1"
 
-	# Save an in-memory copy of the live initial ramdisk for shutdown (exitrd)
-	# https://systemd.io/INITRD_INTERFACE/
-	mkdir /run/initramfs~
-	mount --bind / /run/initramfs~
-	cp -a /run/initramfs~/* /run/initramfs/
-	umount /run/initramfs~
-	rmdir /run/initramfs~
-	# Ensure systemd can pivot into exitrd at shutdown
-	mount -o remount,exec /run
-	# Put exitrd on a diet to save memory
-	rm -rf /run/initramfs/lib/modules /run/initramfs/lib/firmware
+    # Save an in-memory copy of the live initial ramdisk for shutdown (exitrd)
+    # https://systemd.io/INITRD_INTERFACE/
+    mkdir /run/initramfs~
+    mount --bind / /run/initramfs~
+    cp -a /run/initramfs~/* /run/initramfs/
+    umount /run/initramfs~
+    rmdir /run/initramfs~
+    # Ensure systemd can pivot into exitrd at shutdown
+    mount -o remount,exec /run
+    # Put exitrd on a diet to save memory
+    rm -rf /run/initramfs/lib/modules /run/initramfs/lib/firmware
 
-	# don't prompt for ejecting in a virtual machine, unless overriden
-	if [ -n "${FLL_NO_EJECT}" ] || systemd-detect-virt --quiet; then
-		touch /run/initramfs/fll.no_eject
-	fi
-	[ -n "${FLL_DEBUG}" ] && touch /run/initramfs/fll.debug
+    # don't prompt for ejecting in a virtual machine, unless overriden
+    if [ -n "${FLL_NO_EJECT}" ] || systemd-detect-virt --quiet; then
+        touch /run/initramfs/fll.no_eject
+    fi
+    [ -n "${FLL_DEBUG}" ] && touch /run/initramfs/fll.debug
 
-	# final debug checkpoint
-	maybe_break fll-bottom
+    # final debug checkpoint
+    maybe_break fll-bottom
 
-	printf "\nStarting init process...\n\n"
+    printf "\nStarting init process...\n\n"
 }
 
