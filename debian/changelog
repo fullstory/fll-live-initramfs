@@ -1,14 +1,11 @@
-fll-live-initramfs (4.0.6) UNRELEASED; urgency=medium
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (4.0.6) unstable; urgency=medium
 
   [ Kel Modderman ]
   * Tweak error condition when blockdev has been probed before.
   * No longer touch $rootmnt/fastboot, systemd prefers fsck.mode=skip to be
     set on cmdline instead.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 18 Jun 2025 07:08:17 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 22 Jun 2025 07:14:38 +0200
 
 fll-live-initramfs (4.0.5) unstable; urgency=medium
 
