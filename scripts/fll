@@ -65,8 +65,6 @@ mountroot()
     cp -a /run/initramfs~/* /run/initramfs/
     umount /run/initramfs~
     rmdir /run/initramfs~
-    # Ensure systemd can pivot into exitrd at shutdown
-    mount -o remount,exec /run
     # Put exitrd on a diet to save memory
     rm -rf /run/initramfs/lib/modules /run/initramfs/lib/firmware
 
