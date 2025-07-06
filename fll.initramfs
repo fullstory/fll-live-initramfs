@@ -33,7 +33,7 @@ esac
 # source distro-defaults
 [ -s /etc/default/distro ] && . /etc/default/distro
 
-FLL_MD5SUM_CHECK="no"
+FLL_CHECKSUM_CHECK="no"
 
 # parse fll options given on cmdline
 for opt in $(cat /proc/cmdline); do
@@ -61,8 +61,8 @@ for opt in $(cat /proc/cmdline); do
             FLL_IMAGE_FILE="${opt#image_name=}"
             FLL_IMAGE_LOCATION="${FLL_IMAGE_DIR}/${FLL_IMAGE_FILE}"
             ;;
-        md5sum)
-            FLL_MD5SUM_CHECK="yes"
+        sha256sum|sha256sums|checksum|checksums)
+            FLL_CHECKSUM_CHECK="yes"
             ;;
         tz=*)
             CUSTOM_TZ="${opt#tz=}"
@@ -106,8 +106,8 @@ else
 fi
 
 # check integrity of live media if requested
-if [ "${FLL_MD5SUM_CHECK}" = "yes" ] && ! ( cd "${FLL_ISOMEDIA_MNT}" && md5sum -c "md5sums" ); then
-    printf "ERROR: md5sum check failed\n"
+if [ "${FLL_CHECKSUM_CHECK}" = "yes" ] && ! ( cd "${FLL_ISOMEDIA_MNT}" && sha256sum -c "sha256sums" ); then
+    printf "ERROR: sha256sum check failed\n"
     exit 1
 fi
 
