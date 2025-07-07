@@ -10,9 +10,9 @@
 #
 # This script:
 #  * inspects a block device/partition for the UUID of the carrier
-#    filesystem (iso9660) containing the compressed rootfs (squashfs)
-#  * mounts compressed rootfs and setups up COW/tmpfs overlay
-#  * creates a symlink to the compressed rootfs image for use by calamares
+#    filesystem (iso9660) containing the readonly rootfs images
+#  * mounts readonly rootfs and sets up COW/tmpfs overlay
+#  * creates a symlink to the readonly rootfs image for use by calamares
 #  * create udev rule for persistent symlink to device live media was found on
 #  * updates live username variable if given on boot cmdline
 #  * configures live hostname, timezone, and getty
@@ -83,13 +83,13 @@ for opt in $(cat /proc/cmdline); do
 done
 
 FLL_ROOTFS_MNT="${rootmnt:-/root}"
-FLL_SQUASHFS_MNT="/fll/${FLL_UUID}"
+FLL_READONLY_MNT="/fll/${FLL_UUID}"
 FLL_BLOCKDEV_MNT="/fll/${DEVNAME#/dev/}"
 # exit if we've already probed this device before
 [ -d "${FLL_BLOCKDEV_MNT}" ] && exit 1
 mkdir -p "${FLL_BLOCKDEV_MNT}"
 
-mkdir -p "${FLL_BLOCKDEV_MNT}" "${FLL_SQUASHFS_MNT}"
+mkdir -p "${FLL_BLOCKDEV_MNT}" "${FLL_READONLY_MNT}"
 mount -t "${ID_FS_TYPE}" -o ro "${DEVNAME}" "${FLL_BLOCKDEV_MNT}"
 # iso9660 filesystem on block device (cd/dvd/usb)
 if [ "${ID_FS_UUID}" = "${FLL_UUID}" ] && [ -f "${FLL_BLOCKDEV_MNT}/${FLL_IMAGE_LOCATION}" ]; then
@@ -111,13 +111,14 @@ if [ "${FLL_CHECKSUM_CHECK}" = "yes" ] && ! ( cd "${FLL_ISOMEDIA_MNT}" && sha256
     exit 1
 fi
 
-# mount squashfs compressed rootfs
-mount -t squashfs -o ro "${FLL_ISOMEDIA_MNT}/${FLL_IMAGE_LOCATION}" "${FLL_SQUASHFS_MNT}"
+# mount readonly rootfs
+FLL_READONLY_FSTYPE="$(blkid -s  TYPE-o value ${FLL_ISOMEDIA_MNT}/${FLL_IMAGE_LOCATION})"
+mount -t "${FLL_READONLY_FSTYPE}" -o ro "${FLL_ISOMEDIA_MNT}/${FLL_IMAGE_LOCATION}" "${FLL_READONLY_MNT}"
 
 # prepare COW/tmpfs union filesystem
 FLL_UNION_MODULE="overlay"
 FLL_UNION_COWDIR="/fll/cow"
-FLL_UNION_OPTIONS="lowerdir=${FLL_SQUASHFS_MNT},upperdir=${FLL_UNION_COWDIR}/upper,workdir=${FLL_UNION_COWDIR}/work"
+FLL_UNION_OPTIONS="lowerdir=${FLL_READONLY_MNT},upperdir=${FLL_UNION_COWDIR}/upper,workdir=${FLL_UNION_COWDIR}/work"
 modprobe "${FLL_UNION_MODULE}"
 mkdir -p "${FLL_UNION_COWDIR}"
 mount -n -t tmpfs -o size=90%,mode=755 tmpfs "${FLL_UNION_COWDIR}"
@@ -126,14 +127,20 @@ mount -t "${FLL_UNION_MODULE}" -o "${FLL_UNION_OPTIONS}" "${FLL_UNION_MODULE}" "
 
 # create /fll and migrate mountpoints
 mkdir -p "${FLL_ROOTFS_MNT}/fll"
-for mnt in ${FLL_SQUASHFS_MNT} ${FLL_UNION_COWDIR} ${FLL_BLOCKDEV_MNT} ${FLL_ISOMEDIA_MNT}; do
+for mnt in ${FLL_READONLY_MNT} ${FLL_UNION_COWDIR} ${FLL_BLOCKDEV_MNT} ${FLL_ISOMEDIA_MNT}; do
     if grep -q "${mnt}" /proc/mounts; then
-        # create symlink to squashfs for calamares
-        [ -f "${mnt}/${FLL_IMAGE_LOCATION}" ] && ln -sf "${mnt}/${FLL_IMAGE_LOCATION}" "${FLL_ROOTFS_MNT}/fll/squashfs"
+        # create symlink to readonlyfs for calamares
+        [ -f "${mnt}/${FLL_IMAGE_LOCATION}" ] && \
+            ln -sf "${mnt}/${FLL_IMAGE_LOCATION}" "${FLL_ROOTFS_MNT}/fll/${FLL_READONLY_FSTYPE}"
         mkdir -p "${FLL_ROOTFS_MNT}${mnt}"
         mount -n -o move "${mnt}" "${FLL_ROOTFS_MNT}${mnt}"
     fi
 done
+
+# update calamares unpackfs.conf with readonly fstype
+[ -f "${rootmnt}/etc/calamares/modules/unpackfs.conf" ] && \
+    sed -i 's/FLL_READONLY_FSTYPE/'"${FLL_READONLY_FSTYPE}"'/' \
+        "${rootmnt}/etc/calamares/modules/unpackfs.conf"
 
 # prepare /dev /media /proc and /sys
 for dir in dev media proc run sys; do

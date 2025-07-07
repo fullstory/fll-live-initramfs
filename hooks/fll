@@ -36,7 +36,8 @@ copy_file "regular file" /etc/default/distro /etc/default/distro
 # filesystem unioning modules
 manual_add_modules overlay
 
-# squashfs and loop
+# erofs, squashfs and loop
+manual_add_modules erofs
 manual_add_modules squashfs
 manual_add_modules loop
 
