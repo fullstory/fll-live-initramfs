@@ -129,26 +129,28 @@ mount -t "${FLL_UNION_MODULE}" -o "${FLL_UNION_OPTIONS}" "${FLL_UNION_MODULE}" "
 mkdir -p "${FLL_ROOTFS_MNT}/fll"
 for mnt in ${FLL_READONLY_MNT} ${FLL_UNION_COWDIR} ${FLL_BLOCKDEV_MNT} ${FLL_ISOMEDIA_MNT}; do
     if grep -q "${mnt}" /proc/mounts; then
-        # create symlink to readonlyfs for calamares
-        [ -f "${mnt}/${FLL_IMAGE_LOCATION}" ] && \
+        # create symlink to readonly rootfs for calamares
+        if [ -f "${mnt}/${FLL_IMAGE_LOCATION}" ]; then
             ln -sf "${mnt}/${FLL_IMAGE_LOCATION}" "${FLL_ROOTFS_MNT}/fll/${FLL_READONLY_FSTYPE}"
+        fi
         mkdir -p "${FLL_ROOTFS_MNT}${mnt}"
         mount -n -o move "${mnt}" "${FLL_ROOTFS_MNT}${mnt}"
     fi
 done
 
 # update calamares unpackfs.conf with readonly fstype
-[ -f "${rootmnt}/etc/calamares/modules/unpackfs.conf" ] && \
-    sed -i 's/FLL_READONLY_FSTYPE/'"${FLL_READONLY_FSTYPE}"'/' \
-        "${rootmnt}/etc/calamares/modules/unpackfs.conf"
+if [ -f "${FLL_ROOTFS_MNT}/etc/calamares/modules/unpackfs.conf" ]; then
+    sed -i "s/FLL_READONLY_FSTYPE/${FLL_READONLY_FSTYPE}/" \
+        "${FLL_ROOTFS_MNT}/etc/calamares/modules/unpackfs.conf"
+fi
 
 # prepare /dev /media /proc and /sys
 for dir in dev media proc run sys; do
-    mkdir -p -m 0755 "${rootmnt}/${dir}"
+    mkdir -p -m 0755 "${FLL_ROOTFS_MNT}/${dir}"
 done
 
 # tmp with correct permissions for users
-mkdir -p -m 1777 "${rootmnt}/tmp"
+mkdir -p -m 1777 "${FLL_ROOTFS_MNT}/tmp"
 
 # create udev rule for persistent symlink to device live media was found on
 printf "KERNEL==\"%s\", SYMLINK+=\"fll\"\n" \
