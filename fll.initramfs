@@ -112,7 +112,7 @@ if [ "${FLL_CHECKSUM_CHECK}" = "yes" ] && ! ( cd "${FLL_ISOMEDIA_MNT}" && sha256
 fi
 
 # mount readonly rootfs
-FLL_READONLY_FSTYPE="$(blkid -s  TYPE-o value ${FLL_ISOMEDIA_MNT}/${FLL_IMAGE_LOCATION})"
+FLL_READONLY_FSTYPE="$(blkid -s TYPE -o value ${FLL_ISOMEDIA_MNT}/${FLL_IMAGE_LOCATION})"
 mount -t "${FLL_READONLY_FSTYPE}" -o ro "${FLL_ISOMEDIA_MNT}/${FLL_IMAGE_LOCATION}" "${FLL_READONLY_MNT}"
 
 # prepare COW/tmpfs union filesystem
