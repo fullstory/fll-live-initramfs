@@ -141,7 +141,7 @@ done
 # update calamares unpackfs(c).conf with readonly fstype
 if [ -d "${FLL_ROOTFS_MNT}/etc/calamares/modules" ]; then
     sed -i "s/FLL_READONLY_FSTYPE/${FLL_READONLY_FSTYPE}/" \
-        "${FLL_ROOTFS_MNT}/etc/calamares/modules/unpackfs*"
+        "${FLL_ROOTFS_MNT}/etc/calamares/modules/unpackfs"*
 fi
 
 # prepare /dev /media /proc and /sys
