@@ -138,10 +138,10 @@ for mnt in ${FLL_READONLY_MNT} ${FLL_UNION_COWDIR} ${FLL_BLOCKDEV_MNT} ${FLL_ISO
     fi
 done
 
-# update calamares unpackfs.conf with readonly fstype
-if [ -f "${FLL_ROOTFS_MNT}/etc/calamares/modules/unpackfs.conf" ]; then
+# update calamares unpackfs(c).conf with readonly fstype
+if [ -d "${FLL_ROOTFS_MNT}/etc/calamares/modules" ]; then
     sed -i "s/FLL_READONLY_FSTYPE/${FLL_READONLY_FSTYPE}/" \
-        "${FLL_ROOTFS_MNT}/etc/calamares/modules/unpackfs.conf"
+        "${FLL_ROOTFS_MNT}/etc/calamares/modules/unpackfs*"
 fi
 
 # prepare /dev /media /proc and /sys
