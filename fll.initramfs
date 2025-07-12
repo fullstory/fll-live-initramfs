@@ -229,7 +229,7 @@ if [ "${FLL_COPY_TORAM}" = "yes" ]; then
         if [ "$?" = 0 ]; then
             umount "${FLL_ISOMEDIA_MNT}"
             umount "${FLL_BLOCKDEV_MNT}"
-            FLL_ISOMEDIA_MNT=/fll/toram/
+            FLL_ISOMEDIA_MNT=/fll/toram
         else
             umount /fll/toram
             rmdir /fll/toram
