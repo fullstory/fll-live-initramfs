@@ -1,12 +1,9 @@
-fll-live-initramfs (4.0.9) UNRELEASED; urgency=medium
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (4.0.9) unstable; urgency=medium
 
   [ Kel Modderman ]
   * Reimplement toram bot cheatcode.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 09 Jul 2025 19:02:28 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 12 Jul 2025 05:17:10 +0200
 
 fll-live-initramfs (4.0.8) unstable; urgency=medium
 
