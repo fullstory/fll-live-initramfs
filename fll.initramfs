@@ -17,6 +17,111 @@
 #  * updates live username variable if given on boot cmdline
 #  * configures live hostname, timezone, and getty
 
+copy_with_perc()
+{
+    # background the copy, grab the process id
+    dd if="${1}" of="${2}" status=none &
+
+    # calculate copying progress
+    awk -v pid="${!}" -v ifile="${1}" -v ofile="${2}" '
+        function get_size(path)
+        {
+            if (system("test -b " path) == 0)
+                return get_blockdev_size(path)
+            else
+                return get_file_size(path)
+        }
+
+        function get_file_size(file)
+        {
+            size = 0
+            cmd = "ls -l " file
+            if ((cmd | getline) > 0)
+                size = int($5)
+            close(cmd)
+            return size
+        }
+
+        function get_blockdev_size(dev)
+        {
+            size = 0
+            cmd = "blockdev --getsize64 " dev
+            if ((cmd | getline) > 0)
+                size = int($1)
+            close(cmd)
+            return size
+        }
+
+        function get_fd(pid, file)
+        {
+            fd = -1
+            cmd = "ls -l /proc/" pid "/fd/"
+            while ((cmd | getline) > 0) {
+                if ($NF == file) {
+                    fd = $9
+                    break
+                }
+            }
+            close(cmd)
+            return fd
+        }
+
+        function get_pos(pid, fd)
+        {
+            pos = -1
+            cmd = "cat /proc/" pid "/fdinfo/" fd " 2>/dev/null"
+            while ((cmd | getline) > 0) {
+                if (/pos:/) {
+                    pos = $2
+                    break
+                }
+            }
+            close(cmd)
+            return pos
+        }
+
+        BEGIN {
+            perc = 0
+            ifile_size = get_size(ifile)
+            if (ifile_size <= 0) {
+                printf("\nFailed to copy to ram: %s\n", ifile)
+                exit(1)
+            }
+
+            do {
+                ifile_fd = get_fd(pid, ifile)
+                ifile_pos = get_pos(pid, ifile_fd)
+                perc = int(100 * ifile_pos / ifile_size)
+                if (perc > 0 && perc < 100) {
+                    printf("\r[")
+                    for (i = 0; i <= perc; i += 2)
+                        printf("=")
+                    printf(">")
+                    for (i = perc; i < 100; i += 2)
+                        printf(" ")
+                    printf("]  ")
+                    printf("%02d%s", perc, "%")
+                }
+            } while (system("sleep 1") == 0 &&
+                        system("test -d /proc/" pid "/fd") == 0)
+
+            # ofile size is > if size on tmpfs
+            if (get_size(ofile) >= ifile_size) {
+                printf("\r[")
+                for (i = 0; i <= 100; i += 2)
+                    printf("=")
+                printf("=] ")
+                printf("%s\n", "100%")
+                exit(0)
+            }
+            else {
+                printf("\nFailed to copy to ram: %s\n", ifile)
+                exit(1)
+            }
+        }'
+    return ${?}
+}
+
 [ -n "${ID_FS_TYPE}" ] || ID_FS_TYPE="$(blkid -s TYPE -o value ${DEVNAME})"
 
 case "${ID_FS_TYPE}" in
@@ -34,6 +139,7 @@ esac
 [ -s /etc/default/distro ] && . /etc/default/distro
 
 FLL_CHECKSUM_CHECK="no"
+FLL_COPY_TORAM="no"
 
 # parse fll options given on cmdline
 for opt in $(cat /proc/cmdline); do
@@ -63,6 +169,9 @@ for opt in $(cat /proc/cmdline); do
             ;;
         sha256sum|sha256sums|checksum|checksums)
             FLL_CHECKSUM_CHECK="yes"
+            ;;
+        toram)
+            FLL_COPY_TORAM="yes"
             ;;
         tz=*)
             CUSTOM_TZ="${opt#tz=}"
@@ -109,6 +218,24 @@ fi
 if [ "${FLL_CHECKSUM_CHECK}" = "yes" ] && ! ( cd "${FLL_ISOMEDIA_MNT}" && sha256sum -c "sha256sums" ); then
     printf "ERROR: sha256sum check failed\n"
     exit 1
+fi
+
+# toram support
+if [ "${FLL_COPY_TORAM}" = "yes" ]; then
+    mkdir -p /fll/toram
+    if mount -n -t tmpfs -o size=90% tmpfs /fll/toram; then
+        mkdir /fll/toram/"${FLL_IMAGE_DIR}"
+        copy_with_perc "${FLL_ISOMEDIA_MNT}/${FLL_IMAGE_LOCATION}" /fll/toram/"${FLL_IMAGE_LOCATION}"
+        if [ "$?" = 0 ]; then
+            umount "${FLL_ISOMEDIA_MNT}"
+            umount "${FLL_BLOCKDEV_MNT}"
+            FLL_ISOMEDIA_MNT=/fll/toram/
+        else
+            umount /fll/toram
+            rmdir /fll/toram
+    else
+        rmdir /fll/toram
+    fi
 fi
 
 # mount readonly rootfs
