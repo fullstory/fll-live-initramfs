@@ -233,6 +233,7 @@ if [ "${FLL_COPY_TORAM}" = "yes" ]; then
         else
             umount /fll/toram
             rmdir /fll/toram
+        fi
     else
         rmdir /fll/toram
     fi
