@@ -20,7 +20,7 @@
 copy_with_perc()
 {
     # background the copy, grab the process id
-    dd if="${1}" of="${2}" status=none &
+    dd if="${1}" of="${2}" bs=1M status=none &
 
     # calculate copying progress
     awk -v pid="${!}" -v ifile="${1}" -v ofile="${2}" '
