@@ -1,6 +1,10 @@
 fll-live-initramfs (4.0.10) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
+
+  [ Kel Modderman ]
+  * toram: print input and output files.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 12 Jul 2025 05:17:24 +0200
 

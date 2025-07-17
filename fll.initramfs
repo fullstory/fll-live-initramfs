@@ -84,9 +84,11 @@ copy_with_perc()
             perc = 0
             ifile_size = get_size(ifile)
             if (ifile_size <= 0) {
-                printf("\nFailed to copy to ram: %s\n", ifile)
+                printf("\ntoram failed: %s\n", ifile)
                 exit(1)
             }
+
+            printf("\ntoram: %s -> %s\n", ifile, ofile)
 
             do {
                 ifile_fd = get_fd(pid, ifile)
@@ -103,7 +105,7 @@ copy_with_perc()
                     printf("%02d%s", perc, "%")
                 }
             } while (system("sleep 1") == 0 &&
-                        system("test -d /proc/" pid "/fd") == 0)
+                     system("test -d /proc/" pid "/fd") == 0)
 
             # ofile size is > if size on tmpfs
             if (get_size(ofile) >= ifile_size) {
@@ -115,7 +117,7 @@ copy_with_perc()
                 exit(0)
             }
             else {
-                printf("\nFailed to copy to ram: %s\n", ifile)
+                printf("\ntoram failed: %s\n", ifile)
                 exit(1)
             }
         }'
