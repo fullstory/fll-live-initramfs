@@ -3,7 +3,7 @@
 ###
 # F.U.L.L.S.T.O.R.Y systemd-shutdown script
 #
-# Copyright: (C) 2007-2024, Kel Modderman <kelvmod@gmail.com>
+# Copyright: (C) 2007-2025, Kel Modderman <kelvmod@gmail.com>
 # Copyright: (C) 2008-2024, Stefan Lippers-Hollmann <s.l-h@gmx.de>
 # License:   GPLv2
 #
@@ -12,9 +12,6 @@
 ###
 
 NO_EJECT="/fll.no_eject"
-FLLDEBUG="/fll.debug"
-
-[ -e "${FLLDEBUG}" ] && mount
 
 if [ -b /dev/fll-cdrom ] && [ ! -e "${NO_EJECT}" ]; then
     # disable kernel messages while ejecting cdrom (libata noise)
@@ -24,13 +21,6 @@ if [ -b /dev/fll-cdrom ] && [ ! -e "${NO_EJECT}" ]; then
 
     echo "" > /dev/console
     echo "Please remove CD, close cdrom drive then press enter." > /dev/console
-    echo "" > /dev/console
-    read x < /dev/console
-fi
-
-if [ -e "${FLLDEBUG}" ]; then
-    echo "" > /dev/console
-    echo "Please press enter to shutdown." > /dev/console
     echo "" > /dev/console
     read x < /dev/console
 fi

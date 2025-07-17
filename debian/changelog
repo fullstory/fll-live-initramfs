@@ -5,6 +5,7 @@ fll-live-initramfs (4.0.10) UNRELEASED; urgency=medium
 
   [ Kel Modderman ]
   * toram: print input and output files.
+  * shutdown: remove debug code no longer neccessary.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 12 Jul 2025 05:17:24 +0200
 

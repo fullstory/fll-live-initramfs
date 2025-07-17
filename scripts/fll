@@ -71,7 +71,6 @@ mountroot()
     if [ -n "${FLL_NO_EJECT}" ] || systemd-detect-virt --quiet; then
         touch /run/initramfs/fll.no_eject
     fi
-    [ -n "${FLL_DEBUG}" ] && touch /run/initramfs/fll.debug
 
     # final debug checkpoint
     maybe_break fll-bottom
