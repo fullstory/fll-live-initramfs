@@ -1,13 +1,10 @@
-fll-live-initramfs (4.0.10) UNRELEASED; urgency=medium
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (4.0.10) unstable; urgency=medium
 
   [ Kel Modderman ]
   * toram: print input and output files.
   * shutdown: remove debug code no longer neccessary.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 12 Jul 2025 05:17:24 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 18 Jul 2025 06:45:47 +0200
 
 fll-live-initramfs (4.0.9) unstable; urgency=medium
 
