@@ -45,6 +45,11 @@ manual_add_modules loop
 manual_add_modules nls_cp437
 manual_add_modules nls_utf8
 
+# pmem devices for HTTP boot support
+#manual_add_modules of_pmem # arm64
+manual_add_modules nd_pmem
+manual_add_modules nfit
+
 # ensure maximum hardware support
 auto_add_modules
 
