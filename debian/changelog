@@ -1,12 +1,9 @@
-fll-live-initramfs (4.0.11) UNRELEASED; urgency=medium
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (4.0.11) unstable; urgency=medium
 
   [ Kel Modderman ]
   * Add pmem modules for amd64 (nd_pmem, nfit) for UEFI HTTP boot support.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 18 Jul 2025 06:46:11 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 22 Jul 2025 05:19:24 +0200
 
 fll-live-initramfs (4.0.10) unstable; urgency=medium
 
