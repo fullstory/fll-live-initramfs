@@ -1,6 +1,11 @@
 fll-live-initramfs (4.0.12) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
+
+  [ Kel Modderman ]
+  * Add of_pmem module to initramfs for UEFI http boot support on device
+    tree architectures.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 22 Jul 2025 05:19:43 +0200
 
