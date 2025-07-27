@@ -229,8 +229,8 @@ if [ "${FLL_COPY_TORAM}" = "yes" ]; then
         mkdir /fll/toram/"${FLL_IMAGE_DIR}"
         copy_with_perc "${FLL_ISOMEDIA_MNT}/${FLL_IMAGE_LOCATION}" /fll/toram/"${FLL_IMAGE_LOCATION}"
         if [ "$?" = 0 ]; then
-            umount "${FLL_ISOMEDIA_MNT}"
-            umount "${FLL_BLOCKDEV_MNT}"
+            umount -l "${FLL_ISOMEDIA_MNT}"
+            umount -l "${FLL_BLOCKDEV_MNT}"
             FLL_ISOMEDIA_MNT=/fll/toram
         else
             umount /fll/toram
