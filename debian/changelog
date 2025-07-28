@@ -1,13 +1,10 @@
-fll-live-initramfs (4.0.13) UNRELEASED; urgency=medium
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (4.0.13) unstable; urgency=medium
 
   [ Kel Modderman ]
   * Lazy umount original iso and block device mountpoints after toram
     operation completes.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 26 Jul 2025 04:06:45 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 28 Jul 2025 02:35:14 +0200
 
 fll-live-initramfs (4.0.12) unstable; urgency=medium
 
