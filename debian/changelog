@@ -1,6 +1,11 @@
 fll-live-initramfs (4.0.14) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
+
+  [ Kel Modderman ]
+  * Check /proc/mounts before calling umount of iso and block device media
+    during toram routine.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 28 Jul 2025 02:35:34 +0200
 
