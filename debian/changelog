@@ -1,3 +1,9 @@
+fll-live-initramfs (4.0.16) UNRELEASED; urgency=medium
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 18 Aug 2025 01:25:35 +0200
+
 fll-live-initramfs (4.0.15) unstable; urgency=medium
 
   * add ntfs/ vfat to whitelisted filesystems, thanks to Kel.
