@@ -127,7 +127,7 @@ copy_with_perc()
 [ -n "${ID_FS_TYPE}" ] || ID_FS_TYPE="$(blkid -s TYPE -o value ${DEVNAME})"
 
 case "${ID_FS_TYPE}" in
-    iso9660|ext*|btrfs|xfs)
+    iso9660|ext*|btrfs|xfs|ntfs|vfat)
         :
         ;;
     *)
