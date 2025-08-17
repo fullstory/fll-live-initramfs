@@ -45,6 +45,10 @@ manual_add_modules loop
 manual_add_modules nls_cp437
 manual_add_modules nls_utf8
 
+# ntfs3/ vfat (useful for grub2-fll-fromiso)
+manual_add_modules ntfs3
+manual_add_modules vfat
+
 # pmem devices for HTTP boot support
 manual_add_modules of_pmem
 manual_add_modules nd_pmem
