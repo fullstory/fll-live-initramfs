@@ -27,10 +27,9 @@ mountroot()
     for opt in $(cat /proc/cmdline); do
         case "${opt}" in
             noeject)
-                FLL_NO_EJECT="1"
+                touch /run/initramfs/fll.no_eject
                 ;;
             fll=debug)
-                FLL_DEBUG="1"
                 set -x
                 ;;
             quiet)
@@ -67,10 +66,8 @@ mountroot()
     # Put exitrd on a diet to save memory
     rm -rf /run/initramfs/lib/modules /run/initramfs/lib/firmware
 
-    # don't prompt for ejecting in a virtual machine, unless overriden
-    if [ -n "${FLL_NO_EJECT}" ] || systemd-detect-virt --quiet; then
-        touch /run/initramfs/fll.no_eject
-    fi
+    # don't prompt for ejecting in a virtual machine
+    systemd-detect-virt --quiet && touch /run/initramfs/fll.no_eject
 
     # final debug checkpoint
     maybe_break fll-bottom

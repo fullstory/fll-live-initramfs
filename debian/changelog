@@ -9,6 +9,7 @@ fll-live-initramfs (4.0.16) UNRELEASED; urgency=medium
   * If fromhd=/dev/* is provided as a boot parameter, and it is not
     fromhd=/dev/disk/by-uuid/, then only probe the block device node if
     it is a name match.
+  * Remove a couple of unneccessary variables from scripts/fll.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 18 Aug 2025 01:25:35 +0200
 
