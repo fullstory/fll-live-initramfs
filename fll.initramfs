@@ -153,10 +153,18 @@ for opt in $(cat /proc/cmdline); do
             FLL_MEDIA_NAME="${opt#fromiso=}"
             ;;
         fromhd=*)
-            # support for grub2-fll-fromiso: if fromhd=UUID= is provided
-            # then only accept block devices with matching ID_FS_UUID.
+            # support for grub2-fll-fromiso: if fromhd=UUID= or
+            # fromhd=/dev/disk/by-uuid/ or is provided then only accept block
+            # devices with matching ID_FS_UUID.
             FLL_FROMHD="${opt#fromhd=}"
-            [ "${FLL_FROMHD}" = "UUID=${ID_FS_UUID}" ] || exit 1
+            case "${FLL_FROMHD}" in
+                UUID=*)
+                    [ "${FLL_FROMHD#UUID=}" = "${ID_FS_UUID}" ] || exit 1
+                    ;;
+                /dev/disk/by-uuid/*)
+                    [ "${FLL_FROMHD#/dev/disk/by-uuid/}" = "${ID_FS_UUID}" ] || exit 1
+                    ;;
+            esac
             ;;
         hostname=*)
             CUSTOM_HOSTNAME="${opt#hostname=}"

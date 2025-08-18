@@ -1,6 +1,11 @@
 fll-live-initramfs (4.0.16) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
+
+  [ Kel Modderman ]
+  * Support fromhd=/dev/disk/by-uuid/ as well as fromhd=UUID=, which is
+    a boot parameter passed on by grub2-fll-fromiso.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 18 Aug 2025 01:25:35 +0200
 
