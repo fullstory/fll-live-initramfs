@@ -1,7 +1,4 @@
-fll-live-initramfs (4.0.16) UNRELEASED; urgency=medium
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (4.0.16) unstable; urgency=medium
 
   [ Kel Modderman ]
   * Support fromhd=/dev/disk/by-uuid/ as well as fromhd=UUID=, which is
@@ -16,7 +13,7 @@ fll-live-initramfs (4.0.16) UNRELEASED; urgency=medium
   * Do not echo while setting up timezone.
   * Avoid attempting to move mount the same mount more than once.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 18 Aug 2025 01:25:35 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 18 Aug 2025 15:48:52 +0200
 
 fll-live-initramfs (4.0.15) unstable; urgency=medium
 
