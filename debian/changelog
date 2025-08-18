@@ -6,6 +6,9 @@ fll-live-initramfs (4.0.16) UNRELEASED; urgency=medium
   [ Kel Modderman ]
   * Support fromhd=/dev/disk/by-uuid/ as well as fromhd=UUID=, which is
     a boot parameter passed on by grub2-fll-fromiso.
+  * If fromhd=/dev/* is provided as a boot paremeter, and it is not
+    fromhd=/dev/disk/by-uuid/, then only probe the block device node if
+    it is a name match.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 18 Aug 2025 01:25:35 +0200
 

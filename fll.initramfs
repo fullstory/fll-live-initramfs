@@ -164,6 +164,9 @@ for opt in $(cat /proc/cmdline); do
                 /dev/disk/by-uuid/*)
                     [ "${FLL_FROMHD#/dev/disk/by-uuid/}" = "${ID_FS_UUID}" ] || exit 1
                     ;;
+                /dev/*)
+                    [ "${FLL_FROMHD}" = "${DEVNAME}" ] || exit 1
+                    ;;
             esac
             ;;
         hostname=*)
