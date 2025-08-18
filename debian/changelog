@@ -1,13 +1,10 @@
-fll-live-initramfs (4.0.17) UNRELEASED; urgency=medium
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (4.0.17) unstable; urgency=medium
 
   [ Kel Modderman ]
   * Canonicalize device node before comparison with $DEVNAME.
   * Dump environment variables when debugging.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 18 Aug 2025 15:49:08 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 18 Aug 2025 19:00:40 +0200
 
 fll-live-initramfs (4.0.16) unstable; urgency=medium
 
