@@ -124,6 +124,11 @@ copy_with_perc()
     return ${?}
 }
 
+if grep -qw 'fll=debug' /proc/cmdline; then
+    set -x
+    env
+fi
+
 [ -n "${ID_FS_TYPE}" ] || ID_FS_TYPE="$(blkid -s TYPE -o value ${DEVNAME})"
 
 case "${ID_FS_TYPE}" in
@@ -146,10 +151,6 @@ FLL_COPY_TORAM="no"
 # parse fll options given on cmdline
 for opt in $(cat /proc/cmdline); do
     case "${opt}" in
-        fll=debug)
-            set -x
-            env
-            ;;
         fromiso=*)
             FLL_MEDIA_NAME="${opt#fromiso=}"
             ;;

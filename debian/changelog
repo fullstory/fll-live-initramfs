@@ -1,6 +1,10 @@
 fll-live-initramfs (4.0.18) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
+
+  [ Kel Modderman ]
+  * Start debug trace early as possible if fll=debug is given on cmdline.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 18 Aug 2025 19:01:02 +0200
 
