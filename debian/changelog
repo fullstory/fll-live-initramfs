@@ -1,12 +1,9 @@
-fll-live-initramfs (4.0.18) UNRELEASED; urgency=medium
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (4.0.18) unstable; urgency=medium
 
   [ Kel Modderman ]
   * Start debug trace early as possible if fll=debug is given on cmdline.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 18 Aug 2025 19:01:02 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 18 Aug 2025 21:41:08 +0200
 
 fll-live-initramfs (4.0.17) unstable; urgency=medium
 
