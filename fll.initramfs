@@ -324,7 +324,6 @@ fi
 
 # configure timezone, fallback to UTC
 [ -f "${FLL_ROOTFS_MNT}/usr/share/zoneinfo/${TZ}" ] || TZ="Etc/UTC"
-echo "configuring timezone data for '${TZ}'"
 echo "${TZ}" > "${FLL_ROOTFS_MNT}/etc/timezone"
 rm -f "${FLL_ROOTFS_MNT}/etc/localtime"
 ln -sf "/usr/share/zoneinfo/${TZ}" "${FLL_ROOTFS_MNT}/etc/localtime"

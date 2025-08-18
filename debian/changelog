@@ -13,6 +13,7 @@ fll-live-initramfs (4.0.16) UNRELEASED; urgency=medium
   * Remove no_static_dev variable and unnecessary check for quiet variable
     when logging messages.
   * Add debug logging.
+  * Do not echo while setting up timezone.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 18 Aug 2025 01:25:35 +0200
 
