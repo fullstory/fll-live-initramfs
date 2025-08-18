@@ -9,8 +9,8 @@ fll-live-initramfs (4.0.16) UNRELEASED; urgency=medium
   * If fromhd=/dev/* is provided as a boot parameter, and it is not
     fromhd=/dev/disk/by-uuid/, then only probe the block device node if
     it is a name match.
-  * Remove a couple of unneccessary variables from scripts/fll.
-  * Remove no_static_dev variable and unneccessary check for quiet variable
+  * Remove a couple of unnecessary variables from scripts/fll.
+  * Remove no_static_dev variable and unnecessary check for quiet variable
     when logging messages.
   * Add debug logging.
 
