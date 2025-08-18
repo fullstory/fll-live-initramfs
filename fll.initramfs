@@ -148,6 +148,7 @@ for opt in $(cat /proc/cmdline); do
     case "${opt}" in
         fll=debug)
             set -x
+            env
             ;;
         fromiso=*)
             FLL_MEDIA_NAME="${opt#fromiso=}"
@@ -165,7 +166,7 @@ for opt in $(cat /proc/cmdline); do
                     [ "${FLL_FROMHD#/dev/disk/by-uuid/}" = "${ID_FS_UUID}" ] || exit 1
                     ;;
                 /dev/*)
-                    [ "${FLL_FROMHD}" = "${DEVNAME}" ] || exit 1
+                    [ "$(readlink -f ${FLL_FROMHD})" = "${DEVNAME}" ] || exit 1
                     ;;
             esac
             ;;
