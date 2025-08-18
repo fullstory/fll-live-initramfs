@@ -12,6 +12,7 @@ fll-live-initramfs (4.0.16) UNRELEASED; urgency=medium
   * Remove a couple of unneccessary variables from scripts/fll.
   * Remove no_static_dev variable and unneccessary check for quiet variable
     when logging messages.
+  * Add debug logging.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 18 Aug 2025 01:25:35 +0200
 

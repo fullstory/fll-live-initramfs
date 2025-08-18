@@ -18,11 +18,30 @@
 #  * checks the compressed rootfs was detected successfully
 #  * prepares systemd-exitrd for shutdown/reboot in /run/initramfs
 
-###############################################################################
-# define mountroot() for init
-###############################################################################
+init_debug_log()
+{
+    exec 6>&1
+    exec 7>&2
+    exec > debug.log
+    exec 2>&1
+    tail -f debug.log >&7 &
+    echo "${!}" > debug.log.pid
+    set -x
+}
+
+stop_debug_log()
+{
+    [ -f debug.log.pid ] || return 0
+    set +x
+    exec 1>&6 6>&-
+    exec 2>&7 7>&-
+    kill "$(cat debug.log.pid)"
+    mkdir -p "${rootmnt}/var/log/fll" && cp debug.log "${rootmnt}/var/log/fll"
+}
+
 mountroot()
 {
+    maybe_break fll-top
     # parse fll options given on cmdline
     for opt in $(cat /proc/cmdline); do
         case "${opt}" in
@@ -30,7 +49,7 @@ mountroot()
                 touch /run/initramfs/fll.no_eject
                 ;;
             fll=debug)
-                set -x
+                init_debug_log
                 ;;
             quiet)
                 echo "0" > /proc/sys/kernel/printk
@@ -43,14 +62,18 @@ mountroot()
     run_scripts /scripts/local-top
     log_end_msg
 
-    # debug checkpoint
     maybe_break fll-premount
 
-    /usr/bin/fll_blockdev_detect --monitor --execp=/usr/lib/fll/fll.initramfs
+    fll_blockdev_detect --monitor --execp=/usr/lib/fll/fll.initramfs
+    if [ "$?" -eq 0 ]; then
+        log_success_msg "Mounted live media"
+    else
+        log_failure_msg "Live media not detected or mounted"
+    fi
 
-    # debug checkpoint
     maybe_break fll-postmount
 
+    log_begin_msg "Creating exit ramfs"
     # Save an in-memory copy of the live initial ramdisk for shutdown (exitrd)
     # https://systemd.io/INITRD_INTERFACE/
     mkdir /run/initramfs~
@@ -60,13 +83,16 @@ mountroot()
     rmdir /run/initramfs~
     # Put exitrd on a diet to save memory
     rm -rf /run/initramfs/lib/modules /run/initramfs/lib/firmware
+    log_end_msg
 
     # don't prompt for ejecting in a virtual machine
     systemd-detect-virt --quiet && touch /run/initramfs/fll.no_eject
-
+    # stop logging
+    stop_debug_log
     # final debug checkpoint
     maybe_break fll-bottom
 
-    printf "\nStarting init process...\n\n"
+    log_begin_msg "Starting init process"
+    log_end_msg
 }
 
