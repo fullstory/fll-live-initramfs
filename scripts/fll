@@ -38,12 +38,10 @@ mountroot()
         esac
     done
 
-    #
     # Run scripts in local-top, like lvm2
-    #
-    [ "$quiet" != "y" ] && log_begin_msg "Running /scripts/local-top"
+    log_begin_msg "Running /scripts/local-top"
     run_scripts /scripts/local-top
-    [ "$quiet" != "y" ] && log_end_msg
+    log_end_msg
 
     # debug checkpoint
     maybe_break fll-premount
@@ -52,9 +50,6 @@ mountroot()
 
     # debug checkpoint
     maybe_break fll-postmount
-
-    # disable movement of static $rootmnt/dev by scripts/init-bottom/udev
-    export no_static_dev="1"
 
     # Save an in-memory copy of the live initial ramdisk for shutdown (exitrd)
     # https://systemd.io/INITRD_INTERFACE/
