@@ -274,8 +274,10 @@ for mnt in ${FLL_READONLY_MNT} ${FLL_UNION_COWDIR} ${FLL_BLOCKDEV_MNT} ${FLL_ISO
         if [ -f "${mnt}/${FLL_IMAGE_LOCATION}" ]; then
             ln -sf "${mnt}/${FLL_IMAGE_LOCATION}" "${FLL_ROOTFS_MNT}/fll/${FLL_READONLY_FSTYPE}"
         fi
-        mkdir -p "${FLL_ROOTFS_MNT}${mnt}"
-        mount -n -o move "${mnt}" "${FLL_ROOTFS_MNT}${mnt}"
+        if [ ! -d "${FLL_ROOTFS_MNT}${mnt}" ]; then
+            mkdir -p "${FLL_ROOTFS_MNT}${mnt}"
+            mount -n -o move "${mnt}" "${FLL_ROOTFS_MNT}${mnt}"
+        fi
     fi
 done
 
