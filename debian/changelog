@@ -1,6 +1,10 @@
 fll-live-initramfs (4.0.19) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
+
+  [ Kel Modderman ]
+  * Do whole word matching when grepping /proc/mounts.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 18 Aug 2025 21:41:29 +0200
 

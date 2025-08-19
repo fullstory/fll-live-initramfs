@@ -242,8 +242,8 @@ if [ "${FLL_COPY_TORAM}" = "yes" ]; then
         mkdir /fll/toram/"${FLL_IMAGE_DIR}"
         copy_with_perc "${FLL_ISOMEDIA_MNT}/${FLL_IMAGE_LOCATION}" /fll/toram/"${FLL_IMAGE_LOCATION}"
         if [ "$?" = 0 ]; then
-            grep -q "${FLL_ISOMEDIA_MNT}" /proc/mounts && umount -l "${FLL_ISOMEDIA_MNT}"
-            grep -q "${FLL_BLOCKDEV_MNT}" /proc/mounts && umount -l "${FLL_BLOCKDEV_MNT}"
+            grep -qw "${FLL_ISOMEDIA_MNT}" /proc/mounts && umount -l "${FLL_ISOMEDIA_MNT}"
+            grep -qw "${FLL_BLOCKDEV_MNT}" /proc/mounts && umount -l "${FLL_BLOCKDEV_MNT}"
             FLL_ISOMEDIA_MNT=/fll/toram
         else
             umount /fll/toram
@@ -271,7 +271,7 @@ mount -t "${FLL_UNION_MODULE}" -o "${FLL_UNION_OPTIONS}" "${FLL_UNION_MODULE}" "
 # create /fll and migrate mountpoints
 mkdir -p "${FLL_ROOTFS_MNT}/fll"
 for mnt in ${FLL_READONLY_MNT} ${FLL_UNION_COWDIR} ${FLL_BLOCKDEV_MNT} ${FLL_ISOMEDIA_MNT}; do
-    if grep -q "${mnt}" /proc/mounts; then
+    if grep -qw "${mnt}" /proc/mounts; then
         # create symlink to readonly rootfs for calamares
         if [ -f "${mnt}/${FLL_IMAGE_LOCATION}" ]; then
             ln -sf "${mnt}/${FLL_IMAGE_LOCATION}" "${FLL_ROOTFS_MNT}/fll/${FLL_READONLY_FSTYPE}"
