@@ -5,6 +5,7 @@ fll-live-initramfs (4.0.19) UNRELEASED; urgency=medium
 
   [ Kel Modderman ]
   * Do whole word matching when grepping /proc/mounts.
+  * Add jfs|f2fs to the filesystem whitelist.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 18 Aug 2025 21:41:29 +0200
 
