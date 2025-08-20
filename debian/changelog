@@ -1,13 +1,10 @@
-fll-live-initramfs (4.0.19) UNRELEASED; urgency=medium
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (4.0.19) unstable; urgency=medium
 
   [ Kel Modderman ]
   * Do whole word matching when grepping /proc/mounts.
   * Add jfs|f2fs|exfat|udf to the filesystem whitelist.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 18 Aug 2025 21:41:29 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 20 Aug 2025 21:32:14 +0200
 
 fll-live-initramfs (4.0.18) unstable; urgency=medium
 
