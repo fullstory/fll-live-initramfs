@@ -1,6 +1,10 @@
 fll-live-initramfs (4.0.20) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
+
+  [ Kel Modderman ]
+  * Add experimental persist mode.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 20 Aug 2025 21:32:31 +0200
 

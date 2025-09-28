@@ -147,6 +147,7 @@ esac
 
 FLL_CHECKSUM_CHECK="no"
 FLL_COPY_TORAM="no"
+FLL_PERSIST="no"
 
 # parse fll options given on cmdline
 for opt in $(cat /proc/cmdline); do
@@ -181,6 +182,10 @@ for opt in $(cat /proc/cmdline); do
         image_name=*)
             FLL_IMAGE_FILE="${opt#image_name=}"
             FLL_IMAGE_LOCATION="${FLL_IMAGE_DIR}/${FLL_IMAGE_FILE}"
+            ;;
+        persist=*)
+            FLL_PERSIST="yes"
+            FLL_PERSIST_UUID="${opt#persist=}"
             ;;
         sha256sum|sha256sums|checksum|checksums)
             FLL_CHECKSUM_CHECK="yes"
@@ -264,7 +269,11 @@ FLL_UNION_COWDIR="/fll/cow"
 FLL_UNION_OPTIONS="lowerdir=${FLL_READONLY_MNT},upperdir=${FLL_UNION_COWDIR}/upper,workdir=${FLL_UNION_COWDIR}/work"
 modprobe "${FLL_UNION_MODULE}"
 mkdir -p "${FLL_UNION_COWDIR}"
-mount -n -t tmpfs -o size=90%,mode=755 tmpfs "${FLL_UNION_COWDIR}"
+if [ "${FLL_PERSIST}" = "yes" ]; then
+    mount -n -o rw "/dev/disk/by-uuid/${FLL_PERSIST_UUID}" "${FLL_UNION_COWDIR}"
+else
+    mount -n -t tmpfs -o size=90%,mode=755 tmpfs "${FLL_UNION_COWDIR}"
+fi
 mkdir -p "${FLL_UNION_COWDIR}/upper" "${FLL_UNION_COWDIR}/work"
 mount -t "${FLL_UNION_MODULE}" -o "${FLL_UNION_OPTIONS}" "${FLL_UNION_MODULE}" "${FLL_ROOTFS_MNT}"
 
