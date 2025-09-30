@@ -4,7 +4,11 @@ fll-live-initramfs (4.0.20) UNRELEASED; urgency=medium
   * NOT RELEASED YET
 
   [ Kel Modderman ]
-  * Add experimental persist mode.
+  * Add experimental persist_uuid cheatcode.
+  * Provide logic for accessing GPT partition directly rather than via
+    iso9660 file.
+  * Rename uuid cheatcode to iso_uuid.
+  * Add rootfs_uuid cheatcode.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 20 Aug 2025 21:32:31 +0200
 

@@ -147,7 +147,9 @@ esac
 
 FLL_CHECKSUM_CHECK="no"
 FLL_COPY_TORAM="no"
-FLL_PERSIST="no"
+FLL_ISO_UUID=""
+FLL_ROOTFS_UUID=""
+FLL_PERSIST_UUID=""
 
 # parse fll options given on cmdline
 for opt in $(cat /proc/cmdline); do
@@ -183,9 +185,14 @@ for opt in $(cat /proc/cmdline); do
             FLL_IMAGE_FILE="${opt#image_name=}"
             FLL_IMAGE_LOCATION="${FLL_IMAGE_DIR}/${FLL_IMAGE_FILE}"
             ;;
-        persist=*)
-            FLL_PERSIST="yes"
-            FLL_PERSIST_UUID="${opt#persist=}"
+        iso_uuid=*)
+            FLL_ISO_UUID="${opt#iso_uuid=}"
+            ;;
+        persist_uuid=*)
+            FLL_PERSIST_UUID="${opt#persist_uuid=}"
+            ;;
+        rootfs_uuid=*)
+            FLL_ROOTFS_UUID="${opt#rootfs_uuid=}"
             ;;
         sha256sum|sha256sums|checksum|checksums)
             FLL_CHECKSUM_CHECK="yes"
@@ -205,63 +212,88 @@ for opt in $(cat /proc/cmdline); do
         utc|gmt)
             CUSTOM_TZ="Etc/UTC"
             ;;
-        uuid=*)
-            FLL_UUID="${opt#uuid=}"
-            ;;
     esac
 done
 
 FLL_ROOTFS_MNT="${rootmnt:-/root}"
-FLL_READONLY_MNT="/fll/${FLL_UUID}"
-FLL_BLOCKDEV_MNT="/fll/${DEVNAME#/dev/}"
-# exit if we've already probed this device before
-[ -d "${FLL_BLOCKDEV_MNT}" ] && exit 1
-mkdir -p "${FLL_BLOCKDEV_MNT}"
+FLL_ISOMEDIA_MNT=""
+FLL_READONLY_MNT=""
+FLL_READONLY_FILE=""
+FLL_READONLY_FSTYPE=""
+FLL_BLOCKDEV_MNT=""
+# rootfs_uuid matches block device uuid => accessing GPT partition directly
+if [ "${ID_FS_UUID}" = "${FLL_ROOTFS_UUID}" ]; then
+    FLL_READONLY_MNT="/fll/${FLL_ROOTFS_UUID}"
+    FLL_READONLY_FILE="${DEVNAME}"
+    FLL_READONLY_FSTYPE="${ID_FS_TYPE}"
 
-mkdir -p "${FLL_BLOCKDEV_MNT}" "${FLL_READONLY_MNT}"
-mount -t "${ID_FS_TYPE}" -o ro "${DEVNAME}" "${FLL_BLOCKDEV_MNT}"
-# iso9660 filesystem on block device (cd/dvd/usb)
-if [ "${ID_FS_UUID}" = "${FLL_UUID}" ] && [ -f "${FLL_BLOCKDEV_MNT}/${FLL_IMAGE_LOCATION}" ]; then
-    FLL_ISOMEDIA_MNT="${FLL_BLOCKDEV_MNT}"
-# iso file on filesystem (fromiso=)
-elif [ -f "${FLL_BLOCKDEV_MNT}/${FLL_MEDIA_NAME#/}" ] && \
-     [ "$(blkid -s UUID -o value ${FLL_BLOCKDEV_MNT}/${FLL_MEDIA_NAME#/})" = "${FLL_UUID}" ]; then
-    FLL_ISOMEDIA_MNT="/fll/fromiso"; mkdir -p "${FLL_ISOMEDIA_MNT}"
-    mount -t iso9660 -o ro "${FLL_BLOCKDEV_MNT}/${FLL_MEDIA_NAME#/}" "${FLL_ISOMEDIA_MNT}"
-# no iso media detected by UUID
-else
-    umount "${FLL_BLOCKDEV_MNT}"
-    exit 1
-fi
-
-# check integrity of live media if requested
-if [ "${FLL_CHECKSUM_CHECK}" = "yes" ] && ! ( cd "${FLL_ISOMEDIA_MNT}" && sha256sum -c "sha256sums" ); then
-    printf "ERROR: sha256sum check failed\n"
-    exit 1
-fi
-
-# toram support
-if [ "${FLL_COPY_TORAM}" = "yes" ]; then
-    mkdir -p /fll/toram
-    if mount -n -t tmpfs -o size=90% tmpfs /fll/toram; then
-        mkdir /fll/toram/"${FLL_IMAGE_DIR}"
-        copy_with_perc "${FLL_ISOMEDIA_MNT}/${FLL_IMAGE_LOCATION}" /fll/toram/"${FLL_IMAGE_LOCATION}"
-        if [ "$?" = 0 ]; then
-            grep -qw "${FLL_ISOMEDIA_MNT}" /proc/mounts && umount -l "${FLL_ISOMEDIA_MNT}"
-            grep -qw "${FLL_BLOCKDEV_MNT}" /proc/mounts && umount -l "${FLL_BLOCKDEV_MNT}"
-            FLL_ISOMEDIA_MNT=/fll/toram
+    # toram support
+    if [ "${FLL_COPY_TORAM}" = "yes" ]; then
+        mkdir -p /fll/toram
+        if mount -n -t tmpfs -o size=90% tmpfs /fll/toram; then
+            mkdir /fll/toram/"${FLL_IMAGE_DIR}"
+            if copy_with_perc "${FLL_READONLY_FILE}" /fll/toram/"${FLL_IMAGE_LOCATION}"; then
+                FLL_READONLY_FILE=/fll/toram/"${FLL_IMAGE_LOCATION}"
+            else
+                umount /fll/toram
+                rmdir /fll/toram
+            fi
         else
-            umount /fll/toram
             rmdir /fll/toram
         fi
-    else
-        rmdir /fll/toram
     fi
+else
+    FLL_READONLY_MNT="/fll/${FLL_ISO_UUID}"
+    FLL_BLOCKDEV_MNT="/fll/${DEVNAME#/dev/}"
+    mkdir -p "${FLL_BLOCKDEV_MNT}" "${FLL_READONLY_MNT}"
+    mount -t "${ID_FS_TYPE}" -o ro "${DEVNAME}" "${FLL_BLOCKDEV_MNT}"
+
+    # iso9660 filesystem on block device (cd/dvd/usb)
+    if [ "${ID_FS_UUID}" = "${FLL_ISO_UUID}" ] && [ -f "${FLL_BLOCKDEV_MNT}/${FLL_IMAGE_LOCATION}" ]; then
+        FLL_ISOMEDIA_MNT="${FLL_BLOCKDEV_MNT}"
+    # iso file on filesystem (fromiso=)
+    elif [ -f "${FLL_BLOCKDEV_MNT}/${FLL_MEDIA_NAME#/}" ] && \
+        [ "$(blkid -s UUID -o value ${FLL_BLOCKDEV_MNT}/${FLL_MEDIA_NAME#/})" = "${FLL_ISO_UUID}" ]; then
+        FLL_ISOMEDIA_MNT="/fll/fromiso"; mkdir -p "${FLL_ISOMEDIA_MNT}"
+        mount -t iso9660 -o ro "${FLL_BLOCKDEV_MNT}/${FLL_MEDIA_NAME#/}" "${FLL_ISOMEDIA_MNT}"
+    # no iso media detected by UUID
+    else
+        umount "${FLL_BLOCKDEV_MNT}"
+        exit 1
+    fi
+
+    # check integrity of live media if requested
+    if [ "${FLL_CHECKSUM_CHECK}" = "yes" ] && ! ( cd "${FLL_ISOMEDIA_MNT}" && sha256sum -c "sha256sums" ); then
+        printf "ERROR: sha256sum check failed\n"
+        exit 1
+    fi
+
+    # toram support
+    if [ "${FLL_COPY_TORAM}" = "yes" ]; then
+        mkdir -p /fll/toram
+        if mount -n -t tmpfs -o size=90% tmpfs /fll/toram; then
+            mkdir /fll/toram/"${FLL_IMAGE_DIR}"
+            if copy_with_perc "${FLL_ISOMEDIA_MNT}/${FLL_IMAGE_LOCATION}" /fll/toram/"${FLL_IMAGE_LOCATION}"; then
+                grep -qw "${FLL_ISOMEDIA_MNT}" /proc/mounts && umount -l "${FLL_ISOMEDIA_MNT}"
+                grep -qw "${FLL_BLOCKDEV_MNT}" /proc/mounts && umount -l "${FLL_BLOCKDEV_MNT}"
+                FLL_ISOMEDIA_MNT=/fll/toram
+            else
+                umount /fll/toram
+                rmdir /fll/toram
+            fi
+        else
+            rmdir /fll/toram
+        fi
+    fi
+
+    FLL_READONLY_FILE="${FLL_ISOMEDIA_MNT}/${FLL_IMAGE_LOCATION}"
+    FLL_READONLY_FSTYPE="$(blkid -s TYPE -o value ${FLL_READONLY_FILE})"
 fi
 
 # mount readonly rootfs
-FLL_READONLY_FSTYPE="$(blkid -s TYPE -o value ${FLL_ISOMEDIA_MNT}/${FLL_IMAGE_LOCATION})"
-mount -t "${FLL_READONLY_FSTYPE}" -o ro "${FLL_ISOMEDIA_MNT}/${FLL_IMAGE_LOCATION}" "${FLL_READONLY_MNT}"
+if ! mount -t "${FLL_READONLY_FSTYPE}" -o ro "${FLL_READONLY_FILE}" "${FLL_READONLY_MNT}"; then
+    exit 1
+fi
 
 # prepare COW/tmpfs union filesystem
 FLL_UNION_MODULE="overlay"
@@ -269,7 +301,7 @@ FLL_UNION_COWDIR="/fll/cow"
 FLL_UNION_OPTIONS="lowerdir=${FLL_READONLY_MNT},upperdir=${FLL_UNION_COWDIR}/upper,workdir=${FLL_UNION_COWDIR}/work"
 modprobe "${FLL_UNION_MODULE}"
 mkdir -p "${FLL_UNION_COWDIR}"
-if [ "${FLL_PERSIST}" = "yes" ]; then
+if [ "${FLL_PERSIST_UUID}" != "" ]; then
     mount -n -o rw "/dev/disk/by-uuid/${FLL_PERSIST_UUID}" "${FLL_UNION_COWDIR}"
 else
     mount -n -t tmpfs -o size=90%,mode=755 tmpfs "${FLL_UNION_COWDIR}"
@@ -281,16 +313,15 @@ mount -t "${FLL_UNION_MODULE}" -o "${FLL_UNION_OPTIONS}" "${FLL_UNION_MODULE}" "
 mkdir -p "${FLL_ROOTFS_MNT}/fll"
 for mnt in ${FLL_READONLY_MNT} ${FLL_UNION_COWDIR} ${FLL_BLOCKDEV_MNT} ${FLL_ISOMEDIA_MNT}; do
     if grep -qw "${mnt}" /proc/mounts; then
-        # create symlink to readonly rootfs for calamares
-        if [ -f "${mnt}/${FLL_IMAGE_LOCATION}" ]; then
-            ln -sf "${mnt}/${FLL_IMAGE_LOCATION}" "${FLL_ROOTFS_MNT}/fll/${FLL_READONLY_FSTYPE}"
-        fi
         if [ ! -d "${FLL_ROOTFS_MNT}${mnt}" ]; then
             mkdir -p "${FLL_ROOTFS_MNT}${mnt}"
             mount -n -o move "${mnt}" "${FLL_ROOTFS_MNT}${mnt}"
         fi
     fi
 done
+
+# create symlink to readonly rootfs for calamares
+ln -sf "${FLL_READONLY_FILE}" "${FLL_ROOTFS_MNT}/fll/${FLL_READONLY_FSTYPE}"
 
 # update calamares unpackfs(c).conf with readonly fstype
 if [ -d "${FLL_ROOTFS_MNT}/etc/calamares/modules" ]; then
@@ -308,9 +339,9 @@ mkdir -p -m 1777 "${FLL_ROOTFS_MNT}/tmp"
 
 # create udev rule for persistent symlink to device live media was found on
 printf "KERNEL==\"%s\", SYMLINK+=\"fll\"\n" \
-    "${DEVNAME#/dev/}" >  ${FLL_ROOTFS_MNT}/etc/udev/rules.d/70-fll-live.rules
+    "${DEVNAME#/dev/}" >  "${FLL_ROOTFS_MNT}"/etc/udev/rules.d/70-fll-live.rules
 printf "KERNEL==\"%s\", ENV{ID_CDROM}==\"?*\", SYMLINK+=\"fll-cdrom\"\n" \
-    "${DEVNAME#/dev/}" >> ${FLL_ROOTFS_MNT}/etc/udev/rules.d/70-fll-live.rules
+    "${DEVNAME#/dev/}" >> "${FLL_ROOTFS_MNT}"/etc/udev/rules.d/70-fll-live.rules
 
 # Patch /etc/default/distro for custom username
 sed -i "s#^FLL_LIVE_USER=.*#FLL_LIVE_USER=\"${FLL_LIVE_USER}\"#" \
