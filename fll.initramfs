@@ -132,7 +132,7 @@ fi
 [ -n "${ID_FS_TYPE}" ] || ID_FS_TYPE="$(blkid -s TYPE -o value ${DEVNAME})"
 
 case "${ID_FS_TYPE}" in
-    iso9660|ext*|btrfs|jfs|f2fs|xfs|ntfs|vfat|exfat|udf)
+    iso9660|ext*|btrfs|jfs|f2fs|xfs|ntfs|vfat|exfat|udf|erofs|squashfs)
         :
         ;;
     *)
@@ -193,6 +193,8 @@ for opt in $(cat /proc/cmdline); do
             ;;
         rootfs_uuid=*)
             FLL_ROOTFS_UUID="${opt#rootfs_uuid=}"
+            # only accept partitions when rootfs_uuid is given
+            [ "${DEVTYPE}" = "partition" ] || exit 1
             ;;
         sha256sum|sha256sums|checksum|checksums)
             FLL_CHECKSUM_CHECK="yes"
