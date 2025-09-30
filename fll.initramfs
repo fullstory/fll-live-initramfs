@@ -305,6 +305,9 @@ FLL_UNION_OPTIONS="lowerdir=${FLL_READONLY_MNT},upperdir=${FLL_UNION_COWDIR}/upp
 modprobe "${FLL_UNION_MODULE}"
 mkdir -p "${FLL_UNION_COWDIR}"
 if [ "${FLL_PERSIST_UUID}" != "" ]; then
+    # the persist partition will be on the same disk as rootfs, the secret sauce
+    # to successfully mounting it is that we _must_ access the rootfs by partition,
+    # and not via the disk devtype / iso9660 wrapper
     mount -n -o rw "/dev/disk/by-uuid/${FLL_PERSIST_UUID}" "${FLL_UNION_COWDIR}"
 else
     mount -n -t tmpfs -o size=90%,mode=755 tmpfs "${FLL_UNION_COWDIR}"
