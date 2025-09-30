@@ -308,9 +308,14 @@ if [ "${FLL_PERSIST_UUID}" != "" ]; then
     # the persist partition will be on the same disk as rootfs, the secret sauce
     # to successfully mounting it is that we _must_ access the rootfs by partition,
     # and not via the disk devtype / iso9660 wrapper
-    mount -n -o rw "/dev/disk/by-uuid/${FLL_PERSIST_UUID}" "${FLL_UNION_COWDIR}"
+    FLL_PERSIST_FSTYPE="$(blkid -s TYPE -o value /dev/disk/by-uuid/${FLL_PERSIST_UUID})"
+    if ! mount -n -o rw -t "${FLL_PERSIST_FSTYPE}" "/dev/disk/by-uuid/${FLL_PERSIST_UUID}" "${FLL_UNION_COWDIR}"; then
+        exit 1
+    fi
 else
-    mount -n -t tmpfs -o size=90%,mode=755 tmpfs "${FLL_UNION_COWDIR}"
+    if ! mount -n -t tmpfs -o size=90%,mode=755 tmpfs "${FLL_UNION_COWDIR}"; then
+        exit 1
+    fi
 fi
 mkdir -p "${FLL_UNION_COWDIR}/upper" "${FLL_UNION_COWDIR}/work"
 mount -t "${FLL_UNION_MODULE}" -o "${FLL_UNION_OPTIONS}" "${FLL_UNION_MODULE}" "${FLL_ROOTFS_MNT}"

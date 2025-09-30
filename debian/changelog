@@ -11,6 +11,7 @@ fll-live-initramfs (4.0.20) UNRELEASED; urgency=medium
   * Add rootfs_uuid cheatcode.
   * Only accept partitions when rootfs_uuid is given.
   * Whitelist erofs and squashfs filesystems.
+  * Get fstype of persist_uuid before attempting mount.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 20 Aug 2025 21:32:31 +0200
 
