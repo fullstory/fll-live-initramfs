@@ -188,8 +188,8 @@ for opt in $(cat /proc/cmdline); do
         iso_uuid=*)
             FLL_ISO_UUID="${opt#iso_uuid=}"
             ;;
-        persist_uuid=*)
-            FLL_PERSIST_UUID="${opt#persist_uuid=}"
+        persist_uuid=*|uuid=*)
+            FLL_PERSIST_UUID="${opt#*uuid=}"
             ;;
         rootfs_uuid=*)
             FLL_ROOTFS_UUID="${opt#rootfs_uuid=}"
