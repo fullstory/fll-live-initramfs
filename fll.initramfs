@@ -309,7 +309,7 @@ if [ "${FLL_PERSIST_UUID}" != "" ]; then
     # to successfully mounting it is that we _must_ access the rootfs by partition,
     # and not via the disk devtype / iso9660 wrapper
     FLL_PERSIST_FSTYPE="$(blkid -s TYPE -o value /dev/disk/by-uuid/${FLL_PERSIST_UUID})"
-    if ! mount -n -o rw -t "${FLL_PERSIST_FSTYPE}" "/dev/disk/by-uuid/${FLL_PERSIST_UUID}" "${FLL_UNION_COWDIR}"; then
+    if ! mount -n -o rw,noatime -t "${FLL_PERSIST_FSTYPE}" "/dev/disk/by-uuid/${FLL_PERSIST_UUID}" "${FLL_UNION_COWDIR}"; then
         exit 1
     fi
 else
