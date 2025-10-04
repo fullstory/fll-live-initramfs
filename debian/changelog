@@ -1,7 +1,4 @@
-fll-live-initramfs (4.0.20) UNRELEASED; urgency=medium
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (4.0.20) unstable; urgency=medium
 
   [ Kel Modderman ]
   * Add experimental persist_uuid cheatcode.
@@ -14,7 +11,7 @@ fll-live-initramfs (4.0.20) UNRELEASED; urgency=medium
   * Get fstype of persist_uuid before attempting mount.
   * Mount persist volume with noatime option.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 20 Aug 2025 21:32:31 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 04 Oct 2025 19:06:46 +0200
 
 fll-live-initramfs (4.0.19) unstable; urgency=medium
 
