@@ -298,10 +298,10 @@ if ! mount -t "${FLL_READONLY_FSTYPE}" -o ro "${FLL_READONLY_FILE}" "${FLL_READO
     exit 1
 fi
 
+FLL_UNION_COWDIR="/fll/cow"
+mkdir -p "${FLL_UNION_COWDIR}"
 # prepare COW/tmpfs union filesystem
 if [ "${FLL_PERSIST_UUID}" != "" ] && [ "${FLL_ROOTFS_UUID}" != "" ]; then
-    FLL_UNION_COWDIR="/fll/cow/${FLL_ROOTFS_UUID}"
-    mkdir -p "${FLL_UNION_COWDIR}"
     # the persist partition will be on the same disk as rootfs, the secret sauce
     # to successfully mounting it is that we _must_ access the rootfs by partition,
     # and not via the disk devtype / iso9660 wrapper
@@ -309,9 +309,10 @@ if [ "${FLL_PERSIST_UUID}" != "" ] && [ "${FLL_ROOTFS_UUID}" != "" ]; then
     if ! mount -n -o rw,noatime -t "${FLL_PERSIST_FSTYPE}" "/dev/disk/by-uuid/${FLL_PERSIST_UUID}" "${FLL_UNION_COWDIR}"; then
         exit 1
     fi
-else
-    FLL_UNION_COWDIR="/fll/cow"
+    # adjust persistent overlay COW dir to be rootfs specific
+    FLL_UNION_COWDIR="/fll/cow/${FLL_ROOTFS_UUID}"
     mkdir -p "${FLL_UNION_COWDIR}"
+else
     if ! mount -n -t tmpfs -o size=90%,mode=755 tmpfs "${FLL_UNION_COWDIR}"; then
         exit 1
     fi
