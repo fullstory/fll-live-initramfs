@@ -299,12 +299,9 @@ if ! mount -t "${FLL_READONLY_FSTYPE}" -o ro "${FLL_READONLY_FILE}" "${FLL_READO
 fi
 
 # prepare COW/tmpfs union filesystem
-FLL_UNION_MODULE="overlay"
-FLL_UNION_COWDIR="/fll/cow"
-FLL_UNION_OPTIONS="lowerdir=${FLL_READONLY_MNT},upperdir=${FLL_UNION_COWDIR}/upper,workdir=${FLL_UNION_COWDIR}/work"
-modprobe "${FLL_UNION_MODULE}"
-mkdir -p "${FLL_UNION_COWDIR}"
-if [ "${FLL_PERSIST_UUID}" != "" ]; then
+if [ "${FLL_PERSIST_UUID}" != "" ] && [ "${FLL_ROOTFS_UUID}" != "" ]; then
+    FLL_UNION_COWDIR="/fll/cow/${FLL_ROOTFS_UUID}"
+    mkdir -p "${FLL_UNION_COWDIR}"
     # the persist partition will be on the same disk as rootfs, the secret sauce
     # to successfully mounting it is that we _must_ access the rootfs by partition,
     # and not via the disk devtype / iso9660 wrapper
@@ -313,12 +310,19 @@ if [ "${FLL_PERSIST_UUID}" != "" ]; then
         exit 1
     fi
 else
+    FLL_UNION_COWDIR="/fll/cow"
+    mkdir -p "${FLL_UNION_COWDIR}"
     if ! mount -n -t tmpfs -o size=90%,mode=755 tmpfs "${FLL_UNION_COWDIR}"; then
         exit 1
     fi
 fi
+FLL_UNION_MODULE="overlay"
+FLL_UNION_OPTIONS="lowerdir=${FLL_READONLY_MNT},upperdir=${FLL_UNION_COWDIR}/upper,workdir=${FLL_UNION_COWDIR}/work"
+modprobe "${FLL_UNION_MODULE}"
 mkdir -p "${FLL_UNION_COWDIR}/upper" "${FLL_UNION_COWDIR}/work"
-mount -t "${FLL_UNION_MODULE}" -o "${FLL_UNION_OPTIONS}" "${FLL_UNION_MODULE}" "${FLL_ROOTFS_MNT}"
+if ! mount -t "${FLL_UNION_MODULE}" -o "${FLL_UNION_OPTIONS}" "${FLL_UNION_MODULE}" "${FLL_ROOTFS_MNT}"; then
+    exit 1
+fi
 
 # create /fll and migrate mountpoints
 mkdir -p "${FLL_ROOTFS_MNT}/fll"
