@@ -1,6 +1,11 @@
 fll-live-initramfs (4.0.22) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
+
+  [ Kel Modderman ]
+  * Remove uuid= cheatcode handling, I had put it in the incorrect spot
+    anyhow.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 07 Oct 2025 23:32:39 +0200
 
