@@ -1,7 +1,4 @@
-fll-live-initramfs (4.0.22) UNRELEASED; urgency=medium
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (4.0.22) unstable; urgency=medium
 
   [ Kel Modderman ]
   * Remove uuid= cheatcode handling, I had put it in the incorrect spot
@@ -9,7 +6,7 @@ fll-live-initramfs (4.0.22) UNRELEASED; urgency=medium
   * Remove squashfs from filesystem whitelist for device/partition
     matching.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 07 Oct 2025 23:32:39 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 08 Oct 2025 00:52:14 +0200
 
 fll-live-initramfs (4.0.21) unstable; urgency=medium
 
