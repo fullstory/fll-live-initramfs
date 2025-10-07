@@ -6,6 +6,8 @@ fll-live-initramfs (4.0.22) UNRELEASED; urgency=medium
   [ Kel Modderman ]
   * Remove uuid= cheatcode handling, I had put it in the incorrect spot
     anyhow.
+  * Remove squashfs from filesystem whitelist for device/partition
+    matching.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 07 Oct 2025 23:32:39 +0200
 
