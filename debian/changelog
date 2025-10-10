@@ -1,14 +1,11 @@
-fll-live-initramfs (4.0.23) UNRELEASED; urgency=medium
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (4.0.23) unstable; urgency=medium
 
   [ Kel Modderman ]
   * Tweak logic around handling of boot process when rootfs_uuid is given
     as a boot parameter to reject all block devices without a matching
     ID_FS_UUID.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 08 Oct 2025 00:52:37 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 10 Oct 2025 18:28:35 +0200
 
 fll-live-initramfs (4.0.22) unstable; urgency=medium
 
