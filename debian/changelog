@@ -6,6 +6,7 @@ fll-live-initramfs (4.0.24) UNRELEASED; urgency=medium
   [ Kel Modderman ]
   * If fromhd= boot parameter is used, do not attempt to boot directly from
     partition by uuid to preserve fromiso functionality.
+  * Don't attempt to mount by partition by uuid when iso uuid matches.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 10 Oct 2025 18:28:53 +0200
 

@@ -223,7 +223,7 @@ FLL_READONLY_FILE=""
 FLL_READONLY_FSTYPE=""
 FLL_BLOCKDEV_MNT=""
 # rootfs_uuid matches block device uuid => accessing GPT partition directly
-if [ -n "${FLL_ROOTFS_UUID}" ] && [ -z "${FLL_FROMHD}" ]; then
+if [ -n "${FLL_ROOTFS_UUID}" ] && [ -z "${FLL_FROMHD}" ] && [ "${FLL_ISO_UUID}" != "${ID_FS_UUID}" ]; then
     if [ "${ID_FS_UUID}" != "${FLL_ROOTFS_UUID}" ]; then
         # not the filesystem we're looking for by UUID
         exit 1
