@@ -147,6 +147,7 @@ esac
 
 FLL_CHECKSUM_CHECK="no"
 FLL_COPY_TORAM="no"
+FLL_FROMHD=""
 FLL_ISO_UUID=""
 FLL_ROOTFS_UUID=""
 FLL_PERSIST_UUID=""
@@ -222,7 +223,7 @@ FLL_READONLY_FILE=""
 FLL_READONLY_FSTYPE=""
 FLL_BLOCKDEV_MNT=""
 # rootfs_uuid matches block device uuid => accessing GPT partition directly
-if [ -n "${FLL_ROOTFS_UUID}" ]; then
+if [ -n "${FLL_ROOTFS_UUID}" ] && [ -z "${FLL_FROMHD}" ]; then
     if [ "${ID_FS_UUID}" != "${FLL_ROOTFS_UUID}" ]; then
         # not the filesystem we're looking for by UUID
         exit 1
