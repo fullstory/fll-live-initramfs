@@ -145,8 +145,7 @@ esac
 # source distro-defaults
 [ -s /etc/default/distro ] && . /etc/default/distro
 
-FLL_CHECKSUM_CHECK="no"
-FLL_COPY_TORAM="no"
+FLL_COPY_TORAM=""
 FLL_FROMHD=""
 FLL_FROMISO=""
 FLL_ISO_UUID=""
@@ -196,9 +195,6 @@ for opt in $(cat /proc/cmdline); do
         rootfs_uuid=*)
             FLL_ROOTFS_UUID="${opt#rootfs_uuid=}"
             ;;
-        sha256sum|sha256sums|checksum|checksums)
-            FLL_CHECKSUM_CHECK="yes"
-            ;;
         toram)
             FLL_COPY_TORAM="yes"
             ;;
@@ -240,12 +236,6 @@ if [ -n "${FLL_FROMISO}" ] || [ -z "${FLL_ROOTFS_UUID}" ]; then
     # no iso media detected by UUID
     else
         umount "${FLL_BLOCKDEV_MNT}"
-        exit 1
-    fi
-
-    # check integrity of live media if requested
-    if [ "${FLL_CHECKSUM_CHECK}" = "yes" ] && ! ( cd "${FLL_ISOMEDIA_MNT}" && sha256sum -c "sha256sums" ); then
-        printf "ERROR: sha256sum check failed\n"
         exit 1
     fi
 
