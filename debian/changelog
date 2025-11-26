@@ -1,6 +1,14 @@
-fll-live-initramfs (4.0.25) UNRELEASED; urgency=medium
+fll-live-initramfs (5.0.0) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
+
+  [ Kel Modderman ]
+  * Simplify live media mount logic so that iso9660fs or iso file logic
+    is used when fromiso cheatcode is given, or rootfs_uuid cheatcode is
+    not given.
+  * Remove live hashsum logic - one is calculated for the iso media and
+    that is enough.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 22 Oct 2025 21:34:11 +0200
 
