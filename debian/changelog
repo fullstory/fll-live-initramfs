@@ -5,7 +5,7 @@ fll-live-initramfs (5.0.0) UNRELEASED; urgency=medium
 
   [ Kel Modderman ]
   * Simplify live media mount logic so that iso9660fs or iso file logic
-    is used when fromiso cheatcode is given, or rootfs_uuid cheatcode is
+    is used when fromiso cheatcode is given, or persist_uuid cheatcode is
     not given.
   * Remove live hashsum logic - one is calculated for the iso media and
     that is enough.
