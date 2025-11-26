@@ -148,6 +148,7 @@ esac
 FLL_CHECKSUM_CHECK="no"
 FLL_COPY_TORAM="no"
 FLL_FROMHD=""
+FLL_FROMISO=""
 FLL_ISO_UUID=""
 FLL_ROOTFS_UUID=""
 FLL_PERSIST_UUID=""
@@ -156,7 +157,7 @@ FLL_PERSIST_UUID=""
 for opt in $(cat /proc/cmdline); do
     case "${opt}" in
         fromiso=*)
-            FLL_MEDIA_NAME="${opt#fromiso=}"
+            FLL_FROMISO="${opt#fromiso=}"
             ;;
         fromhd=*)
             # support for grub2-fll-fromiso: if fromhd=UUID= or
@@ -222,32 +223,7 @@ FLL_READONLY_MNT=""
 FLL_READONLY_FILE=""
 FLL_READONLY_FSTYPE=""
 FLL_BLOCKDEV_MNT=""
-# rootfs_uuid matches block device uuid => accessing GPT partition directly
-if [ -n "${FLL_ROOTFS_UUID}" ] && [ -z "${FLL_FROMHD}" ] && [ "${FLL_ISO_UUID}" != "${ID_FS_UUID}" ]; then
-    if [ "${ID_FS_UUID}" != "${FLL_ROOTFS_UUID}" ]; then
-        # not the filesystem we're looking for by UUID
-        exit 1
-    fi
-    FLL_READONLY_MNT="/fll/${FLL_ROOTFS_UUID}"
-    FLL_READONLY_FILE="${DEVNAME}"
-    FLL_READONLY_FSTYPE="${ID_FS_TYPE}"
-
-    # toram support
-    if [ "${FLL_COPY_TORAM}" = "yes" ]; then
-        mkdir -p /fll/toram
-        if mount -n -t tmpfs -o size=90% tmpfs /fll/toram; then
-            mkdir /fll/toram/"${FLL_IMAGE_DIR}"
-            if copy_with_perc "${FLL_READONLY_FILE}" /fll/toram/"${FLL_IMAGE_LOCATION}"; then
-                FLL_READONLY_FILE=/fll/toram/"${FLL_IMAGE_LOCATION}"
-            else
-                umount /fll/toram
-                rmdir /fll/toram
-            fi
-        else
-            rmdir /fll/toram
-        fi
-    fi
-else
+if [ -n "${FLL_FROMISO}" ] || [ -z "${FLL_ROOTFS_UUID}" ]; then
     FLL_READONLY_MNT="/fll/${FLL_ISO_UUID}"
     FLL_BLOCKDEV_MNT="/fll/${DEVNAME#/dev/}"
     mkdir -p "${FLL_BLOCKDEV_MNT}"
@@ -257,10 +233,10 @@ else
     if [ "${ID_FS_UUID}" = "${FLL_ISO_UUID}" ] && [ -f "${FLL_BLOCKDEV_MNT}/${FLL_IMAGE_LOCATION}" ]; then
         FLL_ISOMEDIA_MNT="${FLL_BLOCKDEV_MNT}"
     # iso file on filesystem (fromiso=)
-    elif [ -f "${FLL_BLOCKDEV_MNT}/${FLL_MEDIA_NAME#/}" ] && \
-        [ "$(blkid -s UUID -o value ${FLL_BLOCKDEV_MNT}/${FLL_MEDIA_NAME#/})" = "${FLL_ISO_UUID}" ]; then
+    elif [ -f "${FLL_BLOCKDEV_MNT}/${FLL_FROMISO#/}" ] && \
+        [ "$(blkid -s UUID -o value ${FLL_BLOCKDEV_MNT}/${FLL_FROMISO#/})" = "${FLL_ISO_UUID}" ]; then
         FLL_ISOMEDIA_MNT="/fll/fromiso"; mkdir -p "${FLL_ISOMEDIA_MNT}"
-        mount -t iso9660 -o ro "${FLL_BLOCKDEV_MNT}/${FLL_MEDIA_NAME#/}" "${FLL_ISOMEDIA_MNT}"
+        mount -t iso9660 -o ro "${FLL_BLOCKDEV_MNT}/${FLL_FROMISO#/}" "${FLL_ISOMEDIA_MNT}"
     # no iso media detected by UUID
     else
         umount "${FLL_BLOCKDEV_MNT}"
@@ -293,6 +269,28 @@ else
 
     FLL_READONLY_FILE="${FLL_ISOMEDIA_MNT}/${FLL_IMAGE_LOCATION}"
     FLL_READONLY_FSTYPE="$(blkid -s TYPE -o value ${FLL_READONLY_FILE})"
+elif [ "${ID_FS_UUID}" = "${FLL_ROOTFS_UUID}" ]; then
+    FLL_READONLY_MNT="/fll/${FLL_ROOTFS_UUID}"
+    FLL_READONLY_FILE="${DEVNAME}"
+    FLL_READONLY_FSTYPE="${ID_FS_TYPE}"
+
+    # toram support
+    if [ "${FLL_COPY_TORAM}" = "yes" ]; then
+        mkdir -p /fll/toram
+        if mount -n -t tmpfs -o size=90% tmpfs /fll/toram; then
+            mkdir /fll/toram/"${FLL_IMAGE_DIR}"
+            if copy_with_perc "${FLL_READONLY_FILE}" /fll/toram/"${FLL_IMAGE_LOCATION}"; then
+                FLL_READONLY_FILE=/fll/toram/"${FLL_IMAGE_LOCATION}"
+            else
+                umount /fll/toram
+                rmdir /fll/toram
+            fi
+        else
+            rmdir /fll/toram
+        fi
+    fi
+else
+    exit 1
 fi
 
 # mount readonly rootfs
