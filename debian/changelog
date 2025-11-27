@@ -1,7 +1,4 @@
-fll-live-initramfs (5.0.0) UNRELEASED; urgency=medium
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (5.0.0) unstable; urgency=medium
 
   [ Kel Modderman ]
   * Simplify live media mount logic so that iso9660fs or iso file logic
@@ -10,7 +7,7 @@ fll-live-initramfs (5.0.0) UNRELEASED; urgency=medium
   * Remove live hashsum logic - one is calculated for the iso media and
     that is enough.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Wed, 22 Oct 2025 21:34:11 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 27 Nov 2025 02:27:52 +0100
 
 fll-live-initramfs (4.0.24) unstable; urgency=medium
 
