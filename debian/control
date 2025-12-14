@@ -15,13 +15,13 @@ Architecture: all
 Depends: ${misc:Depends},
  busybox,
  distro-defaults,
- initramfs-tools
+ initramfs-tools | dracut
 Suggests: lvm2,
  nbd-client
 Description: fll live media initramfs glue
- This package provides the script glue that allows initramfs-tools to
- generate an early userspace filesystem suitable for booting the live
- media of the F.U.L.L.S.T.O.R.Y project.
+ This package provides the script glue that allows initramfs-tools or
+ dracut to generate an early userspace filesystem suitable for booting
+ the live media of the F.U.L.L.S.T.O.R.Y project.
  .
  This is a FULLSTORY live-only package and must not be installed to an
  ordinary system.

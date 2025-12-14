@@ -124,6 +124,8 @@ copy_with_perc()
     return ${?}
 }
 
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+
 if grep -qw 'fll=debug' /proc/cmdline; then
     set -x
     env
@@ -192,6 +194,10 @@ for opt in $(cat /proc/cmdline); do
         persist_uuid=*)
             FLL_PERSIST_UUID="${opt#persist_uuid=}"
             ;;
+        rd.fll=1)
+            # dracut environment
+            NEWROOT=${NEWROOT:-"/sysroot"}
+            ;;
         rootfs_uuid=*)
             FLL_ROOTFS_UUID="${opt#rootfs_uuid=}"
             ;;
@@ -213,7 +219,13 @@ for opt in $(cat /proc/cmdline); do
     esac
 done
 
-FLL_ROOTFS_MNT="${rootmnt:-/root}"
+if [ "${NEWROOT}" ]; then
+    # dracut
+    FLL_ROOTFS_MNT="${NEWROOT}"
+else
+    # initramfs-tools
+    FLL_ROOTFS_MNT="${rootmnt:-/root}"
+fi
 FLL_ISOMEDIA_MNT=""
 FLL_READONLY_MNT=""
 FLL_READONLY_FILE=""

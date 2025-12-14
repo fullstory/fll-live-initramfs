@@ -1,6 +1,13 @@
-fll-live-initramfs (5.0.1) UNRELEASED; urgency=medium
+fll-live-initramfs (20251214.1) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
+
+  [ Kel Modderman ]
+  * Switch to date release version numbering.
+  * Add initial, optimistic, speculative, and untested dracut configuration
+    and associate module as a starting point for future migration from
+    initramfs-tools.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 27 Nov 2025 02:28:10 +0100
 
