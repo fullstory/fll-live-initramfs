@@ -1,7 +1,4 @@
-fll-live-initramfs (20251216.1) UNRELEASED; urgency=medium
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (20251216.1) unstable; urgency=medium
 
   [ Kel Modderman ]
   * Speculatively set a couple of dracut specific markers for:
@@ -16,7 +13,7 @@ fll-live-initramfs (20251216.1) UNRELEASED; urgency=medium
   * Create readonlyfs symlink in /run and not $root/run (which does not
     yet exist).
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 14 Dec 2025 20:39:45 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 16 Dec 2025 04:44:37 +0100
 
 fll-live-initramfs (20251214.1) unstable; urgency=medium
 
