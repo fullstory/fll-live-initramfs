@@ -228,8 +228,8 @@ FLL_READONLY_FILE=""
 FLL_READONLY_FSTYPE=""
 FLL_BLOCKDEV_MNT=""
 if [ -n "${FLL_FROMISO}" ] || [ -z "${FLL_PERSIST_UUID}" ]; then
-    FLL_READONLY_MNT="/fll/${FLL_ISO_UUID}"
-    FLL_BLOCKDEV_MNT="/fll/${DEVNAME#/dev/}"
+    FLL_READONLY_MNT="/run/fll/${FLL_ISO_UUID}"
+    FLL_BLOCKDEV_MNT="/run/fll/${DEVNAME#/dev/}"
     mkdir -p "${FLL_BLOCKDEV_MNT}"
     mount -t "${ID_FS_TYPE}" -o ro "${DEVNAME}" "${FLL_BLOCKDEV_MNT}"
 
@@ -239,7 +239,7 @@ if [ -n "${FLL_FROMISO}" ] || [ -z "${FLL_PERSIST_UUID}" ]; then
     # iso file on filesystem (fromiso=)
     elif [ -f "${FLL_BLOCKDEV_MNT}/${FLL_FROMISO#/}" ] && \
         [ "$(blkid -s UUID -o value ${FLL_BLOCKDEV_MNT}/${FLL_FROMISO#/})" = "${FLL_ISO_UUID}" ]; then
-        FLL_ISOMEDIA_MNT="/fll/fromiso"; mkdir -p "${FLL_ISOMEDIA_MNT}"
+        FLL_ISOMEDIA_MNT="/run/fll/fromiso"; mkdir -p "${FLL_ISOMEDIA_MNT}"
         mount -t iso9660 -o ro "${FLL_BLOCKDEV_MNT}/${FLL_FROMISO#/}" "${FLL_ISOMEDIA_MNT}"
     # no iso media detected by UUID
     else
@@ -249,42 +249,42 @@ if [ -n "${FLL_FROMISO}" ] || [ -z "${FLL_PERSIST_UUID}" ]; then
 
     # toram support
     if [ "${FLL_COPY_TORAM}" = "yes" ]; then
-        mkdir -p /fll/toram
-        if mount -n -t tmpfs -o size=90% tmpfs /fll/toram; then
-            mkdir /fll/toram/"${FLL_IMAGE_DIR}"
-            if copy_with_perc "${FLL_ISOMEDIA_MNT}/${FLL_IMAGE_LOCATION}" /fll/toram/"${FLL_IMAGE_LOCATION}"; then
+        mkdir -p /run/fll/toram
+        if mount -n -t tmpfs -o size=90% tmpfs /run/fll/toram; then
+            mkdir /run/fll/toram/"${FLL_IMAGE_DIR}"
+            if copy_with_perc "${FLL_ISOMEDIA_MNT}/${FLL_IMAGE_LOCATION}" /run/fll/toram/"${FLL_IMAGE_LOCATION}"; then
                 grep -qw "${FLL_ISOMEDIA_MNT}" /proc/mounts && umount -l "${FLL_ISOMEDIA_MNT}"
                 grep -qw "${FLL_BLOCKDEV_MNT}" /proc/mounts && umount -l "${FLL_BLOCKDEV_MNT}"
-                FLL_ISOMEDIA_MNT=/fll/toram
+                FLL_ISOMEDIA_MNT=/run/fll/toram
             else
-                umount /fll/toram
-                rmdir /fll/toram
+                umount /run/fll/toram
+                rmdir /run/fll/toram
             fi
         else
-            rmdir /fll/toram
+            rmdir /run/fll/toram
         fi
     fi
 
     FLL_READONLY_FILE="${FLL_ISOMEDIA_MNT}/${FLL_IMAGE_LOCATION}"
     FLL_READONLY_FSTYPE="$(blkid -s TYPE -o value ${FLL_READONLY_FILE})"
 elif [ "${ID_FS_UUID}" = "${FLL_ROOTFS_UUID}" ]; then
-    FLL_READONLY_MNT="/fll/${FLL_ROOTFS_UUID}"
+    FLL_READONLY_MNT="/run/fll/${FLL_ROOTFS_UUID}"
     FLL_READONLY_FILE="${DEVNAME}"
     FLL_READONLY_FSTYPE="${ID_FS_TYPE}"
 
     # toram support
     if [ "${FLL_COPY_TORAM}" = "yes" ]; then
-        mkdir -p /fll/toram
-        if mount -n -t tmpfs -o size=90% tmpfs /fll/toram; then
-            mkdir /fll/toram/"${FLL_IMAGE_DIR}"
-            if copy_with_perc "${FLL_READONLY_FILE}" /fll/toram/"${FLL_IMAGE_LOCATION}"; then
-                FLL_READONLY_FILE=/fll/toram/"${FLL_IMAGE_LOCATION}"
+        mkdir -p /run/fll/toram
+        if mount -n -t tmpfs -o size=90% tmpfs /run/fll/toram; then
+            mkdir /run/fll/toram/"${FLL_IMAGE_DIR}"
+            if copy_with_perc "${FLL_READONLY_FILE}" /run/fll/toram/"${FLL_IMAGE_LOCATION}"; then
+                FLL_READONLY_FILE=/run/fll/toram/"${FLL_IMAGE_LOCATION}"
             else
-                umount /fll/toram
-                rmdir /fll/toram
+                umount /run/fll/toram
+                rmdir /run/fll/toram
             fi
         else
-            rmdir /fll/toram
+            rmdir /run/fll/toram
         fi
     fi
 else
@@ -297,7 +297,7 @@ if ! mount -t "${FLL_READONLY_FSTYPE}" -o ro "${FLL_READONLY_FILE}" "${FLL_READO
     exit 1
 fi
 
-FLL_UNION_COWDIR="/fll/cow"
+FLL_UNION_COWDIR="/run/fll/cow"
 mkdir -p "${FLL_UNION_COWDIR}"
 # prepare COW/tmpfs union filesystem
 if [ -n "${FLL_PERSIST_UUID}" ] && [ -n "${FLL_ROOTFS_UUID}" ]; then
@@ -309,7 +309,7 @@ if [ -n "${FLL_PERSIST_UUID}" ] && [ -n "${FLL_ROOTFS_UUID}" ]; then
         exit 1
     fi
     # adjust persistent overlay COW dir to be rootfs specific
-    FLL_UNION_COWDIR="/fll/cow/${FLL_ROOTFS_UUID}"
+    FLL_UNION_COWDIR="/run/fll/cow/${FLL_ROOTFS_UUID}"
     mkdir -p "${FLL_UNION_COWDIR}"
 else
     if ! mount -n -t tmpfs -o size=90%,mode=755 tmpfs "${FLL_UNION_COWDIR}"; then
@@ -324,19 +324,8 @@ if ! mount -t "${FLL_UNION_MODULE}" -o "${FLL_UNION_OPTIONS}" "${FLL_UNION_MODUL
     exit 1
 fi
 
-# create /fll and migrate mountpoints
-mkdir -p "${FLL_ROOTFS_MNT}/fll"
-for mnt in ${FLL_READONLY_MNT} ${FLL_UNION_COWDIR} ${FLL_BLOCKDEV_MNT} ${FLL_ISOMEDIA_MNT}; do
-    if grep -qw "${mnt}" /proc/mounts; then
-        if [ ! -d "${FLL_ROOTFS_MNT}${mnt}" ]; then
-            mkdir -p "${FLL_ROOTFS_MNT}${mnt}"
-            mount -n -o move "${mnt}" "${FLL_ROOTFS_MNT}${mnt}"
-        fi
-    fi
-done
-
 # create symlink to readonly rootfs for calamares
-ln -sf "${FLL_READONLY_FILE}" "${FLL_ROOTFS_MNT}/fll/${FLL_READONLY_FSTYPE}"
+ln -sf "${FLL_READONLY_FILE}" "${FLL_ROOTFS_MNT}/run/fll/${FLL_READONLY_FSTYPE}"
 
 # update calamares unpackfs(c).conf with readonly fstype
 if [ -d "${FLL_ROOTFS_MNT}/etc/calamares/modules" ]; then

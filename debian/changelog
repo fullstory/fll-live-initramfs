@@ -11,6 +11,8 @@ fll-live-initramfs (20251216.1) UNRELEASED; urgency=medium
   * Simplify execution of fll hook - do it directly instead of via
     initqueue.
   * rd.fll is not present in /proc/cmdline so do not parse.
+  * Migrate from /fll to /run/fll and no longer try to mount -o move the
+    live specific mounts.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 14 Dec 2025 20:39:45 +0100
 
