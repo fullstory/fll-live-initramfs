@@ -194,10 +194,6 @@ for opt in $(cat /proc/cmdline); do
         persist_uuid=*)
             FLL_PERSIST_UUID="${opt#persist_uuid=}"
             ;;
-        rd.fll=1)
-            # dracut environment
-            NEWROOT=${NEWROOT:-"/sysroot"}
-            ;;
         rootfs_uuid=*)
             FLL_ROOTFS_UUID="${opt#rootfs_uuid=}"
             ;;
