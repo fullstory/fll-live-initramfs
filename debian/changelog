@@ -1,6 +1,10 @@
 fll-live-initramfs (20251216.3) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
+
+  [ Kel Modderman ]
+  * Revert experimental omit_dracutmodule settings.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 16 Dec 2025 04:55:52 +0100
 
