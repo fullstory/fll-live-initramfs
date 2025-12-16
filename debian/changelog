@@ -1,12 +1,9 @@
-fll-live-initramfs (20251216.3) UNRELEASED; urgency=medium
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (20251216.3) unstable; urgency=medium
 
   [ Kel Modderman ]
   * Revert experimental omit_dracutmodule settings.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 16 Dec 2025 04:55:52 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 16 Dec 2025 05:07:13 +0100
 
 fll-live-initramfs (20251216.2) unstable; urgency=medium
 
