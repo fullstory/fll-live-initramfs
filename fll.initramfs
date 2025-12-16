@@ -325,7 +325,7 @@ if ! mount -t "${FLL_UNION_MODULE}" -o "${FLL_UNION_OPTIONS}" "${FLL_UNION_MODUL
 fi
 
 # create symlink to readonly rootfs for calamares
-ln -sf "${FLL_READONLY_FILE}" "${FLL_ROOTFS_MNT}/run/fll/${FLL_READONLY_FSTYPE}"
+ln -sf "${FLL_READONLY_FILE}" "/run/fll/${FLL_READONLY_FSTYPE}"
 
 # update calamares unpackfs(c).conf with readonly fstype
 if [ -d "${FLL_ROOTFS_MNT}/etc/calamares/modules" ]; then
