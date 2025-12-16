@@ -1,14 +1,11 @@
-fll-live-initramfs (20251216.2) UNRELEASED; urgency=medium
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (20251216.2) unstable; urgency=medium
 
   [ Kel Modderman ]
   * Drop kernel_cmdline= from fll dracut module.
   * Experiment with omit_dracutmodule: systemd systemd-cryptsetup
     network bluetooth.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 16 Dec 2025 04:44:52 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 16 Dec 2025 04:55:34 +0100
 
 fll-live-initramfs (20251216.1) unstable; urgency=medium
 
