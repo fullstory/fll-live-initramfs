@@ -1,8 +1,12 @@
-fll-live-initramfs (20251216.4) UNRELEASED; urgency=medium
+fll-live-initramfs (20251221.1) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 16 Dec 2025 05:07:27 +0100
+  [ Kel Modderman ]
+  * Update calamares by setting readonly fstype and initramfs tool
+
+ -- Kel Modderman <kelvmod@gmail.com>  Sun, 21 Dec 2025 04:58:15 +1000
 
 fll-live-initramfs (20251216.3) unstable; urgency=medium
 
