@@ -1,14 +1,11 @@
-fll-live-initramfs (20251221.2) UNRELEASED; urgency=medium
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (20251221.2) unstable; urgency=medium
 
   [ Kel Modderman ]
   * Set dracut as default initramfs generator.
   * Remove awk code in copy_with_perc function and simplify, the output
     is rarely seen these days and especially so in systemd environment.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 21 Dec 2025 02:43:05 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 22 Dec 2025 00:50:32 +0100
 
 fll-live-initramfs (20251221.1) unstable; urgency=medium
 
