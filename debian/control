@@ -15,9 +15,9 @@ Architecture: all
 Depends: ${misc:Depends},
  distro-defaults,
  dracut | initramfs-tools
-Suggests: busybox,
+Recommends: busybox,
  eject,
- lvm2,
+Suggests: lvm2,
  nbd-client
 Description: fll live media initramfs glue
  This package provides the script glue that allows initramfs-tools or
