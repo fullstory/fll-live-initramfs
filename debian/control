@@ -13,10 +13,11 @@ Vcs-Git: https://github.com/fullstory/fll-live-initramfs.git
 Package: fll-live-initramfs
 Architecture: all
 Depends: ${misc:Depends},
- busybox,
  distro-defaults,
- initramfs-tools | dracut
-Suggests: lvm2,
+ dracut | initramfs-tools
+Suggests: busybox,
+ eject,
+ lvm2,
  nbd-client
 Description: fll live media initramfs glue
  This package provides the script glue that allows initramfs-tools or

@@ -1,6 +1,11 @@
 fll-live-initramfs (20251221.3) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
+
+  [ Kel Modderman ]
+  * Suggest busybox and eject, propote dracut to preferred initramfs
+    dependency.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 22 Dec 2025 00:50:49 +0100
 
