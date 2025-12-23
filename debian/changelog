@@ -1,13 +1,10 @@
-fll-live-initramfs (20251221.3) UNRELEASED; urgency=medium
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (20251221.3) unstable; urgency=medium
 
   [ Kel Modderman ]
   * Recommend busybox and eject.
   * Promote dracut to preferred initramfs dependency.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 22 Dec 2025 00:50:49 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 23 Dec 2025 03:30:03 +0100
 
 fll-live-initramfs (20251221.2) unstable; urgency=medium
 
