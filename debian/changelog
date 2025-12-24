@@ -8,7 +8,7 @@ fll-live-initramfs (20251224.1) UNRELEASED; urgency=medium
     debian/rules.
   * Add the following modules explicitly to dracut initramfs:
     - overlay (required for live cow overlay)
-    - of_pmem nd_pmem nfit (required for UEFI https boot)
+    - of_pmem nd_pmem nfit (required for UEFI http boot)
     - change ntfs to ntfs3
   * Add utilities to dracut initramfs:
     - eject (for legacy ejection of physical cd/dvd media)
