@@ -19,6 +19,8 @@ fll-live-initramfs (20251224.1) UNRELEASED; urgency=medium
   * Simplify noeject logic by making eject on shutdown conditional on
     /dev/fll-cdrom, and /dev/fll-cdrom conditional on absence of virt or
     no eject cheatcode.
+  * Add debug logging to dracut fll script.
+  * Simplify log init from initramfs-tools fll script.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 23 Dec 2025 03:30:18 +0100
 

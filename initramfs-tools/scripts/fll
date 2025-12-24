@@ -20,6 +20,7 @@
 
 init_debug_log()
 {
+    grep -qw fll=debug /proc/cmdline || return 0
     exec 6>&1
     exec 7>&2
     exec > debug.log
@@ -36,23 +37,16 @@ stop_debug_log()
     exec 1>&6 6>&-
     exec 2>&7 7>&-
     kill "$(cat debug.log.pid)"
-    mkdir -p "${rootmnt}/var/log/fll" && cp debug.log "${rootmnt}/var/log/fll"
+    if [ -d "${rootmnt}/var/log" ]; then
+        mkdir -p "${rootmnt}/var/log/fll"
+        cp debug.log "${rootmnt}/var/log/fll"
+    fi
 }
 
 mountroot()
 {
     maybe_break fll-top
-    # parse fll options given on cmdline
-    for opt in $(cat /proc/cmdline); do
-        case "${opt}" in
-            fll=debug)
-                init_debug_log
-                ;;
-            quiet)
-                echo "0" > /proc/sys/kernel/printk
-                ;;
-        esac
-    done
+    init_debug_log
 
     # Run scripts in local-top, like lvm2
     log_begin_msg "Running /scripts/local-top"
