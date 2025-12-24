@@ -31,7 +31,7 @@ fll_toram()
 
 PATH=/usr/sbin:/usr/bin:/sbin:/bin
 
-if grep -qw 'fll=debug' /proc/cmdline; then
+if grep -qw -E 'fll[.=]debug' /proc/cmdline; then
     set -x
     env
 fi

@@ -20,7 +20,7 @@
 
 init_debug_log()
 {
-    grep -qw fll=debug /proc/cmdline || return 0
+    grep -qw -E 'fll[.=]debug' /proc/cmdline || return 0
     exec 6>&1
     exec 7>&2
     exec > debug.log

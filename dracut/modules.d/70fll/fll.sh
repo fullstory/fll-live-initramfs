@@ -4,7 +4,7 @@ PATH=/usr/sbin:/usr/bin:/sbin:/bin
 
 init_debug_log()
 {
-    grep -qw fll=debug /proc/cmdline || return 0
+    grep -qw -E 'fll[.=]debug' /proc/cmdline || return 0
     exec 6>&1
     exec 7>&2
     exec > debug.log
@@ -33,6 +33,8 @@ if fll_blockdev_detect --monitor --execp=/sbin/fll; then
     FLL_RC="${?}"
     ln -s null /dev/root
     : > /run/initramfs/.need_shutdown
+else
+    echo "$0: fll_blockdev_detect failed to mount live media!"
 fi
 stop_debug_log
 exit "${FLL_RC:-1}"
