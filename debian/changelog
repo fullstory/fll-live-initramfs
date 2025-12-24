@@ -16,6 +16,9 @@ fll-live-initramfs (20251224.1) UNRELEASED; urgency=medium
   * Add fll.shutdown to exit-initramfs in dracut initramfs.
   * Adapt initramfs-tools eject logic so it may be shared with dracut
     initramfs unconditionally.
+  * Simplify noeject logic by making eject on shutdown conditional on
+    /dev/fll-cdrom, and /dev/fll-cdrom conditional on absence of virt or
+    no eject cheatcode.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 23 Dec 2025 03:30:18 +0100
 

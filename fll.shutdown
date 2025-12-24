@@ -11,9 +11,7 @@
 # https://github.com/fullstory
 ###
 
-NO_EJECT="/fll.no_eject"
-
-if [ -b /dev/fll-cdrom ] && [ ! -e "${NO_EJECT}" ]; then
+if [ -b /dev/fll-cdrom ]; then
     # disable kernel messages while ejecting cdrom (libata noise)
     echo "0" > /proc/sys/kernel/printk
 
