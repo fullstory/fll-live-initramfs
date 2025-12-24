@@ -98,7 +98,7 @@ for opt in $(cat /proc/cmdline); do
             ;;
         noeject)
             mkdir -p /run/fll
-            touch /run/fll/fll.no_eject
+            : > /run/fll/fll.no_eject
             ;;
         persist_uuid=*)
             FLL_PERSIST_UUID="${opt#persist_uuid=}"
@@ -259,7 +259,9 @@ mkdir -p -m 1777 "${FLL_ROOTFS_MNT}/tmp"
 printf "KERNEL==\"%s\", SYMLINK+=\"fll\"\n" \
     "${DEVNAME#/dev/}" >  "${FLL_ROOTFS_MNT}"/etc/udev/rules.d/70-fll-live.rules
 # don't prompt for ejecting in a virtual machine
-systemd-detect-virt --quiet && touch /run/fll/fll.no_eject
+if systemd-detect-virt --quiet; then
+    : > /run/fll/fll.no_eject
+fi
 # create /dev/fll-cdrom if not virtualised and noeject cheatcode unused
 if [ ! -f /run/fll/fll.no_eject ]; then
     printf "KERNEL==\"%s\", ENV{ID_CDROM}==\"?*\", SYMLINK+=\"fll-cdrom\"\n" \

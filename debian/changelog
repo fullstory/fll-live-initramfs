@@ -21,6 +21,8 @@ fll-live-initramfs (20251224.1) UNRELEASED; urgency=medium
     no eject cheatcode.
   * Add debug logging to dracut fll script.
   * Simplify log init from initramfs-tools fll script.
+  * Revise utilities required in dracut initramfs and avoid use of touch
+    by using shell redirection.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 23 Dec 2025 03:30:18 +0100
 

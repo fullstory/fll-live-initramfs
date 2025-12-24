@@ -17,9 +17,9 @@ installkernel() {
 }
 
 install() {
-    inst_multiple awk blkid blockdev cat dd echo eject fll_blockdev_detect \
-        grep kill losetup mkdir mount readlink rmdir sed stat \
-        systemd-detect-virt tail umount
+    inst_multiple blkid cat dd echo eject env fll_blockdev_detect grep \
+        kill ln losetup ls mkdir mount readlink rmdir sed systemd-detect-virt \
+        tail umount
     inst_simple /etc/default/distro
     inst_hook mount 99 "$moddir/fll.sh"
     inst_script "/usr/share/fll-live-initramfs/fll.initramfs" "/sbin/fll"
