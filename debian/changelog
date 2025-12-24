@@ -1,6 +1,21 @@
-fll-live-initramfs (20251221.4) UNRELEASED; urgency=medium
+fll-live-initramfs (20251224.1) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
+
+  [ Kel Modderman ]
+  * Move initramfs-tools infra into subfolder of same name and adjust
+    debian/rules.
+  * Add the following modules explicitly to dracut initramfs:
+    - overlay (required for live cow overlay)
+    - of_pmem nd_pmem nfit (required for UEFI https boot)
+    - change ntfs to ntfs3
+  * Add utilities to dracut initramfs:
+    - eject (for legacy ejection of physical cd/dvd media)
+    - systemd-detect-virt (to avoid ejection in virt envs)
+  * Add fll.shutdown to exit-initramfs in dracut initramfs.
+  * Adapt initramfs-tools eject logic so it may be shared with dracut
+    initramfs unconditionally.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 23 Dec 2025 03:30:18 +0100
 

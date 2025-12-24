@@ -96,6 +96,10 @@ for opt in $(cat /proc/cmdline); do
         iso_uuid=*)
             FLL_ISO_UUID="${opt#iso_uuid=}"
             ;;
+        noeject)
+            mkdir -p /run/initramfs
+            touch /run/initramfs/fll.no_eject
+            ;;
         persist_uuid=*)
             FLL_PERSIST_UUID="${opt#persist_uuid=}"
             ;;
@@ -303,6 +307,9 @@ if [ -r "${FLL_ROOTFS_MNT}/lib/systemd/system/getty@.service" ]; then
         "${FLL_ROOTFS_MNT}/etc/systemd/system/getty.target.wants/getty@tty1.service"
     ln -fs getty@.service "${FLL_ROOTFS_MNT}/etc/systemd/system/autovt@.service"
 fi
+
+# don't prompt for ejecting in a virtual machine
+systemd-detect-virt --quiet && touch /run/initramfs/fll.no_eject
 
 # success
 exit 0

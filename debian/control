@@ -14,11 +14,9 @@ Package: fll-live-initramfs
 Architecture: all
 Depends: ${misc:Depends},
  distro-defaults,
- dracut | initramfs-tools
-Recommends: busybox,
- eject,
-Suggests: lvm2,
- nbd-client
+ dracut | initramfs-tools,
+ eject
+Recommends: busybox
 Description: fll live media initramfs glue
  This package provides the script glue that allows initramfs-tools or
  dracut to generate an early userspace filesystem suitable for booting
