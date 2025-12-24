@@ -24,6 +24,7 @@ fll-live-initramfs (20251224.1) UNRELEASED; urgency=medium
   * Revise utilities required in dracut initramfs and avoid use of touch
     by using shell redirection.
   * Accept fll.debug and fll=debug cheatcodes for debugging.
+  * Add some copyright and license headers to the dracut scripts.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 23 Dec 2025 03:30:18 +0100
 

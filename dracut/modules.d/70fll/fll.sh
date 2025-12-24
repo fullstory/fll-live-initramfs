@@ -1,5 +1,15 @@
 #!/bin/sh
 
+###
+# F.U.L.L.S.T.O.R.Y dracut script
+#
+# Copyright: (C) 2025, Kel Modderman <kelvmod@gmail.com>
+# License:   GPLv2
+#
+# F.U.L.L.S.T.O.R.Y Project Homepage:
+# https://github.com/fullstory
+###
+
 PATH=/usr/sbin:/usr/bin:/sbin:/bin
 
 init_debug_log()
