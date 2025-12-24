@@ -12,11 +12,7 @@
 ###
 
 if [ -b /dev/fll-cdrom ]; then
-    # disable kernel messages while ejecting cdrom (libata noise)
-    echo "0" > /proc/sys/kernel/printk
-
     eject -m -p /dev/fll-cdrom
-
     echo "" > /dev/console
     echo "Please remove CD, close cdrom drive then press enter." > /dev/console
     echo "" > /dev/console
