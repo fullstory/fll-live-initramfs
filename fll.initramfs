@@ -288,7 +288,8 @@ if [ -z "${FLL_CUSTOM_TZ}" ]; then
     # no TZ specified by owner
     FLL_CUSTOM_TZ="Etc/UTC"
     # configure calamares geoip timezone lookup
-    if ! grep -q '^geoip:' "${FLL_ROOTFS_MNT}/etc/calamares/modules/locale.conf"; then
+    if ! grep -q '^geoip:' "${FLL_ROOTFS_MNT}/etc/calamares/modules/locale.conf" 2>/dev/null; then
+        mkdir -p "${FLL_ROOTFS_MNT}/etc/calamares/modules"
         cat >>"${FLL_ROOTFS_MNT}/etc/calamares/modules/locale.conf" <<EOF
 # added by fll.initramfs: no timezone was selected at boot time
 geoip:
