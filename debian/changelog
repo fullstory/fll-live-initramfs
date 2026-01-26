@@ -6,6 +6,7 @@ fll-live-initramfs (20260126.1) UNRELEASED; urgency=medium
   [ Kel Modderman ]
   * Prepend FLL_ to CUSTOM_HOSTNAME and CUSTOM_TZ variables in
     fll.initramfs.
+  * Remove the intermediary TZ variable in timzeone logic.
 
  -- Kel Modderman <kelvmod@gmail.com>  Mon, 26 Jan 2026 11:13:05 +1000
 

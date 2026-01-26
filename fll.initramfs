@@ -283,24 +283,23 @@ if [ -n "${FLL_CUSTOM_HOSTNAME}" ]; then
         "${FLL_ROOTFS_MNT}/etc/hosts"
 fi
 
-# allow FLL_CUSTOM_TZ to override above TZ definitions
-if [ -n "${FLL_CUSTOM_TZ}" ]; then
-    case "${FLL_CUSTOM_TZ}" in
-        utc|UTC)
-            FLL_CUSTOM_TZ="Etc/UTC"
-            ;;
-    esac
-    [ -f "${FLL_ROOTFS_MNT}/usr/share/zoneinfo/${FLL_CUSTOM_TZ}" ] && TZ="${FLL_CUSTOM_TZ}"
-fi
-
 # configure timezone, fallback to UTC
-[ -f "${FLL_ROOTFS_MNT}/usr/share/zoneinfo/${TZ}" ] || TZ="Etc/UTC"
-echo "${TZ}" > "${FLL_ROOTFS_MNT}/etc/timezone"
+case "${FLL_CUSTOM_TZ}" in
+    utc|UTC)
+        FLL_CUSTOM_TZ="Etc/UTC"
+        ;;
+    *)
+        if [ ! -f "${FLL_ROOTFS_MNT}/usr/share/zoneinfo/${FLL_CUSTOM_TZ}" ]; then
+            TZ="Etc/UTC"
+        fi
+        ;;
+esac
+printf "${FLL_CUSTOM_TZ}\n" > "${FLL_ROOTFS_MNT}/etc/timezone"
 rm -f "${FLL_ROOTFS_MNT}/etc/localtime"
-ln -sf "/usr/share/zoneinfo/${TZ}" "${FLL_ROOTFS_MNT}/etc/localtime"
+ln -sf "/usr/share/zoneinfo/${FLL_CUSTOM_TZ}" "${FLL_ROOTFS_MNT}/etc/localtime"
 
 # make localtime default, unless tz=Etc/UTC or utc=yes
-if [ "${TZ}" = "Etc/UTC" ] || [ "${UTC}" = "yes" ]; then
+if [ "${FLL_CUSTOM_TZ}" = "Etc/UTC" ] || [ "${UTC}" = "yes" ]; then
     printf "0.000000 0 0.000000\n0\nUTC\n" > "${FLL_ROOTFS_MNT}/etc/adjtime"
 else
     # debian defaults to UTC=yes, which is rumored to be dual-boot unfriendly
