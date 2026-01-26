@@ -292,7 +292,7 @@ if [ -z "${FLL_CUSTOM_TZ}" ]; then
         cat >>"${FLL_ROOTFS_MNT}/etc/calamares/modules/locale.conf" <<EOF
 # added by fll.initramfs: no timezone was selected at boot time
 geoip:
-    style:    "json"
+    style:    "none"
     url:      "https://geoip.kde.org/v1/ubiquity"
     selector: "TimeZone"
 EOF
