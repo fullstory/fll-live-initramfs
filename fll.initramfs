@@ -296,8 +296,8 @@ geoip:
     url:      "https://geoip.kde.org/v1/ubiquity"
     selector: "TimeZone"
 EOF
-    sed -i 's/^useSystemTimezone: true/useSystemTimezone: false/' \
-        "${FLL_ROOTFS_MNT}/etc/calamares/modules/locale.conf"
+        sed -i 's/^useSystemTimezone: true/useSystemTimezone: false/' \
+            "${FLL_ROOTFS_MNT}/etc/calamares/modules/locale.conf"
     fi
 fi
 case "${FLL_CUSTOM_TZ}" in
