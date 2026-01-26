@@ -284,6 +284,20 @@ if [ -n "${FLL_CUSTOM_HOSTNAME}" ]; then
 fi
 
 # configure timezone, fallback to UTC
+if [ -z "${FLL_CUSTOM_TZ}" ]; then
+    # no TZ specified by owner
+    FLL_CUSTOM_TZ="Etc/UTC"
+    # configure calamares geoip timezone lookup
+    if ! grep -q '^geoip:' "${FLL_ROOTFS_MNT}/etc/calamares/modules/locale.conf"; then
+        cat >>"${FLL_ROOTFS_MNT}/etc/calamares/modules/locale.conf" <<EOF
+# added by fll.initramfs: no timezone was selected at boot time
+geoip:
+    style:    "none"
+    url:      "https://geoip.kde.org/v1/ubiquity"
+    selector: "TimeZone"
+EOF
+    fi
+fi
 case "${FLL_CUSTOM_TZ}" in
     utc|UTC)
         FLL_CUSTOM_TZ="Etc/UTC"
