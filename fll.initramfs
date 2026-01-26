@@ -290,7 +290,7 @@ case "${FLL_CUSTOM_TZ}" in
         ;;
     *)
         if [ ! -f "${FLL_ROOTFS_MNT}/usr/share/zoneinfo/${FLL_CUSTOM_TZ}" ]; then
-            TZ="Etc/UTC"
+            FLL_CUSTOM_TZ="Etc/UTC"
         fi
         ;;
 esac
