@@ -53,6 +53,8 @@ esac
 [ -s /etc/default/distro ] && . /etc/default/distro
 
 FLL_COPY_TORAM=""
+FLL_CUSTOM_HOSTNAME=""
+FLL_CUSTOM_TZ=""
 FLL_FROMHD=""
 FLL_FROMISO=""
 FLL_ISO_UUID=""
@@ -83,7 +85,7 @@ for opt in $(cat /proc/cmdline); do
             esac
             ;;
         hostname=*)
-            CUSTOM_HOSTNAME="${opt#hostname=}"
+            FLL_CUSTOM_HOSTNAME="${opt#hostname=}"
             ;;
         image_dir=*)
             FLL_IMAGE_DIR="${opt#image_dir=}"
@@ -110,7 +112,7 @@ for opt in $(cat /proc/cmdline); do
             FLL_COPY_TORAM="yes"
             ;;
         tz=*)
-            CUSTOM_TZ="${opt#tz=}"
+            FLL_CUSTOM_TZ="${opt#tz=}"
             ;;
         username=*)
             FLL_LIVE_USER="${opt#username=}"
@@ -119,7 +121,7 @@ for opt in $(cat /proc/cmdline); do
             UTC="yes"
             ;;
         utc|gmt)
-            CUSTOM_TZ="Etc/UTC"
+            FLL_CUSTOM_TZ="Etc/UTC"
             ;;
     esac
 done
@@ -273,22 +275,22 @@ sed -i "s#^FLL_LIVE_USER=.*#FLL_LIVE_USER=\"${FLL_LIVE_USER}\"#" \
     "${FLL_ROOTFS_MNT}/etc/default/distro"
 
 # custom hostname given on cmdline
-if [ "${CUSTOM_HOSTNAME}" ]; then
-    echo "${CUSTOM_HOSTNAME}" > "${FLL_ROOTFS_MNT}/etc/hostname"
-    echo "${CUSTOM_HOSTNAME}" > "${FLL_ROOTFS_MNT}/etc/mailname"
+if [ -n "${FLL_CUSTOM_HOSTNAME}" ]; then
+    echo "${FLL_CUSTOM_HOSTNAME}" > "${FLL_ROOTFS_MNT}/etc/hostname"
+    echo "${FLL_CUSTOM_HOSTNAME}" > "${FLL_ROOTFS_MNT}/etc/mailname"
     # update /etc/hosts
-    sed -i '/localhost/!s/^\(127.0.0.1[ \t]\+\)\(.\+\)$/\1'"${CUSTOM_HOSTNAME}"'/' \
+    sed -i '/localhost/!s/^\(127.0.0.1[ \t]\+\)\(.\+\)$/\1'"${FLL_CUSTOM_HOSTNAME}"'/' \
         "${FLL_ROOTFS_MNT}/etc/hosts"
 fi
 
-# allow CUSTOM_TZ to override above TZ definitions
-if [ -n "${CUSTOM_TZ}" ]; then
-    case "${CUSTOM_TZ}" in
+# allow FLL_CUSTOM_TZ to override above TZ definitions
+if [ -n "${FLL_CUSTOM_TZ}" ]; then
+    case "${FLL_CUSTOM_TZ}" in
         utc|UTC)
-            CUSTOM_TZ="Etc/UTC"
+            FLL_CUSTOM_TZ="Etc/UTC"
             ;;
     esac
-    [ -f "${FLL_ROOTFS_MNT}/usr/share/zoneinfo/${CUSTOM_TZ}" ] && TZ="${CUSTOM_TZ}"
+    [ -f "${FLL_ROOTFS_MNT}/usr/share/zoneinfo/${FLL_CUSTOM_TZ}" ] && TZ="${FLL_CUSTOM_TZ}"
 fi
 
 # configure timezone, fallback to UTC
