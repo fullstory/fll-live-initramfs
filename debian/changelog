@@ -1,7 +1,4 @@
-fll-live-initramfs (20260126.1) UNRELEASED; urgency=medium
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
+fll-live-initramfs (20260126.1) unstable; urgency=medium
 
   [ Kel Modderman ]
   * Prepend FLL_ to CUSTOM_HOSTNAME and CUSTOM_TZ variables in
@@ -11,7 +8,7 @@ fll-live-initramfs (20260126.1) UNRELEASED; urgency=medium
     cheatcode, fallback to Etc/UTC and configure calamares to select a
     timezone via geoip. Also disable use of system tz configuration.
 
- -- Kel Modderman <kelvmod@gmail.com>  Mon, 26 Jan 2026 11:13:05 +1000
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 26 Jan 2026 13:18:21 +0100
 
 fll-live-initramfs (20251224.1) unstable; urgency=medium
 
