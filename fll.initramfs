@@ -18,16 +18,20 @@
 #  * updates live username variable if given on boot cmdline
 #  * configures live hostname, timezone, and getty
 
+fll_say()
+{
+    if [ -n "${FLL_PLYMOUTH}" ]; then
+        plymouth display-message --text="${@}"
+    else
+        printf "${@}"
+    fi
+}
+
 fll_toram()
 {
-    printf "fll toram: %s -> %s ..." "${1}" "${2}"
-    # background the copy, grab the process id
-    if dd if="${1}" of="${2}" bs=1M status=none; then
-        printf "Done.\n"
-        return 0
-    fi
-    printf "Failed.\n"
-    return 1
+    fll_say "Copying rootfs to ram: ${1} -> ${2} ..."
+    dd if="${1}" of="${2}" bs=1M status=none
+    return "${?}"
 }
 
 PATH=/usr/sbin:/usr/bin:/sbin:/bin
@@ -61,6 +65,11 @@ FLL_FROMISO=""
 FLL_ISO_UUID=""
 FLL_ROOTFS_UUID=""
 FLL_PERSIST_UUID=""
+FLL_PLYMOUTH=""
+
+if type plymouth > /dev/null 2>&1 && plymouth --ping; then
+    FLL_PLYMOUTH="yes"
+fi
 
 # parse fll options given on cmdline
 for opt in $(cat /proc/cmdline); do
@@ -332,6 +341,10 @@ if [ -r "${FLL_ROOTFS_MNT}/lib/systemd/system/getty@.service" ]; then
     ln -fs /etc/systemd/system/getty@.service \
         "${FLL_ROOTFS_MNT}/etc/systemd/system/getty.target.wants/getty@tty1.service"
     ln -fs getty@.service "${FLL_ROOTFS_MNT}/etc/systemd/system/autovt@.service"
+fi
+
+if [ -r "${FLL_ROOTFS_MNT}/etc/${FLL_DISTRO_NAME}-version" ]; then
+    fll_say "Booting $(cat ${FLL_ROOTFS_MNT}/etc/${FLL_DISTRO_NAME}-version) ..."
 fi
 
 # success

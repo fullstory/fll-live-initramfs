@@ -1,8 +1,12 @@
-fll-live-initramfs (20260126.2) UNRELEASED; urgency=medium
+fll-live-initramfs (20260305.1) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 26 Jan 2026 13:18:39 +0100
+  [ Kel Modderman ]
+  * Use plymouth to display boot message.
+
+ -- Kel Modderman <kelvmod@gmail.com>  Thu, 05 Mar 2026 22:16:15 +1000
 
 fll-live-initramfs (20260126.1) unstable; urgency=medium
 
