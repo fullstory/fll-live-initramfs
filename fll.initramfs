@@ -2,7 +2,7 @@
 #
 # F.U.L.L.S.T.O.R.Y initramfs live media mount script
 #
-# Copyright: (C) 2025, Kel Modderman <kelvmod@gmail.com>
+# Copyright: (C) 2025-2026, Kel Modderman <kelvmod@gmail.com>
 # License:   GPLv2
 #
 # F.U.L.L.S.T.O.R.Y Project Homepage:
@@ -10,7 +10,8 @@
 #
 # This script:
 #  * inspects a block device/partition for the UUID of the carrier
-#    filesystem (iso9660) containing the readonly rootfs images
+#    filesystem (iso9660) containing the readonly rootfs images, or the
+#    UUID of the readonly rootfs itself (i.e. erofs exposed by hybrid GPT)
 #  * mounts readonly rootfs and sets up COW/tmpfs overlay
 #  * creates a symlink to the readonly rootfs image for use by calamares
 #  * create udev rule for persistent symlink to device live media was found on
