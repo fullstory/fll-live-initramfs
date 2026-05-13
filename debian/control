@@ -15,6 +15,7 @@ Architecture: all
 Depends: ${misc:Depends},
  distro-defaults,
  dracut | initramfs-tools,
+ procps,
  eject
 Recommends: busybox
 Description: fll live media initramfs glue
