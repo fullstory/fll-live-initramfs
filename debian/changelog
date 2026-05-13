@@ -1,9 +1,5 @@
-fll-live-initramfs (20260513.1) UNRELEASED; urgency=medium
+fll-live-initramfs (20260513.1) unstable; urgency=medium
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Update calamares bootloader.conf for systemd-boot if present.
 
  -- Kel Modderman <kelvmod@gmail.com>  Wed, 13 May 2026 18:08:07 +1000
