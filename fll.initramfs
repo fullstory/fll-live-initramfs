@@ -248,14 +248,22 @@ fi
 # create symlink to readonly rootfs for calamares
 ln -sf "${FLL_READONLY_FILE}" "/run/fll/${FLL_READONLY_FSTYPE}"
 
-# update calamares by setting readonly fstype and initramfs tool
+# update calamares by setting readonly_fstype, initramfs_tool and bootloader
 if [ -d "${FLL_ROOTFS_MNT}/etc/calamares" ]; then
+    # readonly_fstype
     sed -i "s/FLL_READONLY_FSTYPE/${FLL_READONLY_FSTYPE}/" \
         "${FLL_ROOTFS_MNT}/etc/calamares/modules/unpackfs"*
+    # initramfs_tool
     if [ -z "${NEWROOT}" ]; then
         # not dracut -> initramfs-tools
         sed -i -e "s/dracutlukscfg/initramfscfg/" -e "s/dracut/initramfs/" \
             "${FLL_ROOTFS_MNT}/etc/calamares/settings.conf"
+    fi
+    # bootloader
+    if [ -d "${FLL_ROOTFS_MNT}/usr/lib/systemd/boot/efi" ]; then
+        # not grub -> systemd-boot
+        sed -i "s/^efiBootLoader: \"grub\"/efiBootLoader: \"systemd-boot\"/" \
+            "${FLL_ROOTFS_MNT}/etc/calamares/bootloader.conf"
     fi
 fi
 
