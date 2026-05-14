@@ -1,9 +1,5 @@
-fll-live-initramfs (20260514.1) UNRELEASED; urgency=medium
+fll-live-initramfs (20260514.1) unstable; urgency=medium
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Add procps to depends.
   * postinst: adjust chrooted() logic to allow installation into
     systemd container.
