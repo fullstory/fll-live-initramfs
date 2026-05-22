@@ -1,9 +1,5 @@
-fll-live-initramfs (20260522.1) UNRELEASED; urgency=medium
+fll-live-initramfs (20260522.1) unstable; urgency=medium
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Update /etc/calamares/bootloader.conf if refind is detected on
     chroot
 
