@@ -1,13 +1,10 @@
-fll-live-initramfs (20260524.1) UNRELEASED; urgency=medium
-
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-  * Brown paper bag: image_name has never been a valid cheatcode,
-    image_file is correctly parse from cmdline now.
+fll-live-initramfs (20260524.1) unstable; urgency=medium
 
   [ Kel Modderman ]
   * Fix path to /etc/calamares/modules/bootloader.conf.
   * Configure calamares to prefer grub when present in live chroot.
+  * Brown paper bag: image_name has never been a valid cheatcode,
+    image_file is correctly parse from cmdline now.
 
  -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 24 May 2026 23:13:34 +1000
 
