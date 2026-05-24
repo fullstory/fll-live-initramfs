@@ -101,8 +101,8 @@ for opt in $(cat /proc/cmdline); do
             FLL_IMAGE_DIR="${opt#image_dir=}"
             FLL_IMAGE_LOCATION="${FLL_IMAGE_DIR}/${FLL_IMAGE_FILE}"
             ;;
-        image_name=*)
-            FLL_IMAGE_FILE="${opt#image_name=}"
+        image_file=*)
+            FLL_IMAGE_FILE="${opt#image_file=}"
             FLL_IMAGE_LOCATION="${FLL_IMAGE_DIR}/${FLL_IMAGE_FILE}"
             ;;
         iso_uuid=*)
