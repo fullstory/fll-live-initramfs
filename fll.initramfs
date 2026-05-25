@@ -237,11 +237,20 @@ else
         exit 1
     fi
 fi
-FLL_UNION_MODULE="overlay"
+
 FLL_UNION_OPTIONS="lowerdir=${FLL_READONLY_MNT},upperdir=${FLL_UNION_COWDIR}/upper,workdir=${FLL_UNION_COWDIR}/work"
-modprobe "${FLL_UNION_MODULE}"
+modprobe overlay
 mkdir -p "${FLL_UNION_COWDIR}/upper" "${FLL_UNION_COWDIR}/work"
-if ! mount -t "${FLL_UNION_MODULE}" -o "${FLL_UNION_OPTIONS}" "${FLL_UNION_MODULE}" "${FLL_ROOTFS_MNT}"; then
+
+if [ -n "${FLL_PERSIST_UUID}" ] && [ -n "${FLL_ROOTFS_UUID}" ]; then
+    # upper on non-volatile stoarge, avoid complex semantics
+    FLL_UNION_OPTIONS="${FLL_UNION_OPTIONS},redirect_dir=off,metacopy=off"
+else
+    # upper on tmpfs, avoid sync overhead
+    FLL_UNION_OPTIONS="${FLL_UNION_OPTIONS},volatile"
+fi
+
+if ! mount -t overlay -o "${FLL_UNION_OPTIONS}" overlay "${FLL_ROOTFS_MNT}"; then
     exit 1
 fi
 
