@@ -1,9 +1,5 @@
-fll-live-initramfs (20260525.1) UNRELEASED; urgency=medium
+fll-live-initramfs (20260525.1) unstable; urgency=medium
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Optimise overlay for performance on tmpfs and simplicity when upper is
     backed by non-volatile storage.
 
