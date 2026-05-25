@@ -238,7 +238,7 @@ else
     fi
 fi
 
-FLL_UNION_OPTIONS="lowerdir=${FLL_READONLY_MNT},upperdir=${FLL_UNION_COWDIR}/upper,workdir=${FLL_UNION_COWDIR}/work"
+FLL_UNION_OPTIONS="lowerdir=${FLL_READONLY_MNT},upperdir=${FLL_UNION_COWDIR}/upper,workdir=${FLL_UNION_COWDIR}/work,noatime"
 modprobe overlay
 mkdir -p "${FLL_UNION_COWDIR}/upper" "${FLL_UNION_COWDIR}/work"
 
