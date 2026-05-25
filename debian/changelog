@@ -1,3 +1,9 @@
+fll-live-initramfs (20260525.2) UNRELEASED; urgency=medium
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 25 May 2026 17:00:23 +0200
+
 fll-live-initramfs (20260525.1) unstable; urgency=medium
 
   * Optimise overlay for performance on tmpfs and simplicity when upper is
