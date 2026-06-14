@@ -1,9 +1,5 @@
-fll-live-initramfs (20260612.1) UNRELEASED; urgency=medium
+fll-live-initramfs (20260612.1) unstable; urgency=medium
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Do not check for presence of /usr/sbin/update-grub when configuring
     calameres bootloader.conf; it's pulled in by os-prober/memtest86+.
 
