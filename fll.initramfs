@@ -65,6 +65,7 @@ FLL_FROMISO=""
 FLL_ISO_UUID=""
 FLL_ROOTFS_UUID=""
 FLL_PERSIST_UUID=""
+FLL_PERSIST_LUKS_UUID=""
 FLL_PLYMOUTH=""
 
 if type plymouth > /dev/null 2>&1 && plymouth --ping; then
@@ -111,6 +112,9 @@ for opt in $(cat /proc/cmdline); do
         noeject)
             mkdir -p /run/fll
             : > /run/fll/fll.noeject
+            ;;
+        persist_luks_uuid=*)
+            FLL_PERSIST_LUKS_UUID="${opt#persist_luks_uuid=}"
             ;;
         persist_uuid=*)
             FLL_PERSIST_UUID="${opt#persist_uuid=}"
@@ -219,19 +223,32 @@ if ! mount -t "${FLL_READONLY_FSTYPE}" -o ro "${FLL_READONLY_FILE}" "${FLL_READO
 fi
 
 FLL_UNION_COWDIR="/run/fll/cow"
+FLL_PERSIST_MNT="/run/fll/persist"
+FLL_PERSIST_DEV=""
 mkdir -p "${FLL_UNION_COWDIR}"
-# prepare COW/tmpfs union filesystem
+# prepare COW/overlay union filesystem
 if [ -n "${FLL_PERSIST_UUID}" ] && [ -n "${FLL_ROOTFS_UUID}" ]; then
-    # the persist partition will be on the same disk as rootfs, the secret sauce
-    # to successfully mounting it is that we _must_ access the rootfs by partition,
-    # and not via the disk devtype / iso9660 wrapper
-    FLL_PERSIST_FSTYPE="$(blkid -s TYPE -o value /dev/disk/by-uuid/${FLL_PERSIST_UUID})"
-    if ! mount -n -o rw,noatime -t "${FLL_PERSIST_FSTYPE}" "/dev/disk/by-uuid/${FLL_PERSIST_UUID}" "${FLL_UNION_COWDIR}"; then
+    if [ -n "${FLL_PERSIST_LUKS_UUID}" ]; then
+        # encrypted persist: prompt for passphrase via Plymouth or console
+        if ! cryptsetup luksOpen \
+                "/dev/disk/by-uuid/${FLL_PERSIST_LUKS_UUID}" fll-persist; then
+            echo "fll: error: could not unlock LUKS container (UUID=${FLL_PERSIST_LUKS_UUID})" >&2
+            exit 1
+        fi
+        FLL_PERSIST_DEV="/dev/mapper/fll-persist"
+    else
+        FLL_PERSIST_DEV="/dev/disk/by-uuid/${FLL_PERSIST_UUID}"
+    fi
+    mkdir -p "${FLL_PERSIST_MNT}"
+    if ! mount -n -o rw,noatime,subvolid=5 -t btrfs \
+               "${FLL_PERSIST_DEV}" "${FLL_PERSIST_MNT}"; then
+        echo "fll: error: could not mount persist btrfs (UUID=${FLL_PERSIST_UUID})" >&2
         exit 1
     fi
-    # adjust persistent overlay COW dir to be rootfs specific
-    FLL_UNION_COWDIR="/run/fll/cow/${FLL_ROOTFS_UUID}"
-    mkdir -p "${FLL_UNION_COWDIR}"
+    # @root is the COW subvolume. Create the uuid-specific upper/work dirs
+    # on first boot (or after an upgrade reset).
+    FLL_UNION_COWDIR="${FLL_PERSIST_MNT}/@root/${FLL_ROOTFS_UUID}"
+    mkdir -p "${FLL_UNION_COWDIR}/upper" "${FLL_UNION_COWDIR}/work"
 else
     if ! mount -n -t tmpfs -o size=90%,mode=755 tmpfs "${FLL_UNION_COWDIR}"; then
         exit 1
@@ -252,6 +269,14 @@ fi
 
 if ! mount -t overlay -o "${FLL_UNION_OPTIONS}" overlay "${FLL_ROOTFS_MNT}"; then
     exit 1
+fi
+
+# Bind @home over the overlay's /home (persistent home).
+if [ -n "${FLL_PERSIST_UUID}" ] && [ -n "${FLL_ROOTFS_UUID}" ]; then
+    mkdir -p "${FLL_ROOTFS_MNT}/home"
+    if ! mount -n --bind "${FLL_PERSIST_MNT}/@home" "${FLL_ROOTFS_MNT}/home"; then
+        echo "fll: warning: could not bind-mount @home, using overlay /home" >&2
+    fi
 fi
 
 # create symlink to readonly rootfs for calamares
