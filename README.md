@@ -63,31 +63,31 @@ are of the form `key=value` or bare words.
 
 ### Media location
 
-| Parameter | Example | Description |
-|-----------|---------|-------------|
-| `iso_uuid=UUID` | `iso_uuid=1234-ABCD` | UUID of the iso9660 carrier filesystem. Used to identify the correct block device when multiple removable devices are present. Typically set by the bootloader. |
-| `rootfs_uuid=UUID` | `rootfs_uuid=abcd-1234` | UUID of the rootfs partition itself (e.g. an erofs partition exposed directly by a hybrid GPT image). When this is set the script skips the iso9660 container and mounts the partition directly. |
-| `fromiso=PATH` | `fromiso=/live/image.iso` | Path to an ISO file on a filesystem. The file is loop-mounted as an iso9660 volume and the rootfs image is read from within it. |
-| `fromhd=DEV` | `fromhd=UUID=1234-ABCD` | Restrict probing to a specific block device. Accepts `UUID=<uuid>`, `/dev/disk/by-uuid/<uuid>`, or a `/dev/*` path. Set automatically by **grub2-fll-fromiso**. |
-| `image_dir=DIR` | `image_dir=live` | Override the directory inside the carrier filesystem that contains the rootfs image file. Defaults to the value from `/etc/default/distro`. |
-| `image_file=FILE` | `image_file=filesystem.erofs` | Override the rootfs image filename. Defaults to the value from `/etc/default/distro`. |
+| Parameter | Description |
+|-----------|-------------|
+| `iso_uuid=UUID` | UUID of the iso9660 carrier filesystem. Used to identify the correct block device when multiple removable devices are present. Typically set by the bootloader. |
+| `rootfs_uuid=UUID` | UUID of the rootfs partition itself (e.g. an erofs partition exposed directly by a hybrid GPT image). When this is set the script skips the iso9660 container and mounts the partition directly. |
+| `fromiso=PATH` | Path to an ISO file on a filesystem. The file is loop-mounted as an iso9660 volume and the rootfs image is read from within it. |
+| `fromhd=DEV` | Restrict probing to a specific block device. Accepts `UUID=<uuid>`, `/dev/disk/by-uuid/<uuid>`, or a `/dev/*` path. Set automatically by **grub2-fll-fromiso**. |
+| `image_dir=DIR` | Override the directory inside the carrier filesystem that contains the rootfs image file. Defaults to the value from `/etc/default/distro`. |
+| `image_file=FILE` | Override the rootfs image filename. Defaults to the value from `/etc/default/distro`. |
 
 ### Persistence
 
-| Parameter | Example | Description |
-|-----------|---------|-------------|
-| `persist_uuid=UUID` | `persist_uuid=dead-beef` | UUID of a btrfs partition to use for persistent storage. The `@root` subvolume is used as the overlay upper directory; `@home` is bind-mounted over `/home`. Both `persist_uuid` and `rootfs_uuid` must be given together. |
-| `persist_luks_uuid=UUID` | `persist_luks_uuid=cafe-1234` | UUID of a LUKS container wrapping the persist btrfs partition. When set, the passphrase is requested via Plymouth (with up to 3 attempts) or read from `/dev/console`. The unlocked device appears as `/dev/mapper/fll-persist`. |
+| Parameter | Description |
+|-----------|-------------|
+| `persist_uuid=UUID` | UUID of a btrfs partition to use for persistent storage. The `@root` subvolume is used as the overlay upper directory; `@home` is bind-mounted over `/home`. Both `persist_uuid` and `rootfs_uuid` must be given together. |
+| `persist_luks_uuid=UUID` | UUID of a LUKS container wrapping the persist btrfs partition. When set, the passphrase is requested via Plymouth (with up to 3 attempts) or read from `/dev/console`. The unlocked device appears as `/dev/mapper/fll-persist`. |
 
 ### Locale and identity
 
-| Parameter | Example | Description |
-|-----------|---------|-------------|
-| `hostname=NAME` | `hostname=mymachine` | Set a custom hostname in `/etc/hostname`, `/etc/mailname`, and `/etc/hosts`. |
-| `tz=TIMEZONE` | `tz=Europe/Berlin` | Set the timezone. Must match a path under `/usr/share/zoneinfo/`. Both `/etc/timezone` and `/etc/localtime` are written. If omitted, defaults to `Etc/UTC` and Calamares is configured to perform a GeoIP timezone lookup. |
-| `utc=yes` | | Write `/etc/adjtime` with `UTC` mode (hardware clock is UTC). |
-| `utc` or `gmt` | | Alias for `tz=Etc/UTC`. |
-| `username=NAME` | `username=alice` | Override the live username written to `/etc/default/distro`. |
+| Parameter | Description |
+|-----------|-------------|
+| `hostname=NAME` | Set a custom hostname in `/etc/hostname`, `/etc/mailname`, and `/etc/hosts`. |
+| `tz=TIMEZONE` | Set the timezone. Must match a path under `/usr/share/zoneinfo/`. Both `/etc/timezone` and `/etc/localtime` are written. If omitted, defaults to `Etc/UTC` and Calamares is configured to perform a GeoIP timezone lookup. |
+| `utc=yes` | Write `/etc/adjtime` with `UTC` mode (hardware clock is UTC). |
+| `utc` or `gmt` | Alias for `tz=Etc/UTC`. |
+| `username=NAME` | Override the live username written to `/etc/default/distro`. |
 
 ### Debugging
 
