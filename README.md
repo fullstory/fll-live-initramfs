@@ -29,7 +29,7 @@ It receives the device path and filesystem type via the environment (`$DEVNAME`,
    filesystem (USB stick, optical disc) or a bare rootfs partition exposed by a
    hybrid GPT layout.
 3. Optionally copies the rootfs image into a tmpfs (`toram`).
-4. Mounts the read-only rootfs (erofs, squashfs, ext4, …).
+4. Mounts the read-only rootfs (erofs or squashfs).
 5. Sets up the overlay — either a volatile tmpfs COW layer (non-persistent) or a
    btrfs `@root` subvolume (persistent, optionally LUKS-encrypted).
 6. Bind-mounts the btrfs `@home` subvolume over `/home` when persisting.
