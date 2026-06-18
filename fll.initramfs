@@ -283,7 +283,8 @@ fi
 if [ -n "${FLL_PERSIST_UUID}" ] && [ -n "${FLL_ROOTFS_UUID}" ]; then
     mkdir -p "${FLL_ROOTFS_MNT}/home"
     if ! mount -n --bind "${FLL_PERSIST_MNT}/@home" "${FLL_ROOTFS_MNT}/home"; then
-        echo "fll: warning: could not bind-mount @home, using overlay /home" >&2
+        echo "fll: error: could not bind-mount @home subvolume" >&2
+        exit 1
     fi
 fi
 
