@@ -13,6 +13,7 @@ fll-live-initramfs (20260617.1) UNRELEASED; urgency=medium
   * Added cryptsetup-bin to Depends so the binary is guaranteed present
     when the initramfs is generateda.
   * Feed luks password to cryptsetup more explicitly via plymouth/dev console.
+  * Allow for 3 attempts at unlocking the luks volume.
   * Remove overlay mount option "optimisations".
 
  -- Kel Modderman <kelvmod@gmail.com>  Wed, 17 Jun 2026 22:10:24 +1000

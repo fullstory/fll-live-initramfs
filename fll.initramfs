@@ -233,11 +233,14 @@ if [ -n "${FLL_PERSIST_UUID}" ] && [ -n "${FLL_ROOTFS_UUID}" ]; then
         # dracut hook stdin is not a tty so cryptsetup must be fed explicitly.
         FLL_PERSIST_LUKS_DEV="/dev/disk/by-uuid/${FLL_PERSIST_LUKS_UUID}"
         if [ -n "${FLL_PLYMOUTH}" ]; then
-            plymouth ask-for-password \
-                --prompt="Enter passphrase for persist LUKS (UUID=${FLL_PERSIST_LUKS_UUID})" \
-                | cryptsetup luksOpen --key-file=- "${FLL_PERSIST_LUKS_DEV}" fll-persist
+            for attempt in 1 2 3; do
+                plymouth ask-for-password \
+                    --prompt="Enter passphrase for persist LUKS (UUID=${FLL_PERSIST_LUKS_UUID}) [attempt ${attempt}/3]" \
+                    | cryptsetup luksOpen --key-file=- "${FLL_PERSIST_LUKS_DEV}" fll-persist \
+                    && break
+            done
         else
-            cryptsetup luksOpen "${FLL_PERSIST_LUKS_DEV}" fll-persist < /dev/console
+            cryptsetup luksOpen --tries=3 "${FLL_PERSIST_LUKS_DEV}" fll-persist < /dev/console
         fi
         if [ $? -ne 0 ]; then
             echo "fll: error: could not unlock LUKS container (UUID=${FLL_PERSIST_LUKS_UUID})" >&2
