@@ -12,7 +12,7 @@ fll-live-initramfs (20260617.1) UNRELEASED; urgency=medium
     manual_add_modules dm-crypt.
   * Added cryptsetup-bin to Depends so the binary is guaranteed present
     when the initramfs is generateda.
-  * Feed luks password to cryptsetup more explicity via plymouth/dev console.
+  * Feed luks password to cryptsetup more explicitly via plymouth/dev console.
 
  -- Kel Modderman <kelvmod@gmail.com>  Wed, 17 Jun 2026 22:10:24 +1000
 
