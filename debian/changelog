@@ -1,9 +1,5 @@
-fll-live-initramfs (20260617.1) UNRELEASED; urgency=medium
+fll-live-initramfs (20260617.1) unstable; urgency=medium
 
-  [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
-
-  [ Kel Modderman ]
   * Support new btrfs persist partition with @root and @home subvolumes,
     and optional luks encryption.
   * dracut/modules.d/70fll/module-setup.sh: added cryptsetup to inst_multiple
