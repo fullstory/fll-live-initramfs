@@ -229,9 +229,17 @@ mkdir -p "${FLL_UNION_COWDIR}"
 # prepare COW/overlay union filesystem
 if [ -n "${FLL_PERSIST_UUID}" ] && [ -n "${FLL_ROOTFS_UUID}" ]; then
     if [ -n "${FLL_PERSIST_LUKS_UUID}" ]; then
-        # encrypted persist: prompt for passphrase via Plymouth or console
-        if ! cryptsetup luksOpen \
-                "/dev/disk/by-uuid/${FLL_PERSIST_LUKS_UUID}" fll-persist; then
+        # encrypted persist: prompt for passphrase via Plymouth or console.
+        # dracut hook stdin is not a tty so cryptsetup must be fed explicitly.
+        FLL_PERSIST_LUKS_DEV="/dev/disk/by-uuid/${FLL_PERSIST_LUKS_UUID}"
+        if [ -n "${FLL_PLYMOUTH}" ]; then
+            plymouth ask-for-password \
+                --prompt="Enter passphrase for persist LUKS (UUID=${FLL_PERSIST_LUKS_UUID})" \
+                | cryptsetup luksOpen --key-file=- "${FLL_PERSIST_LUKS_DEV}" fll-persist
+        else
+            cryptsetup luksOpen "${FLL_PERSIST_LUKS_DEV}" fll-persist < /dev/console
+        fi
+        if [ $? -ne 0 ]; then
             echo "fll: error: could not unlock LUKS container (UUID=${FLL_PERSIST_LUKS_UUID})" >&2
             exit 1
         fi
