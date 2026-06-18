@@ -6,6 +6,12 @@ fll-live-initramfs (20260617.1) UNRELEASED; urgency=medium
   [ Kel Modderman ]
   * Support new btrfs persist partition with @root and @home subvolumes,
     and optional luks encryption.
+  * dracut/modules.d/70fll/module-setup.sh: added cryptsetup to inst_multiple
+    and dm-crypt to installkernel().
+  * initramfs-tools/hooks/fll: added copy_exec /usr/sbin/cryptsetup and
+    manual_add_modules dm-crypt.
+  * Added cryptsetup-bin to Depends so the binary is guaranteed present
+    when the initramfs is generateda.
 
  -- Kel Modderman <kelvmod@gmail.com>  Wed, 17 Jun 2026 22:10:24 +1000
 

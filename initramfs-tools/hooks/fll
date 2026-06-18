@@ -33,6 +33,9 @@ esac
 # distro-defaults
 copy_file "regular file" /etc/default/distro /etc/default/distro
 
+# dm-crypt for encrypted persist partition
+manual_add_modules dm-crypt
+
 # filesystem unioning modules
 manual_add_modules overlay
 
@@ -68,6 +71,8 @@ copy_file "regular file" \
 	/usr/lib/systemd/system-shutdown/fll.shutdown
 copy_exec /usr/bin/systemd-detect-virt /usr/bin/systemd-detect-virt
 copy_exec /usr/bin/eject /usr/bin/eject
+
+copy_exec /usr/sbin/cryptsetup /usr/sbin/cryptsetup
 
 # initramfs live media program + script
 copy_exec /usr/bin/fll_blockdev_detect /usr/bin/fll_blockdev_detect

@@ -23,11 +23,11 @@ depends() {
 installkernel() {
     hostonly='' instmods iso9660 erofs loop squashfs overlay \
         ext4 btrfs jfs f2fs xfs ntfs3 vfat exfat udf \
-        of_pmem nd_pmem nfit
+        of_pmem nd_pmem nfit dm-crypt
 }
 
 install() {
-    inst_multiple blkid cat dd echo eject env fll_blockdev_detect grep \
+    inst_multiple blkid cat cryptsetup dd echo eject env fll_blockdev_detect grep \
         kill ln losetup ls mkdir mount readlink rmdir sed systemd-detect-virt \
         tail umount
     inst_simple /etc/default/distro

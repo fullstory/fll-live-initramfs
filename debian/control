@@ -13,6 +13,7 @@ Vcs-Git: https://github.com/fullstory/fll-live-initramfs.git
 Package: fll-live-initramfs
 Architecture: all
 Depends: ${misc:Depends},
+ cryptsetup-bin,
  distro-defaults,
  dracut | initramfs-tools,
  procps,
