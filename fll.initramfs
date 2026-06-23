@@ -342,6 +342,11 @@ done
 # tmp with correct permissions for users
 mkdir -p -m 1777 "${FLL_ROOTFS_MNT}/tmp"
 
+# keep the systemd journal in RAM for the live session
+mkdir -p "${FLL_ROOTFS_MNT}/etc/systemd/journald.conf.d"
+printf "[Journal]\nStorage=volatile\n" \
+    > "${FLL_ROOTFS_MNT}/etc/systemd/journald.conf.d/00-fll-live.conf"
+
 # create udev rule for persistent symlink to device live media was found on
 printf "KERNEL==\"%s\", SYMLINK+=\"fll\"\n" \
     "${DEVNAME#/dev/}" >  "${FLL_ROOTFS_MNT}"/etc/udev/rules.d/70-fll-live.rules

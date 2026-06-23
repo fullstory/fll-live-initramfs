@@ -12,6 +12,7 @@ fll-live-initramfs (20260623.1) UNRELEASED; urgency=medium
     share the same homed user. This must precede systemd-homed, which loads
     its keys only once at startup (a seed from fll_homectl, run after
     systemd-homed.service, is too late and login fails after the first boot).
+  * Keep the systemd journal in RAM for the live session.
 
  -- Kel Modderman <kelvmod@gmail.com>  Tue, 23 Jun 2026 12:15:09 +1000
 
