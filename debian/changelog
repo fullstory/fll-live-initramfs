@@ -4,8 +4,14 @@ fll-live-initramfs (20260623.1) UNRELEASED; urgency=medium
   * NOT RELEASED YET
 
   [ Kel Modderman ]
-  * Mount a tmpfs over the systemd-homed state dir so private keys do not
-    ever persist when homectl is used for live user home creation.
+  * Seed the systemd-homed signing keypair into the state dir before
+    systemd-homed starts, when homectl is used for live user home creation.
+    The keypair persists in the @root COW across reboots of the same rootfs;
+    on a rootfs with no keys yet it is seeded from the copy fll_homectl saves
+    beside the home image on the shared @home, so chroots sharing one @home
+    share the same homed user. This must precede systemd-homed, which loads
+    its keys only once at startup (a seed from fll_homectl, run after
+    systemd-homed.service, is too late and login fails after the first boot).
 
  -- Kel Modderman <kelvmod@gmail.com>  Tue, 23 Jun 2026 12:15:09 +1000
 
