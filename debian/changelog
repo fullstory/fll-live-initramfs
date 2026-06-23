@@ -1,8 +1,13 @@
-fll-live-initramfs (20260617.2) UNRELEASED; urgency=medium
+fll-live-initramfs (20260623.1) UNRELEASED; urgency=medium
 
+  [ Stefan Lippers-Hollmann ]
   * NOT RELEASED YET
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 19 Jun 2026 00:06:34 +0200
+  [ Kel Modderman ]
+  * Mount a tmpfs over the systemd-homed state dir so private keys do not
+    ever persist when homectl is used for live user home creation.
+
+ -- Kel Modderman <kelvmod@gmail.com>  Tue, 23 Jun 2026 12:15:09 +1000
 
 fll-live-initramfs (20260617.1) unstable; urgency=medium
 
